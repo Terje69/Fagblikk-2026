@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fachblick München</title>
+    <meta
+      name="description"
+      content="Fachblick München. Teaser-side med nedtelling, arbeidsordre, program, challenges og tekstbasert RPG i parodisk DDR-stil."
+    />
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="propaganda-ribbon">BROT • BIER • DISZIPLIN</div>
+    <div class="app-shell">
+      <header class="hero panel">
+        <div class="hero-copy">
+          <p class="eyebrow">Teaseranwendung 2026</p>
+          <h1>FACHBLICK<br />MÜNCHEN</h1>
+          <p class="lead german">
+            Die Au-Pair-Mädchen zittern so stark, dass die Essstäbchen knirschen.
+          </p>
+          <div class="hero-tags">
+            <span>Zentralamt für Reiseordnung</span>
+            <span>Abflug: Molde 8. Okt • 06:45</span>
+            <span>Status: Mobilmachung läuft</span>
+          </div>
+        </div>
+        <div class="countdown-grid">
+          <div class="count-card"><span>Tage</span><strong id="days">0</strong></div>
+          <div class="count-card"><span>Stunden</span><strong id="hours">0</strong></div>
+          <div class="count-card"><span>Minuten</span><strong id="minutes">0</strong></div>
+          <div class="count-card compact"><span>Status</span><strong id="status">Aktiv</strong></div>
+        </div>
+      </header>
+
+      <main class="main-grid">
+        <section class="panel section-span-2 order-panel">
+          <div class="section-header">
+            <h2>Arbeitsordre für Bierkonsum</h2>
+            <p>Verordnung 08/10</p>
+          </div>
+          <div class="order-stamp">STAATLICH GEPRÜFT</div>
+          <ol class="order-list">
+            <li>Antreten am Gate ohne Heldentum og uten diskusjon om klokkeslett.</li>
+            <li>Første glass registreres som kulturell innsats, ikke som svakhet.</li>
+            <li>Bordvalg skjer med myndig pekefinger og svakt grunnlag.</li>
+            <li>Uenighet løses gjennom ny runde, ikke gjennom resonnering.</li>
+            <li>Retur gjennomføres med administrativ mine og selektiv hukommelse.</li>
+          </ol>
+        </section>
+
+        <section class="panel">
+          <div class="section-header">
+            <h2>Scoreboard</h2>
+            <p>Samlet framdrift</p>
+          </div>
+          <div class="score-stack">
+            <div class="stat-pill"><span>Challenge-poeng</span><strong id="challengePoints">0</strong></div>
+            <div class="stat-pill"><span>Pakket</span><strong id="packingProgress">0/0</strong></div>
+            <div class="stat-pill"><span>RPG-status</span><strong id="rpgProgress">Start</strong></div>
+          </div>
+        </section>
+
+        <section class="panel section-span-2">
+          <div class="section-header">
+            <h2>Programm</h2>
+            <p>Drikke øl</p>
+          </div>
+          <div id="scheduleGrid" class="schedule-grid"></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-header">
+            <h2>Packliste</h2>
+            <p>Ren truse, gjerne med hull</p>
+          </div>
+          <div id="packingList" class="check-list"></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-header">
+            <h2>Challenges</h2>
+            <p>Velg gjennomført</p>
+          </div>
+          <div id="challengeList" class="challenge-list"></div>
+        </section>
+
+        <section class="panel section-span-2">
+          <div class="section-header">
+            <h2>RPG: Die Bierlinie</h2>
+            <p>Tekstbasert kaos med flere avslutninger</p>
+          </div>
+          <div class="rpg-layout">
+            <article class="rpg-card">
+              <p class="eyebrow" id="rpgPhase">Aktiv scene</p>
+              <h3 id="rpgTitle"></h3>
+              <p class="rpg-text" id="rpgText"></p>
+              <div class="rpg-options" id="rpgOptions"></div>
+            </article>
+            <aside class="rpg-sidebar">
+              <div class="stats-grid">
+                <div class="stat-pill"><span>Moral</span><strong id="statMorale">0</strong></div>
+                <div class="stat-pill"><span>Ordnung</span><strong id="statOrder">0</strong></div>
+                <div class="stat-pill"><span>Chaos</span><strong id="statChaos">0</strong></div>
+                <div class="stat-pill"><span>Prestige</span><strong id="statPrestige">0</strong></div>
+              </div>
+              <div class="history-box">
+                <h4>Valghistorikk</h4>
+                <div id="rpgHistory"></div>
+              </div>
+            </aside>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer panel">
+        <p>Ministerium für Brot, Bier und Richtungsstabilität</p>
+      </footer>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

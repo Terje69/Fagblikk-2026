@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kontingentet 2026 — München</title>
+    <meta
+      name="description"
+      content="Kontingentet 2026 til München. Nedtelling, reiseplan, bierliste, challenges og RPG i klassisk 70-talls østtysk stil."
+    />
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="hero panel">
+        <div class="hero-copy">
+          <p class="eyebrow">Kontingentet 2026</p>
+          <h1>München-operasjonen</h1>
+          <p class="lead">
+            En fullverdig turapp for gutteekspedisjonen: nedtelling, flyplan, bierliste, poengjakt og et nytt tekstbasert RPG.
+            Denne gangen i klassisk 70-talls østtysk propaganda-estetikk.
+          </p>
+          <div class="hero-tags">
+            <span>Destinasjon: München</span>
+            <span>Flyvalg: Alternativ A</span>
+            <span>Tema: DDR 1970-tall</span>
+          </div>
+        </div>
+        <div class="countdown-grid">
+          <div class="count-card"><span>Dager</span><strong id="days">0</strong></div>
+          <div class="count-card"><span>Timer</span><strong id="hours">0</strong></div>
+          <div class="count-card"><span>Minutter</span><strong id="minutes">0</strong></div>
+          <div class="count-card compact"><span>Status</span><strong id="status">Aktiv</strong></div>
+        </div>
+      </header>
+
+      <main class="main-grid">
+        <section class="panel section-span-2">
+          <div class="section-header">
+            <h2>Reiseramme</h2>
+            <p>Basert på valgt Alternativ A</p>
+          </div>
+          <div class="route-strip">
+            <div class="route-stop">
+              <strong>Molde</strong>
+              <span>Torsdag 8. okt • 06:45</span>
+            </div>
+            <div class="route-arrow">→</div>
+            <div class="route-stop">
+              <strong>Oslo</strong>
+              <span>Gardermoen mellomlanding</span>
+            </div>
+            <div class="route-arrow">→</div>
+            <div class="route-stop">
+              <strong>München</strong>
+              <span>Første operative ettermiddag</span>
+            </div>
+          </div>
+          <p class="muted small">Praktisk note: appen bruker valgt tidligavgang som styrende plan. Endelige klokkeslett bør verifiseres ved booking.</p>
+        </section>
+
+        <section class="panel">
+          <div class="section-header">
+            <h2>Scoreboard</h2>
+            <p>Samlet framdrift</p>
+          </div>
+          <div class="score-stack">
+            <div class="stat-pill"><span>Ølpoeng</span><strong id="beerPoints">0</strong></div>
+            <div class="stat-pill"><span>Challenge-poeng</span><strong id="challengePoints">0</strong></div>
+            <div class="stat-pill"><span>Pakket</span><strong id="packingProgress">0/0</strong></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="section-header">
+            <h2>Doktrine</h2>
+            <p>Hvordan denne turen skal forstås</p>
+          </div>
+          <ul class="manifesto-list">
+            <li>Logistikk først. Fortelling etterpå.</li>
+            <li>Hver øl vurderes kort, skarpt og uten diplomati.</li>
+            <li>Ingen skal late som søndag er en normal dag.</li>
+          </ul>
+        </section>
+
+        <section class="panel section-span-2">
+          <div class="section-header">
+            <h2>Program</h2>
+            <p>Fire dager, null ydmykhet</p>
+          </div>
+          <div id="scheduleGrid" class="schedule-grid"></div>
+        </section>
+
+        <section class="panel section-span-2">
+          <div class="section-header">
+            <h2>Bierliste</h2>
+            <p>Tyske øl som erstatter fjorårets gir-bilder</p>
+          </div>
+          <div id="beerGrid" class="beer-grid"></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-header">
+            <h2>Pakkeliste</h2>
+            <p>Før avreise</p>
+          </div>
+          <div id="packingList" class="check-list"></div>
+        </section>
+
+        <section class="panel">
+          <div class="section-header">
+            <h2>Challenges</h2>
+            <p>Velg gjennomført</p>
+          </div>
+          <div id="challengeList" class="challenge-list"></div>
+        </section>
+
+        <section class="panel section-span-2">
+          <div class="section-header">
+            <h2>RPG: Kontingentet i Bayern</h2>
+            <p>Ny historie med egne valg og avslutninger</p>
+          </div>
+          <div class="rpg-layout">
+            <article class="rpg-card">
+              <p class="eyebrow" id="rpgPhase">Aktiv scene</p>
+              <h3 id="rpgTitle"></h3>
+              <p class="rpg-text" id="rpgText"></p>
+              <div class="rpg-options" id="rpgOptions"></div>
+            </article>
+            <aside class="rpg-sidebar">
+              <div class="stats-grid">
+                <div class="stat-pill"><span>Moral</span><strong id="statMorale">0</strong></div>
+                <div class="stat-pill"><span>Orden</span><strong id="statOrder">0</strong></div>
+                <div class="stat-pill"><span>Kaos</span><strong id="statChaos">0</strong></div>
+                <div class="stat-pill"><span>Prestisje</span><strong id="statPrestige">0</strong></div>
+              </div>
+              <div class="history-box">
+                <h4>Valghistorikk</h4>
+                <div id="rpgHistory"></div>
+              </div>
+            </aside>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer panel">
+        <p>Kontingentet 2026 — bygget som statisk nettside for enkel GitHub-opplasting. All progresjon lagres lokalt i nettleseren.</p>
+      </footer>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>Fagblikk München 2026</title>
+    <meta name="description" content="Fagblikk München 2026. Brot · Bier · Disziplin." />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Fagblikk" />
+    <meta name="theme-color" content="#1a0a0a" />
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+    <link rel="apple-touch-icon" href="assets/icon-192.png" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+
+    <!-- ============ STASI LOGIN SCREEN ============ -->
+    <div class="login-screen" id="loginScreen">
+      <div class="login-container">
+        <div class="login-emblem">
+          <svg viewBox="0 0 120 120" class="stasi-badge">
+            <circle cx="60" cy="60" r="56" fill="none" stroke="#c7a500" stroke-width="3"/>
+            <circle cx="60" cy="60" r="48" fill="none" stroke="#c7a500" stroke-width="1.5"/>
+            <polygon points="60,18 67,42 92,42 72,55 78,78 60,65 42,78 48,55 28,42 53,42" fill="#b71c1c" stroke="#7f0000" stroke-width="1"/>
+            <circle cx="60" cy="48" r="6" fill="#ffd600"/>
+            <rect x="54" y="52" width="12" height="16" rx="2" fill="#ffd600"/>
+            <rect x="50" y="56" width="20" height="3" rx="1" fill="#c7a500"/>
+          </svg>
+        </div>
+
+        <h1 class="login-title">MINISTERIUM FÜR<br/>BIERSICHERHEIT</h1>
+        <p class="login-subtitle">ABTEILUNG FAGBLIKK · MÜNCHEN 2026</p>
+
+        <div class="login-divider">
+          <span class="star">★</span>
+          <span class="ld-line"></span>
+          <span class="ld-text">IDENTIFIKATION</span>
+          <span class="ld-line"></span>
+          <span class="star">★</span>
+        </div>
+
+        <div class="login-form">
+          <label class="login-label" for="agentName">AGENTENNAME EINGEBEN</label>
+          <input
+            type="text"
+            id="agentName"
+            class="login-input"
+            placeholder="DECKNAME..."
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button class="login-btn" id="loginBtn">
+            <span class="star">★</span> ZUGANG GEWÄHRT <span class="star">★</span>
+          </button>
+          <p class="login-error" id="loginError"></p>
+        </div>
+
+        <p class="login-footer">UNBEFUGTER ZUGANG WIRD MIT WEISSBIER BESTRAFT</p>
+      </div>
+    </div>
+
+    <!-- ============ MAIN APP (hidden until login) ============ -->
+    <div class="app-shell" id="appShell" style="display:none;">
+
+      <!-- TOP BANNER -->
+      <div class="top-banner">
+        <span class="star">★</span>
+        <span class="banner-text">BROT · BIER · DISZIPLIN</span>
+        <span class="star">★</span>
+        <button class="agent-badge" id="agentBadge" title="Bytt agent">
+          <span class="agent-name" id="agentDisplay">AGENT</span>
+          <span class="logout-icon">✕</span>
+        </button>
+      </div>
+
+      <!-- NAVIGATION – 7 tabs, scrollable -->
+      <nav class="main-nav" id="mainNav">
+        <button class="nav-card active" data-tab="home">
+          <span class="nav-label">ZENTRALE</span>
+          <strong class="nav-icon">⌂</strong>
+        </button>
+        <button class="nav-card" data-tab="teiln">
+          <span class="nav-label">TEIL&shy;NEHMER</span>
+          <strong class="nav-icon">👥</strong>
+        </button>
+        <button class="nav-card" data-tab="vorb">
+          <span class="nav-label">VORBE&shy;REITUNG</span>
+          <strong class="nav-icon">📋</strong>
+        </button>
+        <button class="nav-card" data-tab="bier">
+          <span class="nav-label">BIER&shy;KONTROLLE</span>
+          <strong class="nav-icon">🍺</strong>
+        </button>
+        <button class="nav-card" data-tab="musik">
+          <span class="nav-label">ALTE SCHLAGER</span>
+          <strong class="nav-icon">🎵</strong>
+        </button>
+        <button class="nav-card" data-tab="frueh">
+          <span class="nav-label">FRÜH&shy;SCHOPPEN</span>
+          <strong class="nav-icon">🍻</strong>
+        </button>
+        <button class="nav-card" data-tab="auftrag">
+          <span class="nav-label">GEHEIM&shy;AUFTRAG</span>
+          <strong class="nav-icon">🕵</strong>
+        </button>
+        <button class="nav-card" data-tab="kriegs">
+          <span class="nav-label">KRIEGS&shy;BEUTE</span>
+          <strong class="nav-icon">🍺</strong>
+        </button>
+        <button class="nav-card" data-tab="gibt">
+          <span class="nav-label">KONT. GIBT</span>
+          <strong class="nav-icon">🥨</strong>
+        </button>
+        <button class="nav-card" data-tab="nimmt">
+          <span class="nav-label">KONT. NIMMT</span>
+          <strong class="nav-icon">🚽</strong>
+        </button>
+      </nav>
+
+      <!-- ============ TAB: HOME ============ -->
+      <main class="tab-content active" id="tab-home">
+        <div class="poster">
+          <section class="hero">
+            <div class="ddr-emblem">★</div>
+            <p class="kicker">ABFLUG</p>
+            <h1 class="main-title">FAGBLIKK<br/>MÜNCHEN<br/><span class="year">2026</span></h1>
+            <p class="lead">
+              Das Kontignent reist nach München für fachliche Weiterbildung in bayerischer Bierkultur.
+              Disziplin ist Pflicht. Lederhosen sind freiwillig.
+            </p>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text">ARCHIV</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+
+            <div class="decree-box">
+              <div class="decree-header">★ AUS DEN ARCHIVEN ★</div>
+              <div class="decree-body">
+                <p class="decree-quote">„Das Au-Pair zittert so stark, dass die Essstäbchen klappern."</p>
+              </div>
+              <div class="decree-stamp">KLASSIFIZIERT · FAGBLIKK 2025</div>
+            </div>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text">COUNTDOWN</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+
+            <div class="countdown-label">Abflug Årø · Mittwoch 7. Oktober · 06:45</div>
+            <div class="countdown">
+              <div class="count-card"><span>TAGE</span><strong id="days">0</strong></div>
+              <div class="count-card"><span>STUNDEN</span><strong id="hours">0</strong></div>
+              <div class="count-card"><span>MINUTEN</span><strong id="minutes">0</strong></div>
+              <div class="count-card count-card--status"><span>STATUS</span><strong id="status">AKTIV</strong></div>
+            </div>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text">FLUGINFORMATION</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+
+            <div class="flight-card">
+              <div class="flight-header">
+                <span class="airline">NORWEGIAN</span>
+                <span class="flight-date">07. OKT 2026</span>
+              </div>
+              <div class="flight-route">
+                <div class="flight-stop">
+                  <span class="flight-time">06:45</span>
+                  <span class="flight-city">MOLDE</span>
+                  <span class="flight-code">MOL</span>
+                </div>
+                <div class="flight-arrow">
+                  <span class="arrow-line"></span>
+                  <span class="arrow-via">VIA OSL</span>
+                  <span class="arrow-line"></span>
+                </div>
+                <div class="flight-stop">
+                  <span class="flight-time">13:15</span>
+                  <span class="flight-city">MÜNCHEN</span>
+                  <span class="flight-code">MUC</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="ddr-footer"><p>VOLKSBIER IST PFLICHTPROGRAMM</p></div>
+          </section>
+        </div>
+      </main>
+
+      <!-- ============ TAB: TEILNEHMER ============ -->
+      <main class="tab-content" id="tab-teiln">
+        <div class="poster">
+          <section class="hero">
+            <div class="ddr-emblem">★</div>
+            <h2 class="tab-title">TEILNEHMER</h2>
+            <p class="lead">Melde dich an. Wähle deine Einsatztage. Das Kontignent muss wissen, wer wann im Dienst ist.</p>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text">DEIN EINSATZPLAN</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+            <div class="day-selector" id="daySelector"></div>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text">ÜBERSICHT ALLER AGENTEN</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+            <div id="attendanceOverview"></div>
+          </section>
+        </div>
+      </main>
+
+      <!-- ============ TAB: VORBEREITUNG ============ -->
+      <main class="tab-content" id="tab-vorb">
+        <div class="poster">
+          <section class="hero">
+            <div class="ddr-emblem">★</div>
+            <h2 class="tab-title">VORBEREITUNG</h2>
+            <p class="lead">Pflichtprogramm vor der Abreise. Jeder Agent muss sich mit dem Kontignent vertraut machen. Fortschritt wird überwacht.</p>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text">AGENTEN-RANGLISTE</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+            <div id="prepLeaderboard"></div>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text">PFLICHTBIERE</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+            <p class="lead" style="font-size:0.6rem;opacity:0.7;">Tilgjengelig på Vinmonopolet og i dagligvarehandel i Norge.</p>
+            <div id="prepList"></div>
+          </section>
+        </div>
+      </main>
+
+      <!-- ============ TAB: BIERKONTROLLE ============ -->
+      <main class="tab-content" id="tab-bier">
+        <div class="poster">
+          <section class="hero">
+            <div class="ddr-emblem">★</div>
+            <h2 class="tab-title">BIERKONTROLLE</h2>
+            <p class="lead">Systematische Bewertung der Münchner Braukultur. Jedes Bier wird nach staatlichen Richtlinien geprüft.</p>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text">PERSÖNLICHE BESTENLISTE</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+            <div id="personalTop3"></div>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text">KOLLEKTIVE BESTENLISTE</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+            <div id="sharedTop3"></div>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text">FLEISSIGSTE PRÜFER</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+            <div id="beerLeaderboard"></div>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text">VOLLSTÄNDIGE KONTROLLE</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+
+            <div class="beer-controls">
+              <button class="ddr-btn" id="resetBeers">NULLSTELLUNG</button>
+              <div class="beer-stats"><span id="beerProgress">0</span> / <span id="beerTotal">0</span> GEPRÜFT</div>
+            </div>
+            <div id="beerList"></div>
+          </section>
+        </div>
+      </main>
+
+      <!-- ============ TAB: ALTE SCHLAGER ============ -->
+      <main class="tab-content" id="tab-musik">
+        <div class="poster">
+          <section class="hero">
+            <div class="ddr-emblem">★</div>
+            <h2 class="tab-title">ALTE SCHLAGER</h2>
+            <p class="lead">Staatsgenehmigte Musik für das Kontignent. Nur zugelassene Schlager werden abgespielt.</p>
+
+            <div class="player-container" id="musicPlayer">
+              <div class="player-display">
+                <div class="player-art">🎵</div>
+                <div class="player-info">
+                  <div class="player-title" id="playerTitle">KEIN LIED GELADEN</div>
+                  <div class="player-artist" id="playerArtist">—</div>
+                </div>
+              </div>
+              <div class="player-progress">
+                <div class="player-bar-bg" id="playerBarBg">
+                  <div class="player-bar-fg" id="playerBarFg"></div>
+                </div>
+                <div class="player-times">
+                  <span id="playerCurrent">0:00</span>
+                  <span id="playerDuration">0:00</span>
+                </div>
+              </div>
+              <div class="player-controls">
+                <button class="player-btn" id="playerPrev" title="Vorheriges">⏮</button>
+                <button class="player-btn player-btn--play" id="playerPlay" title="Abspielen">▶</button>
+                <button class="player-btn" id="playerNext" title="Nächstes">⏭</button>
+              </div>
+            </div>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text">ZUGELASSENE LIEDER</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+            <div id="trackList"></div>
+          </section>
+        </div>
+      </main>
+
+      <!-- ============ TAB: FRÜHSCHOPPEN ============ -->
+      <main class="tab-content" id="tab-frueh">
+        <div class="poster">
+          <section class="hero">
+            <div class="ddr-emblem">★</div>
+            <h2 class="tab-title">FRÜHSCHOPPEN</h2>
+            <p class="lead">Morgendliche Einsatzorte in der Altstadt. Melde dich an, damit das Kontignent weiß wo du bist.</p>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text">TAGESAUSWAHL</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+            <div class="checkin-day-selector" id="checkinDaySelector"></div>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text">AKTIVE AGENTEN</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+            <div id="checkinOverview"></div>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text">EINSATZORTE</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+            <div id="venueList"></div>
+          </section>
+        </div>
+      </main>
+
+      <!-- ============ TAB: GEHEIMAUFTRAG ============ -->
+      <main class="tab-content" id="tab-auftrag">
+        <div class="poster">
+          <section class="hero">
+            <div class="ddr-emblem">★</div>
+            <h2 class="tab-title">GEHEIMAUFTRAG</h2>
+            <p class="lead">Streng geheim. Jeder Agent erhält tägliche Aufträge vom Ministerium. Erfolg wird belohnt. Versagen wird dokumentiert.</p>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text">AUFTRAGS-RANGLISTE</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+            <div id="missionLeaderboard"></div>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text">DEINE AUFTRÄGE</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+            <div id="missionList"></div>
+          </section>
+        </div>
+      </main>
+
+      <!-- ============ TAB: KRIEGSBEUTE ============ -->
+      <main class="tab-content" id="tab-kriegs">
+        <div class="poster">
+          <section class="hero">
+            <div class="ddr-emblem">★</div>
+            <h2 class="tab-title">KRIEGSBEUTE</h2>
+            <p class="lead">Geplünderte Biergläser werden hier registriert. Das Kontignent sammelt Trophäen für das Vaterland.</p>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text">PLÜNDERUNGS-RANGLISTE</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+            <div id="glassLeaderboard"></div>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text">BEUTEVERZEICHNIS</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+            <div id="glassGrid"></div>
+          </section>
+        </div>
+      </main>
+
+      <!-- ============ TAB: DAS KONTIGNENT GIBT ============ -->
+      <main class="tab-content" id="tab-gibt">
+        <div class="poster">
+          <section class="hero">
+            <div class="ddr-emblem">★</div>
+            <h2 class="tab-title">DAS KONTIG&shy;NENT GIBT</h2>
+            <p class="lead">Die Versorgung des Volkes. Bayerische Delikatessen, die das Kontignent mit Freude und Disziplin genießt.</p>
+            <div class="gallery-grid" id="girGallery"></div>
+          </section>
+        </div>
+      </main>
+
+      <!-- ============ TAB: DAS KONTIGNENT NIMMT ============ -->
+      <main class="tab-content" id="tab-nimmt">
+        <div class="poster">
+          <section class="hero">
+            <div class="ddr-emblem">★</div>
+            <h2 class="tab-title">DAS KONTIG&shy;NENT NIMMT</h2>
+            <p class="lead">Die unvermeidliche Konsequenz.</p>
+            <div class="tar-container" id="tarImage"></div>
+          </section>
+        </div>
+      </main>
+
+    </div><!-- /app-shell -->
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -263,20 +263,47 @@ body {
    NAVIGATION
    ============================================================ */
 
-.main-nav {
+.nav-wrap {
   position: fixed;
   bottom: 0; left: 0; right: 0;
   z-index: 100;
+  background: linear-gradient(0deg, var(--red-deep), #3a0a0a);
+  border-top: 3px solid var(--gold-dark);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.5);
+}
+
+/* Faded edge hints to signal scrollability */
+.nav-wrap::before,
+.nav-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: env(safe-area-inset-bottom, 0px);
+  width: 22px;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.nav-wrap::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--red-deep), rgba(127, 0, 0, 0));
+}
+.nav-wrap::after {
+  right: 0;
+  background: linear-gradient(270deg, var(--red-deep), rgba(127, 0, 0, 0));
+}
+.nav-wrap.scroll-left::before  { opacity: 0.95; }
+.nav-wrap.scroll-right::after { opacity: 0.95; }
+
+.main-nav {
   display: flex;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
-  background: linear-gradient(0deg, var(--red-deep), #3a0a0a);
-  border-top: 3px solid var(--gold-dark);
-  padding: 0;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.5);
+  scroll-behavior: smooth;
   scrollbar-width: none;
+  overscroll-behavior-x: contain;
 }
 
 .main-nav::-webkit-scrollbar { display: none; }
@@ -286,37 +313,45 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 3px;
-  padding: 8px 6px 6px;
-  min-width: 64px;
+  justify-content: flex-end;
+  gap: 4px;
+  padding: 9px 10px 8px;
+  min-width: 74px;
+  min-height: 58px;
   flex-shrink: 0;
-  scroll-snap-align: start;
+  scroll-snap-align: center;
   border: none;
   border-right: 1px solid rgba(255, 214, 0, 0.15);
   background: transparent;
   color: var(--cream-dark);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 0.2s, color 0.2s;
   font-family: inherit;
   text-transform: uppercase;
 }
 
 .nav-card:last-child { border-right: none; }
 
-.nav-card .nav-label {
-  font-size: 0.42rem;
-  font-weight: 900;
-  letter-spacing: 0.1em;
-  opacity: 0.6;
-  line-height: 1.2;
-  text-align: center;
-}
-
 .nav-card .nav-icon {
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   line-height: 1;
   font-style: normal;
+  order: 1;
+}
+
+.nav-card .nav-label {
+  font-size: 0.46rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  opacity: 0.65;
+  line-height: 1.15;
+  text-align: center;
+  order: 2;
+  max-width: 70px;
+}
+
+.nav-card:active {
+  background: rgba(255, 214, 0, 0.08);
 }
 
 .nav-card.active {
@@ -330,8 +365,9 @@ body {
   content: '';
   position: absolute;
   top: 0; left: 15%; right: 15%;
-  height: 2px;
+  height: 3px;
   background: var(--gold);
+  box-shadow: 0 0 6px rgba(255, 214, 0, 0.6);
 }
 
 /* ============================================================
@@ -1902,6 +1938,159 @@ h2.tab-title {
   letter-spacing: 0.04em;
   color: var(--cream);
   text-transform: uppercase;
+}
+
+/* ==================== SPIELE ==================== */
+.spiele-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin: 14px 0;
+}
+
+@media (min-width: 640px) {
+  .spiele-grid { grid-template-columns: 1fr 1fr; }
+}
+
+.spiele-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  padding: 18px 16px 14px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 3px solid var(--gold);
+  color: var(--cream);
+  font-family: inherit;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.2s, background 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.spiele-card::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(255, 214, 0, 0.25);
+  pointer-events: none;
+}
+
+.spiele-card:hover {
+  background: rgba(183, 28, 28, 0.25);
+  box-shadow: 0 0 18px rgba(255, 214, 0, 0.4);
+}
+
+.spiele-card:active {
+  transform: scale(0.98);
+}
+
+.spiele-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.spiele-title {
+  font-family: var(--font-heading, inherit);
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+}
+
+.spiele-desc {
+  font-size: 0.58rem;
+  color: var(--cream);
+  letter-spacing: 0.04em;
+  line-height: 1.55;
+  opacity: 0.88;
+  text-transform: none;
+  padding: 0 4px;
+}
+
+.spiele-meta {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.spiele-chip {
+  background: rgba(255, 214, 0, 0.12);
+  border: 1px solid var(--gold-dark);
+  padding: 3px 10px;
+  font-size: 0.5rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+}
+
+.spiele-play {
+  margin-top: 4px;
+  padding: 9px 12px;
+  background: linear-gradient(180deg, var(--red), var(--red-deep));
+  border: 2px solid var(--gold);
+  color: var(--gold);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+
+/* ==================== GAME MODAL ==================== */
+.game-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: var(--ink);
+  display: flex;
+  flex-direction: column;
+}
+
+.game-modal-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(180deg, var(--red), var(--red-deep));
+  border-bottom: 3px solid var(--gold);
+  padding: 10px 14px;
+  padding-top: calc(10px + env(safe-area-inset-top, 0px));
+  flex-shrink: 0;
+}
+
+.game-modal-title {
+  color: var(--gold);
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.game-modal-close {
+  background: transparent;
+  border: 2px solid var(--gold);
+  color: var(--gold);
+  width: 36px;
+  height: 36px;
+  font-size: 1rem;
+  font-weight: 900;
+  font-family: inherit;
+  cursor: pointer;
+  line-height: 1;
+  transition: background 0.15s;
+}
+
+.game-modal-close:active {
+  background: rgba(255, 214, 0, 0.2);
+  transform: scale(0.94);
+}
+
+.game-modal-frame {
+  flex: 1;
+  width: 100%;
+  border: 0;
+  background: var(--ink);
 }
 
 /* ==================== RPG PLACEHOLDER ==================== */

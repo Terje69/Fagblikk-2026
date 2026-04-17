@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🍺 Leere Gläser Klauen</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --red: #b71c1c;
+  --red-deep: #7f0000;
+  --gold: #ffd600;
+  --gold-dark: #c7a500;
+  --cream: #f5e6c8;
+  --ink: #1a0a0a;
+  --wood: #4a2d1a;
+  --wood-dark: #2d1a0f;
+}
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'Arial Black', Arial, sans-serif;
+  background: var(--ink);
+  color: var(--cream);
+  user-select: none;
+  text-transform: uppercase;
+  display: flex;
+  flex-direction: column;
+}
+
+#topbar {
+  display: flex;
+  justify-content: space-around;
+  background: linear-gradient(180deg, var(--red), var(--red-deep));
+  border-bottom: 3px solid var(--gold);
+  padding: 8px 6px;
+  flex-shrink: 0;
+}
+.tb-item { text-align: center; }
+.tb-lbl  { font-size: 0.5em; color: var(--cream); opacity: 0.85; letter-spacing: 0.12em; }
+.tb-val  { font-size: 1.1em; color: var(--gold); font-weight: 900; letter-spacing: 0.06em; margin-top: 2px; }
+
+#title {
+  text-align: center;
+  padding: 6px 10px 4px;
+  font-size: 0.78em;
+  color: var(--gold);
+  letter-spacing: 0.12em;
+  font-weight: 900;
+  border-bottom: 1px solid var(--gold-dark);
+  flex-shrink: 0;
+}
+#subtitle {
+  text-align: center;
+  font-size: 0.5em;
+  color: var(--cream);
+  opacity: 0.7;
+  letter-spacing: 0.08em;
+  padding: 3px 10px 6px;
+  flex-shrink: 0;
+}
+
+#table-area {
+  flex: 1;
+  position: relative;
+  background:
+    repeating-linear-gradient(90deg, rgba(0,0,0,0.25) 0 2px, transparent 2px 28px),
+    linear-gradient(180deg, var(--wood) 0%, var(--wood-dark) 100%);
+  overflow: hidden;
+  border-top: 2px solid var(--gold-dark);
+  border-bottom: 2px solid var(--gold-dark);
+  touch-action: manipulation;
+}
+
+.glass {
+  position: absolute;
+  width: 44px; height: 60px;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  animation: glassAppear 0.25s ease-out;
+}
+@keyframes glassAppear {
+  from { transform: translate(-50%, -50%) scale(0.3) rotate(-20deg); opacity: 0; }
+  to   { transform: translate(-50%, -50%) scale(1) rotate(0); opacity: 1; }
+}
+.glass.stolen {
+  animation: stealFly 0.35s ease-in forwards;
+  pointer-events: none;
+}
+@keyframes stealFly {
+  to { transform: translate(-50%, -50%) scale(0.2) rotate(25deg); opacity: 0; }
+}
+.glass svg { width: 100%; height: 100%; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+
+.plus-one {
+  position: absolute;
+  font-size: 1em;
+  font-weight: 900;
+  color: var(--gold);
+  text-shadow: 0 0 8px rgba(255,214,0,0.8), 1px 1px 0 #000;
+  pointer-events: none;
+  animation: plusFly 0.7s ease-out forwards;
+  letter-spacing: 0.05em;
+}
+@keyframes plusFly {
+  from { transform: translate(-50%, -50%); opacity: 1; }
+  to   { transform: translate(-50%, -150%); opacity: 0; }
+}
+
+#characters {
+  display: flex;
+  justify-content: space-around;
+  background: linear-gradient(180deg, var(--wood-dark), var(--ink));
+  padding: 10px 8px;
+  gap: 10px;
+  flex-shrink: 0;
+  border-top: 2px solid var(--gold-dark);
+}
+.char {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0,0,0,0.4);
+  border: 2px solid var(--gold-dark);
+  padding: 8px;
+  position: relative;
+  transition: transform 0.1s, border-color 0.2s;
+}
+.char.grabbed {
+  animation: charBump 0.25s ease-out;
+  border-color: var(--gold);
+}
+@keyframes charBump {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.06) translateY(-3px); }
+}
+.char-avatar {
+  width: 52px; height: 52px;
+  flex-shrink: 0;
+  position: relative;
+}
+.char-avatar svg { width: 100%; height: 100%; }
+.char-info { flex: 1; min-width: 0; }
+.char-name {
+  font-size: 0.55em;
+  color: var(--gold);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  margin-bottom: 3px;
+}
+.char-score {
+  font-size: 0.9em;
+  color: var(--cream);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+#overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 500;
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+#overlay.show { display: flex; }
+#overlay-box {
+  background: var(--ink);
+  border: 3px solid var(--gold);
+  padding: 26px 28px;
+  max-width: 380px;
+  text-align: center;
+}
+#ov-title {
+  font-size: 1.3em;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+}
+#ov-msg {
+  font-size: 0.68em;
+  color: var(--cream);
+  letter-spacing: 0.05em;
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+#ov-msg b { color: var(--gold); font-size: 1.2em; }
+#btn-restart, #btn-start {
+  background: linear-gradient(180deg, var(--red), var(--red-deep));
+  color: var(--gold);
+  border: 2px solid var(--gold);
+  padding: 10px 22px;
+  font-size: 0.72em;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-family: inherit;
+  cursor: pointer;
+  margin: 4px;
+}
+#btn-restart:active, #btn-start:active { transform: scale(0.96); }
+
+.combo-flash {
+  position: absolute;
+  top: 10px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.85em;
+  color: var(--gold);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 10px rgba(255,214,0,0.8), 1px 1px 0 #000;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.combo-flash.show { opacity: 1; animation: comboShake 0.4s ease-out; }
+@keyframes comboShake {
+  0%   { transform: translateX(-50%) scale(0.7); }
+  50%  { transform: translateX(-50%) scale(1.2); }
+  100% { transform: translateX(-50%) scale(1); }
+}
+</style>
+</head>
+<body>
+
+<div id="overlay">
+  <div id="overlay-box">
+    <div id="ov-title">★ LEERE GLÄSER KLAUEN ★</div>
+    <div id="ov-msg" id="ov-intro">
+      Zwei mutige Agenten müssen so viele leere Bierkrüge wie möglich klauen, bevor das Au-Pair kommt!<br><br>
+      Tippt auf die Gläser zum Klauen.<br>
+      <b>60 Sekunden</b> · viel Glück!
+    </div>
+    <button id="btn-start" onclick="startGame()">★ LOS GEHT'S ★</button>
+  </div>
+</div>
+
+<div id="title">★ LEERE GLÄSER KLAUEN ★</div>
+<div id="subtitle">Tippt schnell! 60 Sekunden · Klaut was das Zeug hält</div>
+
+<div id="topbar">
+  <div class="tb-item">
+    <div class="tb-lbl">⏱ Zeit</div>
+    <div class="tb-val" id="ui-time">60</div>
+  </div>
+  <div class="tb-item">
+    <div class="tb-lbl">🍺 Beute</div>
+    <div class="tb-val" id="ui-total">0</div>
+  </div>
+  <div class="tb-item">
+    <div class="tb-lbl">⚡ Combo</div>
+    <div class="tb-val" id="ui-combo">×1</div>
+  </div>
+</div>
+
+<div id="table-area">
+  <div class="combo-flash" id="comboFlash"></div>
+</div>
+
+<div id="characters">
+  <div class="char" id="char-0">
+    <div class="char-avatar">
+      <!-- Gelbes Piquet / Yellow polo -->
+      <svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+        <!-- Head -->
+        <circle cx="26" cy="16" r="9" fill="#f2c896" stroke="#000" stroke-width="1.2"/>
+        <!-- Hair -->
+        <path d="M17,12 Q26,4 35,12 Q34,9 26,7 Q18,9 17,12 Z" fill="#6b4423" stroke="#000" stroke-width="1"/>
+        <!-- Eyes -->
+        <circle cx="23" cy="16" r="1" fill="#000"/>
+        <circle cx="29" cy="16" r="1" fill="#000"/>
+        <!-- Smile -->
+        <path d="M23,19 Q26,21 29,19" fill="none" stroke="#000" stroke-width="1" stroke-linecap="round"/>
+        <!-- Polo shirt (yellow) -->
+        <path d="M10,50 L12,28 Q16,25 22,25 L22,30 L30,30 L30,25 Q36,25 40,28 L42,50 Z"
+              fill="#ffd600" stroke="#000" stroke-width="1.2"/>
+        <!-- Collar -->
+        <path d="M22,25 L26,31 L30,25" fill="#c7a500" stroke="#000" stroke-width="1"/>
+        <path d="M25,25 L25,33 L27,33 L27,25" fill="#f5e6c8" stroke="#000" stroke-width="0.8"/>
+        <!-- Buttons -->
+        <circle cx="26" cy="29" r="0.7" fill="#000"/>
+        <circle cx="26" cy="32" r="0.7" fill="#000"/>
+      </svg>
+    </div>
+    <div class="char-info">
+      <div class="char-name">Gelbes<br>Piquet</div>
+      <div class="char-score">🍺 <span id="score-0">0</span></div>
+    </div>
+  </div>
+
+  <div class="char" id="char-1">
+    <div class="char-avatar">
+      <!-- Deutsches Trikot / German national team jersey -->
+      <svg viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+        <!-- Head -->
+        <circle cx="26" cy="16" r="9" fill="#f2c896" stroke="#000" stroke-width="1.2"/>
+        <!-- Hair -->
+        <path d="M17,12 Q26,5 35,12 Q33,8 26,7 Q18,8 17,12 Z" fill="#2a1810" stroke="#000" stroke-width="1"/>
+        <!-- Eyes -->
+        <circle cx="23" cy="16" r="1" fill="#000"/>
+        <circle cx="29" cy="16" r="1" fill="#000"/>
+        <!-- Determined mouth -->
+        <path d="M23,20 L29,20" fill="none" stroke="#000" stroke-width="1.2" stroke-linecap="round"/>
+        <!-- Jersey base (white) -->
+        <path d="M10,50 L12,28 Q16,25 22,25 L22,30 L30,30 L30,25 Q36,25 40,28 L42,50 Z"
+              fill="#ffffff" stroke="#000" stroke-width="1.2"/>
+        <!-- German flag stripe across chest: black, red, gold -->
+        <rect x="11" y="34" width="30" height="2.5" fill="#000"/>
+        <rect x="11" y="36.5" width="30" height="2.5" fill="#cc0000"/>
+        <rect x="11" y="39" width="30" height="2.5" fill="#ffd600"/>
+        <!-- Collar -->
+        <path d="M22,25 L26,30 L30,25 L26,28 Z" fill="#000" stroke="#000" stroke-width="0.8"/>
+        <!-- Eagle emblem (simplified) -->
+        <text x="26" y="32" text-anchor="middle" font-size="4" font-weight="900" fill="#000">DFB</text>
+      </svg>
+    </div>
+    <div class="char-info">
+      <div class="char-name">Deutsches<br>Trikot</div>
+      <div class="char-score">🍺 <span id="score-1">0</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const CFG = {
+  duration: 60,
+  spawnMin: 0.45,
+  spawnMax: 1.1,
+  maxActive: 5,
+  glassLifeMin: 2.2,
+  glassLifeMax: 3.8,
+  comboWindow: 1.4,
+  comboMax: 5,
+};
+
+let state;
+let spawnTimer = 0;
+let tickId = null;
+let lastTs = null;
+let glassIdCounter = 0;
+
+function mkState() {
+  return {
+    running: false,
+    timeLeft: CFG.duration,
+    total: 0,
+    scores: [0, 0],
+    combo: 1,
+    comboLeft: 0,
+    glasses: {},
+    nextChar: 0,
+  };
+}
+
+function startGame() {
+  state = mkState();
+  state.running = true;
+  spawnTimer = 0;
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('ui-time').textContent = CFG.duration;
+  document.getElementById('ui-total').textContent = '0';
+  document.getElementById('ui-combo').textContent = '×1';
+  document.getElementById('score-0').textContent = '0';
+  document.getElementById('score-1').textContent = '0';
+  const area = document.getElementById('table-area');
+  area.querySelectorAll('.glass, .plus-one').forEach(el => el.remove());
+
+  if (tickId) cancelAnimationFrame(tickId);
+  lastTs = null;
+  tickId = requestAnimationFrame(tick);
+}
+
+function tick(ts) {
+  if (!state.running) return;
+  if (!lastTs) lastTs = ts;
+  const dt = Math.min((ts - lastTs) / 1000, 0.1);
+  lastTs = ts;
+
+  state.timeLeft -= dt;
+  if (state.timeLeft <= 0) { state.timeLeft = 0; endGame(); return; }
+
+  if (state.comboLeft > 0) {
+    state.comboLeft -= dt;
+    if (state.comboLeft <= 0) {
+      state.combo = 1;
+      document.getElementById('ui-combo').textContent = '×1';
+    }
+  }
+
+  spawnTimer -= dt;
+  if (spawnTimer <= 0 && Object.keys(state.glasses).length < CFG.maxActive) {
+    spawnGlass();
+    spawnTimer = CFG.spawnMin + Math.random() * (CFG.spawnMax - CFG.spawnMin);
+  }
+
+  for (const id in state.glasses) {
+    const g = state.glasses[id];
+    g.life -= dt;
+    if (g.life <= 0) removeGlass(id, false);
+  }
+
+  document.getElementById('ui-time').textContent = Math.ceil(state.timeLeft);
+
+  tickId = requestAnimationFrame(tick);
+}
+
+function spawnGlass() {
+  const area = document.getElementById('table-area');
+  const rect = area.getBoundingClientRect();
+  const margin = 30;
+  const x = margin + Math.random() * (rect.width - margin * 2);
+  const y = margin + Math.random() * (rect.height - margin * 2);
+  const id = ++glassIdCounter;
+
+  const el = document.createElement('div');
+  el.className = 'glass';
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  el.dataset.id = id;
+  el.innerHTML = `
+    <svg viewBox="0 0 44 60" xmlns="http://www.w3.org/2000/svg">
+      <!-- Empty beer mug -->
+      <path d="M7,6 L5,54 Q5,57 8,57 L34,57 Q37,57 37,54 L35,6 Z"
+            fill="rgba(255,255,255,0.08)"
+            stroke="#f5e6c8" stroke-width="2"/>
+      <!-- Leftover foam ring at bottom -->
+      <ellipse cx="21" cy="52" rx="13" ry="2" fill="#f5e6c8" opacity="0.45"/>
+      <!-- Tiny beer residue -->
+      <path d="M8,48 Q21,52 34,48 L34,55 Q21,57 8,55 Z" fill="#c7a500" opacity="0.35"/>
+      <!-- Handle -->
+      <path d="M37,18 Q48,18 48,30 Q48,42 37,42" fill="none"
+            stroke="#f5e6c8" stroke-width="3"/>
+      <!-- Glass shine -->
+      <path d="M11,10 L10,50" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none"/>
+    </svg>
+  `;
+  el.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    stealGlass(id);
+  });
+  area.appendChild(el);
+
+  const life = CFG.glassLifeMin + Math.random() * (CFG.glassLifeMax - CFG.glassLifeMin);
+  state.glasses[id] = { el, x, y, life };
+}
+
+function stealGlass(id) {
+  const g = state.glasses[id];
+  if (!g) return;
+
+  // Combo
+  if (state.comboLeft > 0) {
+    state.combo = Math.min(CFG.comboMax, state.combo + 1);
+  } else {
+    state.combo = 1;
+  }
+  state.comboLeft = CFG.comboWindow;
+
+  const points = state.combo;
+
+  // Alternate characters
+  const charIdx = state.nextChar;
+  state.nextChar = 1 - state.nextChar;
+  state.scores[charIdx] += points;
+  state.total += points;
+
+  document.getElementById('score-' + charIdx).textContent = state.scores[charIdx];
+  document.getElementById('ui-total').textContent = state.total;
+  document.getElementById('ui-combo').textContent = '×' + state.combo;
+
+  // Bump character
+  const charEl = document.getElementById('char-' + charIdx);
+  charEl.classList.remove('grabbed');
+  void charEl.offsetWidth;
+  charEl.classList.add('grabbed');
+
+  // +N flyup
+  const area = document.getElementById('table-area');
+  const plus = document.createElement('div');
+  plus.className = 'plus-one';
+  plus.textContent = '+' + points;
+  plus.style.left = g.x + 'px';
+  plus.style.top = g.y + 'px';
+  area.appendChild(plus);
+  setTimeout(() => plus.remove(), 700);
+
+  // Combo flash
+  if (state.combo >= 3) {
+    const flash = document.getElementById('comboFlash');
+    flash.textContent = '★ ' + state.combo + 'er Combo! ★';
+    flash.classList.remove('show');
+    void flash.offsetWidth;
+    flash.classList.add('show');
+    clearTimeout(flash._t);
+    flash._t = setTimeout(() => flash.classList.remove('show'), 600);
+  }
+
+  removeGlass(id, true);
+}
+
+function removeGlass(id, stolen) {
+  const g = state.glasses[id];
+  if (!g) return;
+  delete state.glasses[id];
+  if (stolen) {
+    g.el.classList.add('stolen');
+    setTimeout(() => g.el.remove(), 350);
+  } else {
+    g.el.remove();
+  }
+}
+
+function endGame() {
+  state.running = false;
+  if (tickId) { cancelAnimationFrame(tickId); tickId = null; }
+
+  const winner = state.scores[0] > state.scores[1] ? 'Gelbes Piquet'
+                : state.scores[1] > state.scores[0] ? 'Deutsches Trikot'
+                : 'Unentschieden';
+
+  document.getElementById('ov-title').textContent = '★ ZEIT UM! ★';
+  document.getElementById('ov-msg').innerHTML = `
+    Insgesamt geklaut: <b>${state.total}</b> Gläser<br><br>
+    🟡 Gelbes Piquet: <b>${state.scores[0]}</b><br>
+    🇩🇪 Deutsches Trikot: <b>${state.scores[1]}</b><br><br>
+    Sieger: <b>${winner}</b>
+  `;
+  document.getElementById('btn-start').textContent = '★ NOCHMAL ★';
+  document.getElementById('overlay').classList.add('show');
+}
+
+window.addEventListener('load', () => {
+  document.getElementById('overlay').classList.add('show');
+});
+</script>
+</body>
+</html>

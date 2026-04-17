@@ -75,7 +75,8 @@
         </button>
       </div>
 
-      <!-- NAVIGATION – 7 tabs, scrollable -->
+      <!-- NAVIGATION – scrollable tabs with edge hints -->
+      <div class="nav-wrap" id="navWrap">
       <nav class="main-nav" id="mainNav">
         <button class="nav-card active" data-tab="home">
           <span class="nav-label">ZENTRALE</span>
@@ -117,6 +118,10 @@
           <span class="nav-label">DAS SPIEL</span>
           <strong class="nav-icon">⚔️</strong>
         </button>
+        <button class="nav-card" data-tab="spiele">
+          <span class="nav-label">SPIELE</span>
+          <strong class="nav-icon">🎮</strong>
+        </button>
         <button class="nav-card" data-tab="gibt">
           <span class="nav-label">KONT. GIBT</span>
           <strong class="nav-icon">🥨</strong>
@@ -126,6 +131,7 @@
           <strong class="nav-icon">🚽</strong>
         </button>
       </nav>
+      </div><!-- /nav-wrap -->
 
       <!-- ============ TAB: HOME ============ -->
       <main class="tab-content active" id="tab-home">
@@ -488,6 +494,56 @@
           </section>
         </div>
       </main>
+
+      <!-- ============ TAB: SPIELE ============ -->
+      <main class="tab-content" id="tab-spiele">
+        <div class="poster">
+          <section class="hero">
+            <div class="ddr-emblem">★</div>
+            <h2 class="tab-title">SPIELE</h2>
+            <p class="lead">Staatsgenehmigte Unterhaltungsprogramme des Ministeriums. Zur Schulung der Reflexe und Stärkung des Kollektivgeistes.</p>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text">SPIEL-AUSWAHL</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+
+            <div class="spiele-grid">
+              <button class="spiele-card" data-game="bierturm">
+                <div class="spiele-icon">🏗️🍺</div>
+                <div class="spiele-title">BIERTURM AM FLUGHAFEN</div>
+                <div class="spiele-desc">Trinkt, stapelt, flieht vor dem Au-Pair. Stapelt zwei Türme à 7 Gläser.</div>
+                <div class="spiele-meta">
+                  <span class="spiele-chip">👥 1–6 Agenten</span>
+                  <span class="spiele-chip">⏱ Kurz</span>
+                </div>
+                <div class="spiele-play">★ SPIELEN ★</div>
+              </button>
+
+              <button class="spiele-card" data-game="glaeser-klauen">
+                <div class="spiele-icon">🟡🇩🇪</div>
+                <div class="spiele-title">LEERE GLÄSER KLAUEN</div>
+                <div class="spiele-desc">Gelbes Piquet und Deutsches Trikot klauen leere Krüge. 60 Sekunden. Volle Ehre.</div>
+                <div class="spiele-meta">
+                  <span class="spiele-chip">👥 Solo</span>
+                  <span class="spiele-chip">⏱ 60 Sek.</span>
+                </div>
+                <div class="spiele-play">★ SPIELEN ★</div>
+              </button>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <!-- ============ GAME MODAL ============ -->
+      <div class="game-modal" id="gameModal" style="display:none;">
+        <div class="game-modal-bar">
+          <span class="game-modal-title" id="gameModalTitle">SPIEL</span>
+          <button class="game-modal-close" id="gameModalClose" aria-label="Schließen">✕</button>
+        </div>
+        <iframe class="game-modal-frame" id="gameModalFrame" src="about:blank" title="Spiel"></iframe>
+      </div>
 
       <!-- ============ TAB: DAS KONTIGNENT GIBT ============ -->
       <main class="tab-content" id="tab-gibt">

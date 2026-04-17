@@ -341,6 +341,23 @@
   // Auto-login is deferred to end of file (after all const declarations)
 
   // ==================== NAVIGATION ====================
+  const mainNav = document.getElementById('mainNav');
+  const navWrap = document.getElementById('navWrap');
+
+  function updateNavScrollHints() {
+    if (!mainNav || !navWrap) return;
+    const sl = mainNav.scrollLeft;
+    const maxScroll = mainNav.scrollWidth - mainNav.clientWidth;
+    navWrap.classList.toggle('scroll-left',  sl > 4);
+    navWrap.classList.toggle('scroll-right', sl < maxScroll - 4);
+  }
+
+  if (mainNav) {
+    mainNav.addEventListener('scroll', updateNavScrollHints, { passive: true });
+    window.addEventListener('resize', updateNavScrollHints);
+    requestAnimationFrame(updateNavScrollHints);
+  }
+
   document.querySelectorAll('.nav-card').forEach(btn => {
     btn.addEventListener('click', () => {
       const tab = btn.dataset.tab;
@@ -349,6 +366,9 @@
       btn.classList.add('active');
       document.getElementById('tab-' + tab).classList.add('active');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Center the active nav button so the user can see neighbors
+      try { btn.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' }); } catch (e) {}
+      setTimeout(updateNavScrollHints, 350);
       // Refresh data when switching tabs
       if (tab === 'bier') { renderBeerList(); }
       if (tab === 'vorb') { renderPrepList(); renderPrepLeaderboard(); }
@@ -357,6 +377,41 @@
       if (tab === 'auftrag') { renderMissionList(); renderMissionLeaderboard(); }
       if (tab === 'kriegs') { renderGlassGrid(); renderGlassLeaderboard(); }
     });
+  });
+
+  // ==================== SPIELE (GAMES) ====================
+  const GAMES = {
+    'bierturm':       { title: 'BIERTURM AM FLUGHAFEN', src: 'games/bierturm.html' },
+    'glaeser-klauen': { title: 'LEERE GLÄSER KLAUEN',   src: 'games/glaeser-klauen.html' },
+  };
+
+  const gameModal   = document.getElementById('gameModal');
+  const gameFrame   = document.getElementById('gameModalFrame');
+  const gameTitle   = document.getElementById('gameModalTitle');
+  const gameClose   = document.getElementById('gameModalClose');
+
+  function openGame(key) {
+    const g = GAMES[key];
+    if (!g || !gameModal) return;
+    gameTitle.textContent = g.title;
+    gameFrame.src = g.src;
+    gameModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeGame() {
+    if (!gameModal) return;
+    gameModal.style.display = 'none';
+    gameFrame.src = 'about:blank';
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('.spiele-card').forEach(card => {
+    card.addEventListener('click', () => openGame(card.dataset.game));
+  });
+  if (gameClose) gameClose.addEventListener('click', closeGame);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && gameModal && gameModal.style.display === 'flex') closeGame();
   });
 
   // ==================== COUNTDOWN ====================

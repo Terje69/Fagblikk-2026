@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🍺 Bierturm am Flughafen</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --red: #b71c1c;
+  --red-deep: #7f0000;
+  --gold: #ffd600;
+  --gold-dark: #c7a500;
+  --cream: #f5e6c8;
+  --ink: #1a0a0a;
+}
+body {
+  font-family: 'Arial Black', Arial, sans-serif;
+  background: var(--ink);
+  color: var(--cream);
+  min-height: 100vh;
+  user-select: none;
+  overflow-x: hidden;
+  text-transform: uppercase;
+}
+
+#game-wrap { max-width: 980px; margin: 0 auto; padding: 8px 10px 16px; }
+
+#header {
+  text-align: center;
+  padding: 10px 0 6px;
+  border-bottom: 2px solid var(--gold-dark);
+  margin-bottom: 8px;
+}
+#header h1 { font-size: 1.3em; color: var(--gold); letter-spacing: 0.08em; text-shadow: 0 0 14px rgba(255, 214, 0, 0.4); }
+#header p  { font-size: 0.58em; color: var(--cream); opacity: 0.75; margin-top: 4px; letter-spacing: 0.08em; }
+
+#info-bar {
+  display: flex; justify-content: space-around;
+  background: rgba(183, 28, 28, 0.22);
+  border: 2px solid var(--gold-dark);
+  padding: 7px 4px;
+  margin-bottom: 8px;
+}
+.info-item { text-align: center; }
+.info-lbl  { font-size: 0.52em; color: var(--cream); opacity: 0.7; letter-spacing: 0.1em; }
+.info-val  { font-size: 1em; color: var(--gold); font-weight: 900; letter-spacing: 0.05em; }
+
+#towers-row {
+  display: flex; justify-content: center;
+  align-items: flex-end; gap: 28px;
+  margin: 6px 0;
+}
+.tower { text-align: center; min-width: 110px; }
+.tower-lbl { font-size: 0.65em; color: var(--gold); margin-bottom: 4px; letter-spacing: 0.08em; }
+.tower-stack {
+  display: flex; flex-direction: column-reverse;
+  align-items: center; gap: 1px;
+  min-height: 148px; justify-content: flex-start;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 2px dashed rgba(255, 214, 0, 0.3);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  position: relative;
+}
+.tower-stack.highlight {
+  border-color: var(--gold);
+  background: rgba(255, 214, 0, 0.14);
+  box-shadow: 0 0 16px rgba(255, 214, 0, 0.4);
+}
+.tower-stack.just-stolen { animation: shakeIt 0.4s ease-in-out; }
+@keyframes shakeIt {
+  0%,100% { transform: translateX(0) rotate(0); }
+  25% { transform: translateX(-7px) rotate(-3deg); }
+  75% { transform: translateX(7px) rotate(3deg); }
+}
+.glass-item { font-size: 1.85em; line-height: 1; animation: dropIn 0.22s ease-out; }
+@keyframes dropIn {
+  from { transform: translateY(-28px) scale(1.25); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+.slot-empty { font-size: 1.3em; opacity: 0.12; line-height: 1; }
+.tower-cnt  { margin-top: 5px; font-size: 0.78em; color: var(--gold); font-weight: 900; letter-spacing: 0.08em; }
+.tower-cnt.full { color: #66ff99; }
+
+#worker-scene {
+  position: relative; height: 58px;
+  background: linear-gradient(135deg, #2a0a0a, #4a1818, #2a0a0a);
+  overflow: hidden;
+  margin: 6px 0;
+  border: 2px solid var(--gold-dark);
+}
+#worker-npc {
+  position: absolute; font-size: 2.3em;
+  top: 8px; transition: left 0.1s linear;
+  filter: drop-shadow(0 0 7px rgba(255, 214, 0, 0.7));
+  display: none;
+}
+#worker-speech {
+  position: absolute; top: 6px;
+  font-size: 0.6em; color: var(--gold);
+  font-weight: bold; white-space: nowrap;
+  display: none; background: rgba(0, 0, 0, 0.65);
+  padding: 2px 7px;
+  letter-spacing: 0.05em;
+  transition: left 0.1s linear;
+}
+#worker-idle {
+  position: absolute; right: 10px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.58em; color: var(--cream); opacity: 0.6;
+  letter-spacing: 0.06em;
+}
+#distract-btn {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(180deg, var(--red), var(--red-deep));
+  color: var(--gold); border: 2px solid var(--gold);
+  padding: 6px 16px; font-size: 0.68em;
+  font-weight: 900; font-family: inherit;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  cursor: pointer; display: none;
+  animation: pulseBtn 0.5s infinite alternate;
+  z-index: 10;
+  box-shadow: 0 0 14px rgba(255, 214, 0, 0.6);
+}
+@keyframes pulseBtn {
+  from { box-shadow: 0 0 8px rgba(255, 214, 0, 0.5); transform: translate(-50%,-50%) scale(1); }
+  to   { box-shadow: 0 0 18px rgba(255, 214, 0, 0.9); transform: translate(-50%,-50%) scale(1.04); }
+}
+#distract-used {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%,-50%);
+  font-size: 0.65em; color: var(--gold-dark);
+  display: none; letter-spacing: 0.08em;
+}
+#worker-progress-bar {
+  position: absolute; bottom: 0; left: 0; height: 3px;
+  background: var(--gold); transition: width 0.1s;
+  display: none;
+}
+
+#players-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px; margin: 8px 0;
+}
+
+.pcard {
+  background: rgba(0, 0, 0, 0.35);
+  border: 2px solid var(--gold-dark);
+  padding: 8px 8px 6px;
+  cursor: pointer; position: relative;
+  transition: background 0.12s, border-color 0.12s, transform 0.08s;
+}
+.pcard:hover:not(.state-bathroom):not(.state-waiting):not(.state-empty) {
+  background: rgba(183, 28, 28, 0.25);
+  border-color: var(--gold);
+}
+.pcard:active:not(.state-bathroom) { transform: scale(0.96); }
+
+.pcard.state-bathroom {
+  background: rgba(127, 0, 0, 0.35);
+  border-color: var(--red);
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+.pcard.state-empty {
+  background: rgba(255, 214, 0, 0.16);
+  border-color: var(--gold);
+  animation: emptyGlow 0.8s infinite alternate;
+}
+@keyframes emptyGlow {
+  from { box-shadow: 0 0 4px rgba(255, 214, 0, 0.35); }
+  to   { box-shadow: 0 0 14px rgba(255, 214, 0, 0.8); }
+}
+.pcard.state-danger {
+  border-color: var(--red-bright, #ff3333);
+  animation: dangerFlash 0.45s infinite alternate;
+}
+@keyframes dangerFlash {
+  from { box-shadow: 0 0 4px rgba(229, 57, 53, 0.4); }
+  to   { box-shadow: 0 0 16px rgba(229, 57, 53, 0.9); }
+}
+.pcard.clicked-fx { animation: clickPop 0.18s ease-out; }
+@keyframes clickPop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+.card-top { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.p-avatar { font-size: 1.8em; line-height: 1; flex-shrink: 0; }
+.p-name-block { flex: 1; min-width: 0; }
+.p-name {
+  font-size: 0.62em; font-weight: 900;
+  color: var(--gold); margin-bottom: 2px;
+  white-space: nowrap; overflow: hidden;
+  text-overflow: ellipsis; letter-spacing: 0.05em;
+}
+.p-key {
+  display: inline-block;
+  background: rgba(255, 214, 0, 0.15);
+  border: 1px solid var(--gold-dark);
+  padding: 0 5px;
+  font-size: 0.58em; color: var(--gold);
+  font-family: monospace; font-weight: bold;
+  margin-bottom: 2px;
+}
+.p-status { font-size: 0.55em; color: var(--cream); opacity: 0.75; white-space: nowrap; letter-spacing: 0.04em; }
+
+.beer-glass-wrap { position: relative; width: 32px; height: 46px; flex-shrink: 0; }
+.beer-glass-svg  { width: 32px; height: 46px; }
+
+.speed-row { margin-top: 5px; }
+.speed-lbl {
+  display: flex; justify-content: space-between;
+  font-size: 0.52em; color: var(--cream); opacity: 0.7;
+  margin-bottom: 2px; letter-spacing: 0.06em;
+}
+.speed-bg {
+  height: 6px; background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--gold-dark);
+  overflow: hidden;
+}
+.speed-fill {
+  height: 100%;
+  transition: width 0.18s, background-color 0.3s;
+}
+
+.stack-btns { display: none; gap: 5px; margin-top: 7px; }
+.stack-btns.show { display: flex; }
+.stack-btn {
+  flex: 1;
+  background: linear-gradient(180deg, var(--red), var(--red-deep));
+  border: 1.5px solid var(--gold);
+  color: var(--gold); font-size: 0.6em;
+  font-weight: 900; padding: 5px 2px;
+  font-family: inherit; letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer; transition: background 0.15s, transform 0.1s;
+}
+.stack-btn:hover  { background: var(--red-bright, #e53935); transform: scale(1.04); }
+.stack-btn:active { transform: scale(0.96); }
+
+.bathroom-badge {
+  position: absolute; top: 6px; right: 7px;
+  background: var(--red); color: var(--gold);
+  border: 2px solid var(--gold);
+  border-radius: 50%; width: 26px; height: 26px;
+  font-size: 0.68em; font-weight: 900;
+  display: flex; align-items: center; justify-content: center;
+  animation: badgePulse 0.6s infinite alternate;
+}
+@keyframes badgePulse {
+  from { background: var(--red-deep); }
+  to   { background: var(--red); }
+}
+
+#log {
+  background: rgba(0, 0, 0, 0.45);
+  border: 2px solid var(--gold-dark);
+  padding: 5px 10px;
+  height: 68px; overflow-y: auto;
+  font-size: 0.55em; color: var(--cream);
+  margin-top: 6px; letter-spacing: 0.05em;
+}
+.log-info    { color: var(--cream); opacity: 0.85; }
+.log-warn    { color: var(--gold); }
+.log-danger  { color: #ff6655; }
+.log-success { color: #66ff99; }
+
+#overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  z-index: 500; align-items: center; justify-content: center;
+  padding: 20px;
+}
+#overlay.show { display: flex; }
+#overlay-box {
+  background: var(--ink); border: 3px solid var(--gold);
+  padding: 30px 36px; text-align: center; max-width: 460px;
+}
+#ov-title { font-size: 1.6em; color: var(--gold); margin-bottom: 12px; letter-spacing: 0.08em; }
+#ov-msg   { font-size: 0.72em; color: var(--cream); line-height: 1.7; margin-bottom: 22px; letter-spacing: 0.04em; }
+#btn-restart {
+  background: linear-gradient(180deg, var(--red), var(--red-deep));
+  color: var(--gold); border: 2px solid var(--gold);
+  padding: 10px 26px; font-size: 0.8em; font-weight: 900;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  font-family: inherit; cursor: pointer;
+}
+#btn-restart:active { transform: scale(0.96); }
+
+#warn-banner {
+  display: none; position: fixed;
+  top: 0; left: 0; right: 0;
+  background: var(--red-deep); color: var(--gold);
+  border-bottom: 2px solid var(--gold);
+  text-align: center; font-size: 0.78em;
+  font-weight: 900; letter-spacing: 0.1em;
+  padding: 8px; z-index: 400;
+  animation: bannerFlash 0.35s infinite alternate;
+}
+@keyframes bannerFlash {
+  from { background: var(--red-deep); }
+  to   { background: var(--red); }
+}
+
+#goal-bar {
+  display: flex; align-items: center; justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px; margin-bottom: 6px;
+  font-size: 0.58em; color: var(--cream); opacity: 0.8;
+  letter-spacing: 0.06em;
+}
+.goal-chip {
+  background: rgba(255, 214, 0, 0.12);
+  border: 1px solid var(--gold-dark);
+  padding: 2px 10px; color: var(--gold); font-weight: 900;
+}
+
+.auto-timer {
+  position: absolute; bottom: 4px; right: 6px;
+  font-size: 0.55em; color: var(--gold); opacity: 0.9;
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 480px) {
+  #towers-row { gap: 14px; }
+  .tower { min-width: 100px; }
+  #players-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<div id="warn-banner">⚠ DAS AU-PAIR NÄHERT SICH — SCHÜTZT DEN TURM! ⚠</div>
+
+<div id="overlay">
+  <div id="overlay-box">
+    <div id="ov-title">★ SIEG ★</div>
+    <div id="ov-msg">Glückwunsch!</div>
+    <button id="btn-restart" onclick="restartGame()">★ NOCHMAL SPIELEN ★</button>
+  </div>
+</div>
+
+<div id="game-wrap">
+
+  <div id="header">
+    <h1>★ BIERTURM AM FLUGHAFEN ★</h1>
+    <p>Klickt auf Spieler (oder Tasten) zum Trinken · Stapelt leere Gläser · Nicht ZU schnell trinken!</p>
+  </div>
+
+  <div id="info-bar">
+    <div class="info-item">
+      <div class="info-lbl">⏱ Zeit</div>
+      <div class="info-val" id="ui-time">0:00</div>
+    </div>
+    <div class="info-item">
+      <div class="info-lbl">🍺 Gläser</div>
+      <div class="info-val" id="ui-glasses">0</div>
+    </div>
+    <div class="info-item">
+      <div class="info-lbl">🚽 WC</div>
+      <div class="info-val" id="ui-wc">0</div>
+    </div>
+    <div class="info-item">
+      <div class="info-lbl">😤 Au-Pair</div>
+      <div class="info-val" id="ui-worker">0</div>
+    </div>
+  </div>
+
+  <div id="goal-bar">
+    <span>Ziel:</span>
+    <span class="goal-chip">🥃 Turm 1 · 7</span>
+    <span>+</span>
+    <span class="goal-chip">🥃 Turm 2 · 7</span>
+    <span>= ★ SIEG</span>
+  </div>
+
+  <div id="towers-row">
+    <div class="tower">
+      <div class="tower-lbl">★ TURM 1</div>
+      <div class="tower-stack" id="tstack-0" onclick="onClickTower(0)"></div>
+      <div class="tower-cnt" id="tcnt-0">0 / 7</div>
+    </div>
+    <div style="padding-bottom:44px;color:var(--gold);font-size:1.4em;opacity:0.5;">⟷</div>
+    <div class="tower">
+      <div class="tower-lbl">★ TURM 2</div>
+      <div class="tower-stack" id="tstack-1" onclick="onClickTower(1)"></div>
+      <div class="tower-cnt" id="tcnt-1">0 / 7</div>
+    </div>
+  </div>
+
+  <div id="worker-scene">
+    <div id="worker-npc">🧹</div>
+    <div id="worker-speech"></div>
+    <div id="worker-idle">Au-Pair irgendwo am Flughafen... 👀</div>
+    <button id="distract-btn" onclick="distractWorker()">🙈 AU-PAIR ABLENKEN!</button>
+    <div id="distract-used">😅 Schon abgelenkt...</div>
+    <div id="worker-progress-bar"></div>
+  </div>
+
+  <div id="players-grid"></div>
+
+  <div id="log"></div>
+
+</div>
+
+<script>
+const CFG = {
+  players: [
+    { name: 'Hams Bruder',                 emoji: '🧑',     key: 'Q' },
+    { name: 'Hams Bruders Bruders Bruder', emoji: '👦',     key: 'W' },
+    { name: 'Mykle',                       emoji: '🧔',     key: 'E' },
+    { name: 'Mace',                        emoji: '👨‍🦱',  key: 'A' },
+    { name: 'Niggo Kristiansen',           emoji: '😎',     key: 'S' },
+    { name: 'Wiggen',                      emoji: '🤠',     key: 'D' },
+  ],
+  beerDrainAuto:  1.8,
+  beerDrainBoost: 34,
+  clickBoostDur:  1.2,
+  clickSpeedGain: 24,
+  speedDecay:     8,
+  speedDanger:    55,
+  bathroomSec:    15,
+  newBeerDelay:   1.8,
+  autoStackDelay: 4.5,
+  workerMinSec:   14,
+  workerMaxSec:   26,
+  workerPx:       75,
+  distractDur:    3.5,
+  towerTarget:    7,
+};
+
+const KEY_MAP = {};
+CFG.players.forEach((p, i) => { KEY_MAP[p.key.toLowerCase()] = i; });
+
+let G, rafId, lastTs;
+
+function mkState() {
+  return {
+    running: false, over: false, won: false,
+    time: 0, totalGlasses: 0, bathroomCount: 0, workerCount: 0,
+    towers: [0, 0],
+    pendingPlayer: -1,
+    players: CFG.players.map((p, i) => ({
+      id: i, name: p.name, emoji: p.emoji, key: p.key,
+      beer: 100, speed: 0,
+      state: 'drinking',
+      bathroomLeft: 0,
+      waitLeft: 0,
+      boostLeft: 0,
+      autoStackLeft: 0,
+    })),
+    worker: {
+      active: false, x: -80, dir: 1,
+      cooldown: randCD(),
+      distracted: false, distractLeft: 0,
+      tookTower: false,
+      warnTimer: 0,
+      usedDistract: false,
+    },
+    sceneW: 900,
+  };
+}
+
+function randCD() {
+  return CFG.workerMinSec + Math.random() * (CFG.workerMaxSec - CFG.workerMinSec);
+}
+
+function onClickPlayer(id) {
+  if (!G.running || G.over) return;
+  const p = G.players[id];
+  if (p.state === 'bathroom' || p.state === 'waiting') return;
+  if (p.state === 'empty') return;
+
+  drinkClick(p);
+
+  const card = document.getElementById('pcard-' + id);
+  if (card) {
+    card.classList.remove('clicked-fx');
+    void card.offsetWidth;
+    card.classList.add('clicked-fx');
+    setTimeout(() => card.classList.remove('clicked-fx'), 200);
+  }
+}
+
+function drinkClick(p) {
+  p.speed = Math.min(100, p.speed + CFG.clickSpeedGain);
+  p.boostLeft = CFG.clickBoostDur;
+  if (p.speed >= CFG.speedDanger && p.state !== 'bathroom') goBathroom(p);
+}
+
+function onClickTower(tIdx) {
+  if (!G.running || G.over) return;
+  const p = G.players.find(pl => pl.state === 'empty');
+  if (!p) return;
+  placeGlass(p, tIdx);
+}
+
+function placeGlass(p, tIdx) {
+  if (G.towers[tIdx] >= CFG.towerTarget) {
+    const other = 1 - tIdx;
+    if (G.towers[other] < CFG.towerTarget) { placeGlass(p, other); return; }
+    return;
+  }
+  G.towers[tIdx]++;
+  G.totalGlasses++;
+  p.state = 'waiting';
+  p.waitLeft = CFG.newBeerDelay;
+  p.autoStackLeft = 0;
+  addLog(`🥃 ${p.name} legt Glas auf Turm ${tIdx + 1}! (${G.towers[tIdx]}/${CFG.towerTarget})`, 'info');
+
+  if (G.towers[0] >= CFG.towerTarget && G.towers[1] >= CFG.towerTarget) triggerWin();
+  unhighlightTowers();
+}
+
+function goBathroom(p) {
+  p.state = 'bathroom';
+  p.bathroomLeft = CFG.bathroomSec;
+  p.boostLeft = 0;
+  if (p.autoStackLeft > 0) autoStack(p);
+  G.bathroomCount++;
+  addLog(`🚽 ${p.name} rennt aufs Klo! (${CFG.bathroomSec}s raus)`, 'warn');
+}
+
+function autoStack(p) {
+  const t = G.towers[0] <= G.towers[1] ? 0 : 1;
+  if (G.towers[t] < CFG.towerTarget) {
+    G.towers[t]++;
+    G.totalGlasses++;
+    addLog(`⏰ Automatisch gestapelt: ${p.name} auf Turm ${t+1}`, 'warn');
+    if (G.towers[0] >= CFG.towerTarget && G.towers[1] >= CFG.towerTarget) triggerWin();
+  }
+  p.autoStackLeft = 0;
+}
+
+function distractWorker() {
+  if (!G.running || G.over) return;
+  const w = G.worker;
+  if (!w.active || w.usedDistract || w.distracted) return;
+  w.distracted = true;
+  w.distractLeft = CFG.distractDur;
+  w.usedDistract = true;
+  addLog(`🙈 AU-PAIR ABGELENKT! ${CFG.distractDur}s Pause!`, 'success');
+  document.getElementById('distract-btn').style.display = 'none';
+  document.getElementById('distract-used').style.display = 'block';
+}
+
+window.addEventListener('keydown', e => {
+  const key = e.key.toLowerCase();
+  if (key in KEY_MAP) onClickPlayer(KEY_MAP[key]);
+});
+
+function update(dt) {
+  G.time += dt;
+  G.players.forEach(p => updatePlayer(p, dt));
+  updateWorker(dt);
+}
+
+function updatePlayer(p, dt) {
+  if (p.state === 'bathroom') {
+    p.bathroomLeft -= dt;
+    if (p.bathroomLeft <= 0) {
+      p.bathroomLeft = 0; p.speed = 0; p.beer = 100;
+      p.state = 'drinking';
+      addLog(`${p.emoji} ${p.name} zurück vom Klo — neues Glas bereit!`, 'info');
+    }
+    return;
+  }
+  if (p.state === 'waiting') {
+    p.waitLeft -= dt;
+    if (p.waitLeft <= 0) { p.waitLeft = 0; p.beer = 100; p.state = 'drinking'; }
+    return;
+  }
+  if (p.state === 'empty') {
+    p.autoStackLeft -= dt;
+    if (p.autoStackLeft <= 0) {
+      autoStack(p);
+      p.state = 'waiting';
+      p.waitLeft = CFG.newBeerDelay;
+      unhighlightTowers();
+    }
+    return;
+  }
+
+  if (p.boostLeft > 0) {
+    p.boostLeft -= dt;
+    if (p.boostLeft < 0) p.boostLeft = 0;
+  } else {
+    p.speed = Math.max(0, p.speed - CFG.speedDecay * dt);
+  }
+
+  const rate = p.boostLeft > 0 ? CFG.beerDrainBoost : CFG.beerDrainAuto;
+  p.beer -= rate * dt;
+
+  if (p.beer <= 0) {
+    p.beer = 0;
+    p.boostLeft = 0;
+    p.state = 'empty';
+    p.autoStackLeft = CFG.autoStackDelay;
+    highlightTowers();
+    addLog(`✅ ${p.name} hat das Glas leer! Auf einen Turm stapeln!`, 'warn');
+  }
+}
+
+function highlightTowers() {
+  document.getElementById('tstack-0').classList.add('highlight');
+  document.getElementById('tstack-1').classList.add('highlight');
+}
+function unhighlightTowers() {
+  const anyEmpty = G.players.some(p => p.state === 'empty');
+  if (!anyEmpty) {
+    document.getElementById('tstack-0').classList.remove('highlight');
+    document.getElementById('tstack-1').classList.remove('highlight');
+  }
+}
+
+function updateWorker(dt) {
+  const w = G.worker;
+  const sw = G.sceneW;
+
+  if (!w.active) {
+    w.cooldown -= dt;
+    if (w.cooldown <= 0) spawnWorker();
+    return;
+  }
+
+  if (w.warnTimer > 0) {
+    w.warnTimer -= dt;
+    if (w.warnTimer <= 0) document.getElementById('warn-banner').style.display = 'none';
+  }
+
+  if (w.distracted) {
+    w.distractLeft -= dt;
+    if (w.distractLeft <= 0) {
+      w.distracted = false; w.distractLeft = 0;
+      addLog('😤 Au-Pair nicht mehr abgelenkt!', 'warn');
+    }
+  } else {
+    w.x += CFG.workerPx * w.dir * dt;
+  }
+
+  const progress = w.dir === 1
+    ? Math.min(100, ((w.x + 40) / sw) * 100)
+    : Math.min(100, ((sw - w.x) / sw) * 100);
+  document.getElementById('worker-progress-bar').style.width = progress + '%';
+
+  const mid = sw / 2;
+  const wMid = w.x + 22;
+  const pastMid = (w.dir === 1 && wMid >= mid) || (w.dir === -1 && wMid <= mid);
+  if (!w.tookTower && pastMid) { w.tookTower = true; stealTower(); }
+
+  const gone = (w.dir === 1 && w.x > sw + 80) || (w.dir === -1 && w.x < -120);
+  if (gone) {
+    w.active = false; w.tookTower = false; w.usedDistract = false; w.distracted = false;
+    w.cooldown = randCD();
+    hideWorker();
+    addLog('👋 Au-Pair ist weg... erstmal.', 'info');
+  }
+}
+
+function spawnWorker() {
+  const w = G.worker;
+  const sw = G.sceneW;
+  w.active = true;
+  w.dir = Math.random() > 0.5 ? 1 : -1;
+  w.x = w.dir === 1 ? -60 : sw + 60;
+  w.tookTower = false; w.usedDistract = false; w.distracted = false;
+  w.warnTimer = 5;
+  G.workerCount++;
+
+  document.getElementById('warn-banner').style.display = 'block';
+  document.getElementById('distract-btn').style.display = 'block';
+  document.getElementById('distract-used').style.display = 'none';
+  document.getElementById('worker-progress-bar').style.display = 'block';
+  document.getElementById('worker-idle').style.display = 'none';
+
+  addLog('😤 AU-PAIR KOMMT! Drücke "ABLENKEN" um Zeit zu gewinnen!', 'danger');
+}
+
+function stealTower() {
+  const biggest = G.towers[0] >= G.towers[1] ? 0 : 1;
+  if (G.towers[biggest] === 0) {
+    addLog('😒 Au-Pair fand nichts zum Mitnehmen. Diesmal.', 'info');
+    return;
+  }
+  const n = G.towers[biggest];
+  G.towers[biggest] = 0;
+  addLog(`😡 AU-PAIR HAT ${n} GLÄSER VON TURM ${biggest + 1} GEKLAUT! CHAOS!`, 'danger');
+
+  const el = document.getElementById(`tstack-${biggest}`);
+  if (el) {
+    el.classList.remove('just-stolen');
+    void el.offsetWidth;
+    el.classList.add('just-stolen');
+    setTimeout(() => el.classList.remove('just-stolen'), 500);
+  }
+}
+
+function hideWorker() {
+  document.getElementById('worker-npc').style.display = 'none';
+  document.getElementById('worker-speech').style.display = 'none';
+  document.getElementById('distract-btn').style.display = 'none';
+  document.getElementById('distract-used').style.display = 'none';
+  document.getElementById('worker-progress-bar').style.display = 'none';
+  document.getElementById('worker-idle').style.display = 'block';
+}
+
+function render() {
+  renderTowers();
+  renderPlayers();
+  renderWorker();
+  renderUI();
+}
+
+function renderTowers() {
+  for (let t = 0; t < 2; t++) {
+    const el = document.getElementById(`tstack-${t}`);
+    const cnt = G.towers[t];
+    let html = '';
+    for (let i = 0; i < cnt; i++)               html += '<div class="glass-item">🥃</div>';
+    for (let i = cnt; i < CFG.towerTarget; i++) html += '<div class="slot-empty">⬜</div>';
+    el.innerHTML = html;
+
+    const ce = document.getElementById(`tcnt-${t}`);
+    ce.textContent = `${cnt} / ${CFG.towerTarget}`;
+    ce.className = 'tower-cnt' + (cnt >= CFG.towerTarget ? ' full' : '');
+  }
+}
+
+function renderPlayers() {
+  const grid = document.getElementById('players-grid');
+  G.players.forEach((p, i) => {
+    let card = document.getElementById('pcard-' + i);
+    if (!card) {
+      card = document.createElement('div');
+      card.id = 'pcard-' + i;
+      card.addEventListener('click', () => onClickPlayer(i));
+      grid.appendChild(card);
+    }
+
+    let cls = 'pcard';
+    if (p.state === 'bathroom') cls += ' state-bathroom';
+    else if (p.state === 'empty') cls += ' state-empty';
+    else if (p.state === 'waiting') cls += ' state-waiting';
+    else if (p.speed >= CFG.speedDanger - 14) cls += ' state-danger';
+    card.className = cls;
+
+    const beerPct  = Math.max(0, Math.min(100, p.beer));
+    const speedPct = Math.min(100, p.speed);
+    const speedColor = speedColor_(speedPct);
+
+    let status = '';
+    if      (p.state === 'bathroom') status = `🚽 Klo — ${Math.ceil(p.bathroomLeft)}s`;
+    else if (p.state === 'waiting')  status = `🍺 Neues Glas...`;
+    else if (p.state === 'empty')    status = `👇 Auf Turm stapeln!`;
+    else if (p.boostLeft > 0)        status = `😤 Trinkt schnell!`;
+    else                             status = `😌 Trinkt...`;
+
+    const showStack = p.state === 'empty';
+
+    card.innerHTML = `
+      <div class="card-top">
+        <div class="p-avatar">${p.emoji}</div>
+        <div class="p-name-block">
+          <div class="p-name">${p.name}</div>
+          <span class="p-key">${p.key}</span>
+          <div class="p-status">${status}</div>
+        </div>
+        ${beerGlassSVG(beerPct)}
+      </div>
+      <div class="speed-row">
+        <div class="speed-lbl">
+          <span>⚡ Tempo</span>
+          <span>${Math.round(speedPct)}%</span>
+        </div>
+        <div class="speed-bg">
+          <div class="speed-fill" style="width:${speedPct}%;background:${speedColor}"></div>
+        </div>
+      </div>
+      <div class="stack-btns${showStack ? ' show' : ''}">
+        <button class="stack-btn" onclick="event.stopPropagation();placeGlass(G.players[${i}],0)">★ TURM 1</button>
+        <button class="stack-btn" onclick="event.stopPropagation();placeGlass(G.players[${i}],1)">★ TURM 2</button>
+      </div>
+      ${showStack ? `<div class="auto-timer">Auto in ${Math.ceil(Math.max(0,p.autoStackLeft))}s</div>` : ''}
+      ${p.state === 'bathroom' ? `<div class="bathroom-badge">${Math.ceil(p.bathroomLeft)}</div>` : ''}
+    `;
+  });
+}
+
+function beerGlassSVG(pct) {
+  const h = Math.round(pct * 0.6);
+  const foamH = pct > 5 ? 7 : 0;
+  const liquidH = Math.max(0, h - foamH);
+  const color = pct > 30 ? '#ffd600' : '#c7a500';
+  return `
+    <div class="beer-glass-wrap">
+      <svg class="beer-glass-svg" viewBox="0 0 36 52" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5,4 L4,48 Q4,50 6,50 L30,50 Q32,50 32,48 L31,4 Z"
+              fill="rgba(255,214,0,0.06)" stroke="rgba(255,214,0,0.5)" stroke-width="1.5"/>
+        ${liquidH > 0 ? `<clipPath id="gc${pct}"><path d="M5,4 L4,48 Q4,50 6,50 L30,50 Q32,50 32,48 L31,4 Z"/></clipPath>
+        <rect x="4" y="${52 - liquidH - foamH}" width="32" height="${liquidH}"
+              fill="${color}" opacity="0.9" clip-path="url(#gc${pct})"/>` : ''}
+        ${foamH > 0 ? `<rect x="4" y="${52 - liquidH - foamH}" width="32" height="${foamH}"
+              fill="rgba(245,230,200,0.9)" rx="2" clip-path="url(#gc${pct})"/>` : ''}
+        <path d="M32,16 Q42,16 42,26 Q42,36 32,36" fill="none"
+              stroke="rgba(255,214,0,0.5)" stroke-width="2.5"/>
+      </svg>
+    </div>`;
+}
+
+function speedColor_(pct) {
+  if (pct < 35) return '#66ff99';
+  if (pct < 60) return '#ffd600';
+  if (pct < 80) return '#ff8833';
+  return '#ff3333';
+}
+
+function renderWorker() {
+  const w = G.worker;
+  const npc    = document.getElementById('worker-npc');
+  const speech = document.getElementById('worker-speech');
+
+  if (w.active) {
+    npc.style.display = 'block';
+    npc.style.left = w.x + 'px';
+    npc.style.transform = w.dir === -1 ? 'scaleX(-1)' : '';
+
+    speech.style.display = 'block';
+    speech.style.left = Math.max(0, w.x + 50) + 'px';
+    speech.textContent = w.distracted
+      ? '😵‍💫 Abgelenkt!'
+      : w.tookTower ? '😤 Räumt auf!'
+      : '🧹 Auf Streife...';
+  } else {
+    npc.style.display = 'none';
+    speech.style.display = 'none';
+    const cd = Math.ceil(Math.max(0, w.cooldown));
+    document.getElementById('worker-idle').textContent = `Au-Pair irgendwo am Flughafen... (~${cd}s) 👀`;
+  }
+}
+
+function renderUI() {
+  const m = Math.floor(G.time / 60);
+  const s = Math.floor(G.time % 60);
+  document.getElementById('ui-time').textContent    = `${m}:${s.toString().padStart(2, '0')}`;
+  document.getElementById('ui-glasses').textContent = G.totalGlasses;
+  document.getElementById('ui-wc').textContent      = G.bathroomCount;
+  document.getElementById('ui-worker').textContent  = G.workerCount;
+}
+
+function triggerWin() {
+  G.over = true; G.won = true;
+  const m = Math.floor(G.time / 60);
+  const s = Math.floor(G.time % 60);
+  document.getElementById('ov-title').textContent = '★ SIEG! ★';
+  document.getElementById('ov-msg').innerHTML =
+    `Zwei Türme mit 7 Gläsern! LEGENDÄR!<br><br>
+     ⏱ <b>${m}:${s.toString().padStart(2,'0')}</b> &nbsp;·&nbsp;
+     🚽 Klo: <b>${G.bathroomCount}</b> &nbsp;·&nbsp;
+     😤 Au-Pair-Angriffe: <b>${G.workerCount}</b>`;
+  document.getElementById('overlay').classList.add('show');
+}
+
+function addLog(txt, type = 'info') {
+  const log = document.getElementById('log');
+  const t = G ? G.time : 0;
+  const m = Math.floor(t / 60), s = Math.floor(t % 60);
+  const div = document.createElement('div');
+  div.className = 'log-' + type;
+  div.textContent = `[${m}:${s.toString().padStart(2,'0')}] ${txt}`;
+  log.insertBefore(div, log.firstChild);
+  while (log.children.length > 30) log.removeChild(log.lastChild);
+}
+
+function loop(ts) {
+  if (!G.running || G.over) return;
+  if (!lastTs) lastTs = ts;
+  const dt = Math.min((ts - lastTs) / 1000, 0.08);
+  lastTs = ts;
+  update(dt);
+  render();
+  rafId = requestAnimationFrame(loop);
+}
+
+function startGame() {
+  if (rafId) cancelAnimationFrame(rafId);
+  lastTs = null;
+
+  const scene = document.getElementById('worker-scene');
+  const sw = scene ? scene.offsetWidth : 900;
+
+  G = mkState();
+  G.sceneW = sw;
+  G.running = true;
+
+  document.getElementById('players-grid').innerHTML = '';
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('warn-banner').style.display = 'none';
+  hideWorker();
+
+  addLog('🍺 Die Truppe ist am Flughafen! Klickt (oder Q/W/E A/S/D) zum Trinken!', 'success');
+  addLog(`⚠ Tempo über ${CFG.speedDanger}% = Klo für ${CFG.bathroomSec}s. Drückt die Türme zum Stapeln!`, 'warn');
+
+  render();
+  rafId = requestAnimationFrame(loop);
+}
+
+function restartGame() { startGame(); }
+
+window.addEventListener('load', startGame);
+window.addEventListener('resize', () => {
+  if (!G) return;
+  const scene = document.getElementById('worker-scene');
+  if (scene) G.sceneW = scene.offsetWidth;
+});
+</script>
+</body>
+</html>

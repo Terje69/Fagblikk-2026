@@ -464,7 +464,7 @@
           <section class="hero">
             <div class="ddr-emblem">★</div>
             <h2 class="tab-title">DAS SPIEL</h2>
-            <p class="lead">Ein textbasiertes Abenteuer des Ministeriums für Unterhaltung.</p>
+            <p class="lead">Et tekstbasert rollespill fra Ministerium für Unterhaltung. Velg dine valg med omhu — Skumløs-Wald er aldri langt unna.</p>
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
@@ -472,24 +472,55 @@
               <span class="divider-line"></span><span class="star">★</span>
             </div>
 
-            <div class="rpg-teaser">
-              <div class="rpg-title">DIE LEGENDE VON<br/>MÜCKLUS VON BUSTENBURG</div>
-              <div class="rpg-subtitle">Ein textbasiertes Rollenspiel</div>
-              <div class="rpg-story">
-                Im Jahre 1972, in den dunklen Gassen von Ost-München, lebte ein Mann, den niemand kannte — und den alle fürchteten. Sein Name: <strong>Mücklus von Bustenburg</strong>, ehemaliger Bierinspektor des Ministeriums, entlassen wegen „übermäßiger Gründlichkeit beim Verkosten."
+            <div class="rpg-intro">
+              <div class="rpg-intro-title">DIE LEGENDE VON<br/>MÜCKLUS VON BUSTENBURG</div>
+              <div class="rpg-intro-subtitle">Et tekstbasert rollespill i fem kapitler</div>
+              <div class="rpg-intro-story">
+                I oktober 2026 vandrer en mann gjennom Münchens biergartens — en mann ingen kjenner, og som alle frykter. Hans navn: <strong>Mücklus von Bustenburg</strong>, tidligere Bierinspektor i Ministeriet, oppsagt på grunn av <em>«übermäßige Gründlichkeit beim Verkosten»</em>.
                 <br/><br/>
-                Nun wandert er durch die Bierkeller Bayerns, auf der Suche nach dem verlorenen <strong>Goldenen Maßkrug von König Ludwig</strong> — einem Artefakt, das seinem Besitzer unbegrenzte Biermacht verleiht.
+                Nå er han på leting etter den forsvunnede <strong>Goldenen Maßkrug von König Ludwig</strong> — en artefakt som gir sin eier ubegrenset Bierehre. Han må også redde sjelen til <strong>Kai Andreas</strong>, den rettmessige guden, fra evig fortapelse i <strong>Skumløs-Wald</strong>.
                 <br/><br/>
-                Doch Vorsicht: Die Bierspione der Geheimen Braupolizei sind ihm auf den Fersen. Jede Kneipe birgt Gefahren. Jedes Pils könnte vergiftet sein. Jeder Kellner könnte ein Doppelagent sein.
+                Men pass på: Geheime Braupolizei er på hans fælle. Hver Kneipe rommer farer. Hver Pils kan være forgiftet. Hver Kellner kan være dobbeltagent.
                 <br/><br/>
-                <em>Nur wer würdig trinkt, wird bestehen.</em>
-              </div>
-              <div class="rpg-coming-soon">
-                <div class="rpg-lock">🔒</div>
-                <div class="rpg-status">KOMMT BALD</div>
-                <div class="rpg-date">Verfügbar ab München · Oktober 2026</div>
+                <em>Kun den som drikker faglig sterkt vil bestå.</em>
               </div>
             </div>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text">KAPITLER</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+
+            <div id="rpgChapterMenu" class="rpg-chapter-menu">
+              <button class="rpg-chapter-tile" data-chapter="1">
+                <span class="rpg-chapter-num">★ KAPITTEL 1 ★</span>
+                <span class="rpg-chapter-name">MÜCKLUS' OPPVÅKNING</span>
+                <span class="rpg-chapter-blurb">DJ Höchst, dackel-valpen, og en magisk togbillett til Tegernsee.</span>
+              </button>
+              <button class="rpg-chapter-tile" data-chapter="2">
+                <span class="rpg-chapter-num">★ KAPITTEL 2 ★</span>
+                <span class="rpg-chapter-name">FLUKTEN FRA WEGERT BEID</span>
+                <span class="rpg-chapter-blurb">Glasshold-bedømming på Augustiner-Keller. Der Rüller venter i hjørnet.</span>
+              </button>
+              <button class="rpg-chapter-tile" data-chapter="3">
+                <span class="rpg-chapter-num">★ KAPITTEL 3 ★</span>
+                <span class="rpg-chapter-name">DER RÜLLERS PRØVELSE</span>
+                <span class="rpg-chapter-blurb">15 bayerske øl. BSM mot Heim E. Wernhardt. To uventede gjester på hotellet.</span>
+              </button>
+              <button class="rpg-chapter-tile" data-chapter="4">
+                <span class="rpg-chapter-num">★ KAPITTEL 4 ★</span>
+                <span class="rpg-chapter-name">BAMS BRÜR</span>
+                <span class="rpg-chapter-blurb">Andechs-klosteret, Türken Som Ligner på Mace, og en mann i tysk landslagsdrakt.</span>
+              </button>
+              <button class="rpg-chapter-tile" data-chapter="5">
+                <span class="rpg-chapter-num">★ KAPITTEL 5 ★</span>
+                <span class="rpg-chapter-name">SKUMLØS-WALD &amp; DIE GOLDENE MASSKRUG</span>
+                <span class="rpg-chapter-blurb">6,9 i promille. KFC. Hasse Blitzland og El Bonero. DJ Dock-Vater venter.</span>
+              </button>
+            </div>
+
+            <div id="rpgGame" class="rpg-game hidden"></div>
 
           </section>
         </div>
@@ -575,5 +606,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
     <script src="app.js"></script>
+    <script src="rpg.js"></script>
   </body>
 </html>

@@ -2280,6 +2280,59 @@ h2.tab-title {
   color: var(--cream);
 }
 
+.rpg-consequence.rpg-win {
+  background: linear-gradient(180deg, rgba(255, 214, 0, 0.18), rgba(199, 165, 0, 0.12));
+  border-left: 3px solid var(--gold);
+  border-right: 1px solid var(--gold);
+  color: var(--cream);
+}
+
+/* ─── WIN BOX ─── */
+.rpg-winbox {
+  margin: 16px 0;
+  padding: 22px 18px 20px;
+  background: linear-gradient(180deg, rgba(255, 214, 0, 0.22), rgba(127, 0, 0, 0.35));
+  border: 3px solid var(--gold);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.rpg-winbox::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(255, 214, 0, 0.4);
+  pointer-events: none;
+}
+
+.rpg-win-emblem {
+  font-size: 2.2rem;
+  color: var(--gold);
+  text-shadow: 0 0 20px rgba(255, 214, 0, 0.7);
+  margin-bottom: 6px;
+}
+
+.rpg-win-title {
+  font-family: var(--font-heading, inherit);
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.18em;
+  margin-bottom: 10px;
+}
+
+.rpg-win-sub {
+  font-size: 0.66rem;
+  color: var(--cream);
+  letter-spacing: 0.04em;
+  line-height: 1.7;
+  text-transform: none;
+  padding: 0 6px;
+}
+
+.rpg-win-sub em { color: var(--gold); font-style: italic; }
+
 .rpg-choice {
   display: flex;
   align-items: center;

@@ -379,6 +379,55 @@
     });
   });
 
+  // ==================== DIE REISE — språkveksler ====================
+  const REISE_LANG_KEY = 'fagblikk-reise-lang';
+
+  function applyReiseLang(lang) {
+    const section = document.getElementById('reiseSection');
+    if (!section) return;
+
+    // Sett attribute for styling/tracking
+    section.dataset.lang = lang;
+
+    // Vis riktig block
+    section.querySelectorAll('.lang-block').forEach(el => {
+      const isMatch = el.classList.contains('lang-' + lang);
+      el.classList.toggle('active', isMatch);
+    });
+
+    // Toggle active-state på knapper
+    section.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.langSet === lang);
+    });
+
+    // Oppdater elementer med data-de/data-no (kun titler etc.)
+    section.querySelectorAll('[data-de][data-no]').forEach(el => {
+      const v = el.dataset[lang];
+      if (v != null) el.textContent = v;
+    });
+  }
+
+  function initReiseLang() {
+    const section = document.getElementById('reiseSection');
+    if (!section) return;
+
+    let saved = 'de';
+    try { saved = localStorage.getItem(REISE_LANG_KEY) || 'de'; } catch (e) {}
+
+    section.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const lang = btn.dataset.langSet;
+        if (!lang) return;
+        try { localStorage.setItem(REISE_LANG_KEY, lang); } catch (e) {}
+        applyReiseLang(lang);
+      });
+    });
+
+    applyReiseLang(saved);
+  }
+
+  initReiseLang();
+
   // ==================== SPIELE (GAMES) ====================
   const GAMES = {
     'bierturm':       { title: 'BIERTURM AM FLUGHAFEN', src: 'games/bierturm.html' },
@@ -415,7 +464,7 @@
   });
 
   // ==================== COUNTDOWN ====================
-  const TRIP_DATE = '2026-10-07T06:45:00+02:00';
+  const TRIP_DATE = '2026-10-07T09:00:00+02:00';
 
   function updateCountdown() {
     const diff = new Date(TRIP_DATE) - new Date();

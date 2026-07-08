@@ -1940,6 +1940,252 @@ h2.tab-title {
   text-transform: uppercase;
 }
 
+/* ==================== DIE REISE ==================== */
+
+/* Language toggle */
+.lang-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 10px 8px;
+  margin: 10px 0 14px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 2px solid var(--gold-dark);
+}
+
+.lang-toggle-label {
+  font-size: 0.55rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  color: var(--cream);
+  opacity: 0.75;
+}
+
+.lang-btn {
+  background: transparent;
+  border: 2px solid var(--gold-dark);
+  color: var(--cream);
+  font-family: inherit;
+  font-size: 0.6rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  padding: 6px 14px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.08s;
+}
+
+.lang-btn:hover  { background: rgba(255, 214, 0, 0.1); border-color: var(--gold); }
+.lang-btn:active { transform: scale(0.96); }
+
+.lang-btn.active {
+  background: linear-gradient(180deg, var(--gold), var(--gold-dark));
+  color: var(--ink);
+  border-color: var(--gold);
+}
+
+/* Language blocks */
+.lang-block { display: none; }
+.lang-block.active { display: block; }
+
+/* Reise timeline */
+.reise-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 16px 0;
+  position: relative;
+  padding-left: 8px;
+}
+
+.reise-stop {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 12px 12px 14px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 2px solid var(--gold-dark);
+  border-bottom: none;
+  position: relative;
+}
+
+.reise-stop:last-child       { border-bottom: 2px solid var(--gold-dark); }
+.reise-stop:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 46px;
+  top: 100%;
+  height: 8px;
+  width: 2px;
+  background: var(--gold);
+  z-index: 1;
+}
+
+.reise-stop--final {
+  background: linear-gradient(180deg, rgba(255, 214, 0, 0.18), rgba(127, 0, 0, 0.25));
+  border-color: var(--gold);
+}
+
+.reise-time {
+  flex-shrink: 0;
+  min-width: 64px;
+  font-family: var(--font-heading, inherit);
+  font-size: 0.82rem;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+  padding-top: 2px;
+}
+
+.reise-body { flex: 1; min-width: 0; }
+
+.reise-loc {
+  font-size: 0.62rem;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  line-height: 1.3;
+  margin-bottom: 3px;
+}
+
+.reise-desc {
+  font-size: 0.55rem;
+  color: var(--cream);
+  letter-spacing: 0.03em;
+  line-height: 1.55;
+  text-transform: none;
+  opacity: 0.9;
+}
+
+/* Reise requirement blocks (§) */
+.reise-req {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  padding: 14px;
+  margin: 12px 0;
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid var(--gold-dark);
+  border-left: 4px solid var(--gold);
+}
+
+.reise-req-num {
+  flex-shrink: 0;
+  font-family: var(--font-heading, inherit);
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.02em;
+  min-width: 44px;
+  text-align: center;
+  padding-top: 2px;
+}
+
+.reise-req-body { flex: 1; min-width: 0; }
+
+.reise-req-title {
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  line-height: 1.25;
+  margin-bottom: 8px;
+}
+
+.reise-req-detail {
+  font-size: 0.6rem;
+  color: var(--cream);
+  letter-spacing: 0.02em;
+  line-height: 1.75;
+  text-transform: none;
+  margin-bottom: 10px;
+}
+
+.reise-req-detail strong { color: var(--gold); }
+
+.reise-req-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.reise-stat {
+  background: rgba(255, 214, 0, 0.12);
+  border: 1px solid var(--gold-dark);
+  padding: 3px 10px;
+  font-size: 0.5rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+}
+
+/* Reise warnings */
+.reise-warn {
+  padding: 14px;
+  margin: 12px 0;
+  background: rgba(127, 0, 0, 0.4);
+  border: 3px solid var(--red-bright, #e53935);
+  position: relative;
+}
+
+.reise-warn--danger {
+  animation: warnPulse 1.4s infinite alternate;
+}
+
+@keyframes warnPulse {
+  from { box-shadow: 0 0 4px rgba(229, 57, 53, 0.4); }
+  to   { box-shadow: 0 0 20px rgba(229, 57, 53, 0.85); }
+}
+
+.reise-warn--forbid {
+  background: rgba(0, 0, 0, 0.55);
+  border-color: var(--gold);
+}
+
+.reise-warn-head {
+  font-family: var(--font-heading, inherit);
+  font-size: 0.82rem;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  line-height: 1.3;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed rgba(255, 214, 0, 0.35);
+}
+
+.reise-warn-body {
+  font-size: 0.62rem;
+  color: var(--cream);
+  letter-spacing: 0.03em;
+  line-height: 1.75;
+  text-transform: none;
+}
+
+.reise-warn-body strong { color: var(--gold); }
+.reise-warn-body em     { color: var(--gold); font-style: italic; }
+
+.reise-warn-body ul {
+  margin: 8px 0 8px 0;
+  padding-left: 18px;
+  list-style: none;
+}
+
+.reise-warn-body ul li {
+  position: relative;
+  padding: 3px 0 3px 12px;
+}
+
+.reise-warn-body ul li::before {
+  content: '★';
+  position: absolute;
+  left: -8px;
+  color: var(--gold);
+  font-weight: 900;
+}
+
 /* ==================== SPIELE ==================== */
 .spiele-grid {
   display: grid;

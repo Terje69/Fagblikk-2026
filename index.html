@@ -82,6 +82,10 @@
           <span class="nav-label">ZENTRALE</span>
           <strong class="nav-icon">⌂</strong>
         </button>
+        <button class="nav-card" data-tab="reise">
+          <span class="nav-label">DIE REISE</span>
+          <strong class="nav-icon">✈</strong>
+        </button>
         <button class="nav-card" data-tab="teiln">
           <span class="nav-label">TEIL&shy;NEHMER</span>
           <strong class="nav-icon">👥</strong>
@@ -165,7 +169,7 @@
               <span class="divider-line"></span><span class="star">★</span>
             </div>
 
-            <div class="countdown-label">Abflug Årø · Mittwoch 7. Oktober · 06:45</div>
+            <div class="countdown-label">Abflug Årø · Mittwoch 7. Oktober · 09:00</div>
             <div class="countdown">
               <div class="count-card"><span>TAGE</span><strong id="days">0</strong></div>
               <div class="count-card"><span>STUNDEN</span><strong id="hours">0</strong></div>
@@ -181,22 +185,22 @@
 
             <div class="flight-card">
               <div class="flight-header">
-                <span class="airline">NORWEGIAN</span>
+                <span class="airline">WIDERØE / LUFTHANSA</span>
                 <span class="flight-date">07. OKT 2026</span>
               </div>
               <div class="flight-route">
                 <div class="flight-stop">
-                  <span class="flight-time">06:45</span>
+                  <span class="flight-time">09:00</span>
                   <span class="flight-city">MOLDE</span>
                   <span class="flight-code">MOL</span>
                 </div>
                 <div class="flight-arrow">
                   <span class="arrow-line"></span>
-                  <span class="arrow-via">VIA OSL</span>
+                  <span class="arrow-via">VIA BGO</span>
                   <span class="arrow-line"></span>
                 </div>
                 <div class="flight-stop">
-                  <span class="flight-time">13:15</span>
+                  <span class="flight-time">13:30</span>
                   <span class="flight-city">MÜNCHEN</span>
                   <span class="flight-code">MUC</span>
                 </div>
@@ -204,6 +208,259 @@
             </div>
 
             <div class="ddr-footer"><p>VOLKSBIER IST PFLICHTPROGRAMM</p></div>
+          </section>
+        </div>
+      </main>
+
+      <!-- ============ TAB: DIE REISE ============ -->
+      <main class="tab-content" id="tab-reise">
+        <div class="poster">
+          <section class="hero" data-lang="de" id="reiseSection">
+            <div class="ddr-emblem">★</div>
+            <h2 class="tab-title" data-de="DIE REISE" data-no="REISEN">DIE REISE</h2>
+
+            <!-- SPRÅKVELGER -->
+            <div class="lang-toggle">
+              <span class="lang-toggle-label" data-de="SPRACHE:" data-no="MAAL:">SPRACHE:</span>
+              <button class="lang-btn active" data-lang-set="de">DEUTSCH</button>
+              <button class="lang-btn" data-lang-set="no">NORSK (IBSEN)</button>
+            </div>
+
+            <!-- ═══════════ DEUTSCH ═══════════ -->
+            <div class="lang-block lang-de">
+
+              <p class="lead">Kongelig festgelegter Reiseplan des Ministeriums für Biersicherheit. Bepilsungs-Anforderungen und Warnungen für die Reise vom 7. Oktober 2026.</p>
+
+              <div class="section-divider">
+                <span class="star">★</span><span class="divider-line"></span>
+                <span class="divider-text">FLUGPLAN</span>
+                <span class="divider-line"></span><span class="star">★</span>
+              </div>
+
+              <div class="reise-timeline">
+                <div class="reise-stop">
+                  <div class="reise-time">08:00</div>
+                  <div class="reise-body">
+                    <div class="reise-loc">MOLDE-ÅRØ · AU-PAIR-BAR</div>
+                    <div class="reise-desc">Öffnung der Bar. Ankunft des Kontignents.</div>
+                  </div>
+                </div>
+                <div class="reise-stop">
+                  <div class="reise-time">09:00</div>
+                  <div class="reise-body">
+                    <div class="reise-loc">ABFLUG MOLDE (MOL) · WIDERØE</div>
+                    <div class="reise-desc">Kleiner Widerøe-Vogel. Richtung Bergen.</div>
+                  </div>
+                </div>
+                <div class="reise-stop">
+                  <div class="reise-time">~09:45</div>
+                  <div class="reise-body">
+                    <div class="reise-loc">BERGEN (BGO) · KURZE ZWISCHENLANDUNG</div>
+                    <div class="reise-desc">Umsteigen. O'Learys wartet.</div>
+                  </div>
+                </div>
+                <div class="reise-stop">
+                  <div class="reise-time">~11:30</div>
+                  <div class="reise-body">
+                    <div class="reise-loc">WEITERFLUG BGO → MUC · LUFTHANSA</div>
+                    <div class="reise-desc">Bayerischer Boden nähert sich.</div>
+                  </div>
+                </div>
+                <div class="reise-stop reise-stop--final">
+                  <div class="reise-time">13:30</div>
+                  <div class="reise-body">
+                    <div class="reise-loc">ANKUNFT MÜNCHEN (MUC)</div>
+                    <div class="reise-desc">Willkommen im Fagets Rige.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="section-divider">
+                <span class="star">★</span><span class="divider-line"></span>
+                <span class="divider-text">BEPILSUNGS-ANFORDERUNGEN</span>
+                <span class="divider-line"></span><span class="star">★</span>
+              </div>
+
+              <div class="reise-req">
+                <div class="reise-req-num">§ 1</div>
+                <div class="reise-req-body">
+                  <div class="reise-req-title">AU-PAIR-BAR · MOLDE-ÅRØ</div>
+                  <div class="reise-req-detail">
+                    Öffnung: <strong>08:00</strong> · Abflug: <strong>09:00</strong><br>
+                    <strong>Ziel:</strong> 2 × 0,6 L Pils pro Agent, weder mehr noch weniger.<br>
+                    Dies muss in Ruhe und Disziplin geschehen. Hastværk ist lastværk selbst im Dienste der Bepilsung.
+                  </div>
+                  <div class="reise-req-stats">
+                    <span class="reise-stat">🍺 2 × 0,6 L</span>
+                    <span class="reise-stat">⏱ 60 min</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="reise-req">
+                <div class="reise-req-num">§ 2</div>
+                <div class="reise-req-body">
+                  <div class="reise-req-title">O'LEARYS · BERGEN LUFTHAVN</div>
+                  <div class="reise-req-detail">
+                    Zwischenlandung. <strong>1 × 0,6 L Pils</strong> vor dem Weiterflug.<br>
+                    Niemand soll schwänzen; niemand soll übertreiben. Die Ehre des Kontignents wird auf O'Learys geprüft.
+                  </div>
+                  <div class="reise-req-stats">
+                    <span class="reise-stat">🍺 1 × 0,6 L</span>
+                    <span class="reise-stat">📍 BGO</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="section-divider">
+                <span class="star">★</span><span class="divider-line"></span>
+                <span class="divider-text">WARNUNGEN</span>
+                <span class="divider-line"></span><span class="star">★</span>
+              </div>
+
+              <div class="reise-warn reise-warn--danger">
+                <div class="reise-warn-head">⚠ DRINGENDE WARNUNG: WIDERØES HAUSBIER</div>
+                <div class="reise-warn-body">
+                  Das Hausbier auf Widerøe-Flügen ist <strong>ISBJØRN</strong>. Ein Bier von zweifelhafter Bierehre.<br><br>
+                  <strong>Vorsichtsmaßnahmen:</strong>
+                  <ul>
+                    <li>Eigene Provianten mitbringen (Duty-Free empfohlen).</li>
+                    <li>Falls unumgänglich: mit steifer Oberlippe wie ein Soldat vor dem Feind.</li>
+                    <li>Auf keinen Fall zu wiederholter Bepilsung dieser Art verleiten lassen.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="reise-warn reise-warn--forbid">
+                <div class="reise-warn-head">⛔ VERBOTEN: PILSEN AUF DER MÜNCHNER S-BAHN</div>
+                <div class="reise-warn-body">
+                  Auf der <strong>S-Bahn München</strong> ist das Pilsen <em>strengstens verboten</em>. Es steht in deutlichen deutschen Buchstaben geschrieben: <em>«Es ist verboten.»</em><br><br>
+                  Wer es versucht, dem drohen: öffentliche Schande, eine Verwarnung von den bayerischen Ordnungshütern, und möglicherweise eine Geldstrafe.<br><br>
+                  <strong>Warten</strong>, bis wir festen Boden erreicht haben und ein Wirtshaus sich für uns geöffnet hat.
+                </div>
+              </div>
+
+              <div class="ddr-footer"><p>DISZIPLIN VOR ABFLUG</p></div>
+            </div>
+
+            <!-- ═══════════ NORSK (IBSEN) ═══════════ -->
+            <div class="lang-block lang-no">
+
+              <p class="lead">Kongelig fastsat Reisebeskrivelse fra Ministeriet für Biersicherheit. Bepilsningens bud og formaninger for reisen den syvende oktober tvo tusinde og seks og tyve.</p>
+
+              <div class="section-divider">
+                <span class="star">★</span><span class="divider-line"></span>
+                <span class="divider-text">FLYVEPLAN</span>
+                <span class="divider-line"></span><span class="star">★</span>
+              </div>
+
+              <div class="reise-timeline">
+                <div class="reise-stop">
+                  <div class="reise-time">08:00</div>
+                  <div class="reise-body">
+                    <div class="reise-loc">MOLDE-AARØ · AU PAIR-BAREN</div>
+                    <div class="reise-desc">Baren aabnes. Kontignentet stiger ind, vaagne og driftige.</div>
+                  </div>
+                </div>
+                <div class="reise-stop">
+                  <div class="reise-time">09:00</div>
+                  <div class="reise-body">
+                    <div class="reise-loc">AFGANG MOLDE (MOL) · WIDERØE</div>
+                    <div class="reise-desc">Widerøes lille fugl letter og styrer vestover mod Bergen.</div>
+                  </div>
+                </div>
+                <div class="reise-stop">
+                  <div class="reise-time">omkr. 09:45</div>
+                  <div class="reise-body">
+                    <div class="reise-loc">BERGEN (BGO) · KORT OPHOLD</div>
+                    <div class="reise-desc">Vi stige af, sætte kursen mod O'Learys.</div>
+                  </div>
+                </div>
+                <div class="reise-stop">
+                  <div class="reise-time">omkr. 11:30</div>
+                  <div class="reise-body">
+                    <div class="reise-loc">VIDERE BGO → MUC · LUFTHANSA</div>
+                    <div class="reise-desc">Vi seile videre mod det bayerske land.</div>
+                  </div>
+                </div>
+                <div class="reise-stop reise-stop--final">
+                  <div class="reise-time">13:30</div>
+                  <div class="reise-body">
+                    <div class="reise-loc">ANKOMST MÜNCHEN (MUC)</div>
+                    <div class="reise-desc">Vi ere fremme i Fagets Rige.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="section-divider">
+                <span class="star">★</span><span class="divider-line"></span>
+                <span class="divider-text">BEPILSNINGENS BUD</span>
+                <span class="divider-line"></span><span class="star">★</span>
+              </div>
+
+              <div class="reise-req">
+                <div class="reise-req-num">§ 1</div>
+                <div class="reise-req-body">
+                  <div class="reise-req-title">AU PAIR-BAREN · MOLDE-AARØ</div>
+                  <div class="reise-req-detail">
+                    Baren aabnes klokken <strong>otte</strong> om morgenen — én time førend vi stige ombord klokken <strong>ni</strong>.<br>
+                    <strong>Kravet er dette:</strong> tvende halvliters glas Pils per agent — hverken mere eller mindre.<br>
+                    Det maa gjøres i ro og med forstand, thi hastværk er lastværk selv i bepilsningens tjeneste. Ingen skal skulke; ingen skal overdrive.
+                  </div>
+                  <div class="reise-req-stats">
+                    <span class="reise-stat">🍺 2 × 0,6 L</span>
+                    <span class="reise-stat">⏱ En times tid</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="reise-req">
+                <div class="reise-req-num">§ 2</div>
+                <div class="reise-req-body">
+                  <div class="reise-req-title">O'LEARYS · BERGENS LUFTHAVN</div>
+                  <div class="reise-req-detail">
+                    Vor mellemlanding i Bergen kræver <strong>én ærlig halvliter</strong> paa O'Learys inden vi seile videre.<br>
+                    Enhver mand med selvagtelse maa der prøves paa Kontignentets ære. Man drikke i det tempo som passer sig, og lade sit blik falde vaagent paa avgangstavlen.
+                  </div>
+                  <div class="reise-req-stats">
+                    <span class="reise-stat">🍺 1 × 0,6 L</span>
+                    <span class="reise-stat">📍 BGO</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="section-divider">
+                <span class="star">★</span><span class="divider-line"></span>
+                <span class="divider-text">FORMANINGER</span>
+                <span class="divider-line"></span><span class="star">★</span>
+              </div>
+
+              <div class="reise-warn reise-warn--danger">
+                <div class="reise-warn-head">⚠ INDTRÆNGENDE ADVARSEL — OM WIDERØES HUSØL</div>
+                <div class="reise-warn-body">
+                  Husølet paa Widerøes fugle er <strong>ISBJØRN</strong>. En drik af tvivlsom Bierehre — den er lig med at drikke sneen af en tinden.<br><br>
+                  <strong>Der maa tages forholdsregler:</strong>
+                  <ul>
+                    <li>En ærbar mand medbringer egne provianter fra Tax Free.</li>
+                    <li>Er det uundgaaeligt: møde denne drik med stiv læbeholdning, som en soldat mødet fienden.</li>
+                    <li>Ingen maa lade sig kue til gjentagen bepilsning af denne art. Én er nok. Ingen er bedre.</li>
+                  </ul>
+                  Husk, at Bierehren er skrøbelig, og at Isbjørn har sendt saa mangen en agtværdig mand tilbage til Skumløs-Wald.
+                </div>
+              </div>
+
+              <div class="reise-warn reise-warn--forbid">
+                <div class="reise-warn-head">⛔ FORBUDT — AT PILSE PAA S-BAHNEN I MÜNCHEN</div>
+                <div class="reise-warn-body">
+                  Paa <strong>S-Bahnen i München</strong> er det <em>strengt forbudt</em> at pilse. Der staar med tyske bogstaver: <em>«Es ist verboten.»</em><br><br>
+                  Den som forsøger, møder offentlig skam, en irettesættelse fra hine tyske ordensmagter, og maaske en klingende bøde af ikke ubetydelig størrelse.<br><br>
+                  <strong>Vent</strong> til vi have naaet fast grund, og en Wirtshaus har aabnet sig for os. Der er tid nok naar vi ere ankommet.
+                </div>
+              </div>
+
+              <div class="ddr-footer"><p>DISCIPLIN GAAR FORUD FOR AFGANG</p></div>
+            </div>
+
           </section>
         </div>
       </main>

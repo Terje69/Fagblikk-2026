@@ -379,54 +379,63 @@
     });
   });
 
-  // ==================== DIE REISE — språkveksler ====================
-  const REISE_LANG_KEY = 'fagblikk-reise-lang';
+  // ==================== SPRACHE / MAAL — global språkveksler ====================
+  const LANG_KEY = 'fagblikk-lang';
+  const HTML_TAG_RE = /<[a-z][^>]*>/i;
 
-  function applyReiseLang(lang) {
-    const section = document.getElementById('reiseSection');
-    if (!section) return;
+  function applyLang(lang) {
+    document.documentElement.setAttribute('data-lang', lang);
 
-    // Sett attribute for styling/tracking
-    section.dataset.lang = lang;
+    // 1. Bytt tekst på alle elementer med data-de/data-no
+    document.querySelectorAll('[data-de][data-no]').forEach(el => {
+      const v = el.dataset[lang];
+      if (v == null) return;
+      if (HTML_TAG_RE.test(v)) el.innerHTML = v;
+      else                     el.textContent = v;
+    });
 
-    // Vis riktig block
-    section.querySelectorAll('.lang-block').forEach(el => {
+    // 1b. Bytt placeholder på input-felt med data-de-placeholder / data-no-placeholder
+    document.querySelectorAll('[data-de-placeholder][data-no-placeholder]').forEach(el => {
+      const key = lang === 'de' ? 'dePlaceholder' : 'noPlaceholder';
+      const v = el.dataset[key];
+      if (v != null) el.placeholder = v;
+    });
+
+    // 2. Vis riktig .lang-block (for lengre prosa)
+    document.querySelectorAll('.lang-block').forEach(el => {
       const isMatch = el.classList.contains('lang-' + lang);
       el.classList.toggle('active', isMatch);
     });
 
-    // Toggle active-state på knapper
-    section.querySelectorAll('.lang-btn').forEach(btn => {
+    // 3. Marker aktiv knapp
+    document.querySelectorAll('[data-lang-set]').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.langSet === lang);
-    });
-
-    // Oppdater elementer med data-de/data-no (kun titler etc.)
-    section.querySelectorAll('[data-de][data-no]').forEach(el => {
-      const v = el.dataset[lang];
-      if (v != null) el.textContent = v;
     });
   }
 
-  function initReiseLang() {
-    const section = document.getElementById('reiseSection');
-    if (!section) return;
-
+  function initLang() {
     let saved = 'de';
-    try { saved = localStorage.getItem(REISE_LANG_KEY) || 'de'; } catch (e) {}
+    try { saved = localStorage.getItem(LANG_KEY) || 'de'; } catch (e) {}
 
-    section.querySelectorAll('.lang-btn').forEach(btn => {
+    document.querySelectorAll('[data-lang-set]').forEach(btn => {
       btn.addEventListener('click', () => {
         const lang = btn.dataset.langSet;
         if (!lang) return;
-        try { localStorage.setItem(REISE_LANG_KEY, lang); } catch (e) {}
-        applyReiseLang(lang);
+        try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
+        applyLang(lang);
       });
     });
 
-    applyReiseLang(saved);
+    applyLang(saved);
   }
 
-  initReiseLang();
+  initLang();
+  // Reapply language after dynamic renders (idempotent, safe to spam)
+  window.__reapplyLang = () => {
+    let cur = 'de';
+    try { cur = localStorage.getItem(LANG_KEY) || 'de'; } catch (e) {}
+    applyLang(cur);
+  };
 
   // ==================== SPIELE (GAMES) ====================
   const GAMES = {

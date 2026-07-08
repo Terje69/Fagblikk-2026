@@ -30,34 +30,36 @@
           </svg>
         </div>
 
-        <h1 class="login-title">MINISTERIUM FÜR<br/>BIERSICHERHEIT</h1>
-        <p class="login-subtitle">ABTEILUNG FAGBLIKK · MÜNCHEN 2026</p>
+        <h1 class="login-title" data-de="MINISTERIUM FÜR<br/>BIERSICHERHEIT" data-no="MINISTERIET FOR<br/>BIERSIKKERHED">MINISTERIUM FÜR<br/>BIERSICHERHEIT</h1>
+        <p class="login-subtitle" data-de="ABTEILUNG FAGBLIKK · MÜNCHEN 2026" data-no="AFDELING FAGBLIKK · MÜNCHEN 2026">ABTEILUNG FAGBLIKK · MÜNCHEN 2026</p>
 
         <div class="login-divider">
           <span class="star">★</span>
           <span class="ld-line"></span>
-          <span class="ld-text">IDENTIFIKATION</span>
+          <span class="ld-text" data-de="IDENTIFIKATION" data-no="LEGITIMATION">IDENTIFIKATION</span>
           <span class="ld-line"></span>
           <span class="star">★</span>
         </div>
 
         <div class="login-form">
-          <label class="login-label" for="agentName">AGENTENNAME EINGEBEN</label>
+          <label class="login-label" for="agentName" data-de="AGENTENNAME EINGEBEN" data-no="AGENTNAVN INDTASTES">AGENTENNAME EINGEBEN</label>
           <input
             type="text"
             id="agentName"
             class="login-input"
             placeholder="DECKNAME..."
+            data-de-placeholder="DECKNAME..."
+            data-no-placeholder="DEKNAVN..."
             autocomplete="off"
             spellcheck="false"
           />
           <button class="login-btn" id="loginBtn">
-            <span class="star">★</span> ZUGANG GEWÄHRT <span class="star">★</span>
+            <span class="star">★</span> <span data-de="ZUGANG GEWÄHRT" data-no="ADGANG BEVILGES">ZUGANG GEWÄHRT</span> <span class="star">★</span>
           </button>
           <p class="login-error" id="loginError"></p>
         </div>
 
-        <p class="login-footer">UNBEFUGTER ZUGANG WIRD MIT WEISSBIER BESTRAFT</p>
+        <p class="login-footer" data-de="UNBEFUGTER ZUGANG WIRD MIT WEISSBIER BESTRAFT" data-no="UBEFØIET ADGANG STRAFFES MED WEISSBIER">UNBEFUGTER ZUGANG WIRD MIT WEISSBIER BESTRAFT</p>
       </div>
     </div>
 
@@ -67,7 +69,7 @@
       <!-- TOP BANNER -->
       <div class="top-banner">
         <span class="star">★</span>
-        <span class="banner-text">BROT · BIER · DISZIPLIN</span>
+        <span class="banner-text" data-de="BROT · BIER · DISZIPLIN" data-no="BRØD · ØL · DISCIPLIN">BROT · BIER · DISZIPLIN</span>
         <span class="star">★</span>
         <button class="agent-badge" id="agentBadge" title="Bytt agent">
           <span class="agent-name" id="agentDisplay">AGENT</span>
@@ -79,59 +81,59 @@
       <div class="nav-wrap" id="navWrap">
       <nav class="main-nav" id="mainNav">
         <button class="nav-card active" data-tab="home">
-          <span class="nav-label">ZENTRALE</span>
+          <span class="nav-label" data-de="ZENTRALE" data-no="CENTRALEN">ZENTRALE</span>
           <strong class="nav-icon">⌂</strong>
         </button>
         <button class="nav-card" data-tab="reise">
-          <span class="nav-label">DIE REISE</span>
+          <span class="nav-label" data-de="DIE REISE" data-no="REISEN">DIE REISE</span>
           <strong class="nav-icon">✈</strong>
         </button>
         <button class="nav-card" data-tab="teiln">
-          <span class="nav-label">TEIL&shy;NEHMER</span>
+          <span class="nav-label" data-de="TEIL&shy;NEHMER" data-no="DELTAGERE">TEIL&shy;NEHMER</span>
           <strong class="nav-icon">👥</strong>
         </button>
         <button class="nav-card" data-tab="vorb">
-          <span class="nav-label">VORBE&shy;REITUNG</span>
+          <span class="nav-label" data-de="VORBE&shy;REITUNG" data-no="FORBE&shy;REDELSE">VORBE&shy;REITUNG</span>
           <strong class="nav-icon">📋</strong>
         </button>
         <button class="nav-card" data-tab="bier">
-          <span class="nav-label">BIER&shy;KONTROLLE</span>
+          <span class="nav-label" data-de="BIER&shy;KONTROLLE" data-no="ØL&shy;KONTROL">BIER&shy;KONTROLLE</span>
           <strong class="nav-icon">🍺</strong>
         </button>
         <button class="nav-card" data-tab="musik">
-          <span class="nav-label">ALTE SCHLAGER</span>
+          <span class="nav-label" data-de="ALTE SCHLAGER" data-no="GAMLE TONER">ALTE SCHLAGER</span>
           <strong class="nav-icon">🎵</strong>
         </button>
         <button class="nav-card" data-tab="frueh">
-          <span class="nav-label">FRÜH&shy;SCHOPPEN</span>
+          <span class="nav-label" data-de="FRÜH&shy;SCHOPPEN" data-no="MORGEN&shy;DRAM">FRÜH&shy;SCHOPPEN</span>
           <strong class="nav-icon">🍻</strong>
         </button>
         <button class="nav-card" data-tab="auftrag">
-          <span class="nav-label">GEHEIM&shy;AUFTRAG</span>
+          <span class="nav-label" data-de="GEHEIM&shy;AUFTRAG" data-no="LØNLIG BEFAL">GEHEIM&shy;AUFTRAG</span>
           <strong class="nav-icon">🕵</strong>
         </button>
         <button class="nav-card" data-tab="kriegs">
-          <span class="nav-label">KRIEGS&shy;BEUTE</span>
+          <span class="nav-label" data-de="KRIEGS&shy;BEUTE" data-no="KRIGS&shy;BYTTE">KRIEGS&shy;BEUTE</span>
           <strong class="nav-icon">🍺</strong>
         </button>
         <button class="nav-card" data-tab="gespraech">
-          <span class="nav-label">GESPRÄCHS&shy;STARTER</span>
+          <span class="nav-label" data-de="GESPRÄCHS&shy;STARTER" data-no="TAL-OPHAV">GESPRÄCHS&shy;STARTER</span>
           <strong class="nav-icon">🗣️</strong>
         </button>
         <button class="nav-card" data-tab="rpg">
-          <span class="nav-label">DAS SPIEL</span>
+          <span class="nav-label" data-de="DAS SPIEL" data-no="SPILLET">DAS SPIEL</span>
           <strong class="nav-icon">⚔️</strong>
         </button>
         <button class="nav-card" data-tab="spiele">
-          <span class="nav-label">SPIELE</span>
+          <span class="nav-label" data-de="SPIELE" data-no="SPIL">SPIELE</span>
           <strong class="nav-icon">🎮</strong>
         </button>
         <button class="nav-card" data-tab="gibt">
-          <span class="nav-label">KONT. GIBT</span>
+          <span class="nav-label" data-de="KONT. GIBT" data-no="KONT. GIVER">KONT. GIBT</span>
           <strong class="nav-icon">🥨</strong>
         </button>
         <button class="nav-card" data-tab="nimmt">
-          <span class="nav-label">KONT. NIMMT</span>
+          <span class="nav-label" data-de="KONT. NIMMT" data-no="KONT. TAGER">KONT. NIMMT</span>
           <strong class="nav-icon">🚽</strong>
         </button>
       </nav>
@@ -142,44 +144,52 @@
         <div class="poster">
           <section class="hero">
             <div class="ddr-emblem">★</div>
-            <p class="kicker">ABFLUG</p>
+            <p class="kicker" data-de="ABFLUG" data-no="AFGANG">ABFLUG</p>
             <h1 class="main-title">FAGBLIKK<br/>MÜNCHEN<br/><span class="year">2026</span></h1>
-            <p class="lead">
+
+            <!-- GLOBAL SPRÅKVELGER -->
+            <div class="lang-toggle lang-toggle--global">
+              <span class="lang-toggle-label" data-de="SPRACHE:" data-no="MAAL:">SPRACHE:</span>
+              <button class="lang-btn active" data-lang-set="de">DEUTSCH</button>
+              <button class="lang-btn" data-lang-set="no">NORSK (IBSEN)</button>
+            </div>
+
+            <p class="lead" data-de="Das Kontignent reist nach München für fachliche Weiterbildung in bayerischer Bierkultur. Disziplin ist Pflicht. Lederhosen sind freiwillig." data-no="Kontignentet drage til München for fagligt fremskridt i den bayerske ølkultur. Disciplin er pligt. Læderhoser ere frivillige.">
               Das Kontignent reist nach München für fachliche Weiterbildung in bayerischer Bierkultur.
               Disziplin ist Pflicht. Lederhosen sind freiwillig.
             </p>
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
-              <span class="divider-text">ARCHIV</span>
+              <span class="divider-text" data-de="ARCHIV" data-no="ARKIVET">ARCHIV</span>
               <span class="divider-line"></span><span class="star">★</span>
             </div>
 
             <div class="decree-box">
-              <div class="decree-header">★ AUS DEN ARCHIVEN ★</div>
+              <div class="decree-header" data-de="★ AUS DEN ARCHIVEN ★" data-no="★ FRA DE HEMMELIGE ARKIVER ★">★ AUS DEN ARCHIVEN ★</div>
               <div class="decree-body">
-                <p class="decree-quote">„Das Au-Pair zittert so stark, dass die Essstäbchen klappern."</p>
+                <p class="decree-quote" data-de="„Das Au-Pair zittert so stark, dass die Essstäbchen klappern." data-no="„Au Pairen skjælvede saa stærkt, at Essstäbchene klapre paa bordet.">„Das Au-Pair zittert so stark, dass die Essstäbchen klappern."</p>
               </div>
-              <div class="decree-stamp">KLASSIFIZIERT · FAGBLIKK 2025</div>
+              <div class="decree-stamp" data-de="KLASSIFIZIERT · FAGBLIKK 2025" data-no="HEMMELIGSTEMPLET · FAGBLIKK 2025">KLASSIFIZIERT · FAGBLIKK 2025</div>
             </div>
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
-              <span class="divider-text">COUNTDOWN</span>
+              <span class="divider-text" data-de="COUNTDOWN" data-no="NEDTÆLLINGEN">COUNTDOWN</span>
               <span class="divider-line"></span><span class="star">★</span>
             </div>
 
-            <div class="countdown-label">Abflug Årø · Mittwoch 7. Oktober · 09:00</div>
+            <div class="countdown-label" data-de="Abflug Årø · Mittwoch 7. Oktober · 09:00" data-no="Afgang Aarø · Onsdag den 7. oktober · 09:00">Abflug Årø · Mittwoch 7. Oktober · 09:00</div>
             <div class="countdown">
-              <div class="count-card"><span>TAGE</span><strong id="days">0</strong></div>
-              <div class="count-card"><span>STUNDEN</span><strong id="hours">0</strong></div>
-              <div class="count-card"><span>MINUTEN</span><strong id="minutes">0</strong></div>
-              <div class="count-card count-card--status"><span>STATUS</span><strong id="status">AKTIV</strong></div>
+              <div class="count-card"><span data-de="TAGE" data-no="DAGE">TAGE</span><strong id="days">0</strong></div>
+              <div class="count-card"><span data-de="STUNDEN" data-no="TIMER">STUNDEN</span><strong id="hours">0</strong></div>
+              <div class="count-card"><span data-de="MINUTEN" data-no="MINUTTER">MINUTEN</span><strong id="minutes">0</strong></div>
+              <div class="count-card count-card--status"><span data-de="STATUS" data-no="STATUS">STATUS</span><strong id="status">AKTIV</strong></div>
             </div>
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
-              <span class="divider-text">FLUGINFORMATION</span>
+              <span class="divider-text" data-de="FLUGINFORMATION" data-no="FLYVEINFORMATION">FLUGINFORMATION</span>
               <span class="divider-line"></span><span class="star">★</span>
             </div>
 
@@ -207,7 +217,7 @@
               </div>
             </div>
 
-            <div class="ddr-footer"><p>VOLKSBIER IST PFLICHTPROGRAMM</p></div>
+            <div class="ddr-footer"><p data-de="VOLKSBIER IST PFLICHTPROGRAMM" data-no="FOLKEØLET ER PLIGTPROGRAM">VOLKSBIER IST PFLICHTPROGRAMM</p></div>
           </section>
         </div>
       </main>
@@ -477,19 +487,19 @@
         <div class="poster">
           <section class="hero">
             <div class="ddr-emblem">★</div>
-            <h2 class="tab-title">TEILNEHMER</h2>
-            <p class="lead">Melde dich an. Wähle deine Einsatztage. Das Kontignent muss wissen, wer wann im Dienst ist.</p>
+            <h2 class="tab-title" data-de="TEILNEHMER" data-no="DELTAGERE">TEILNEHMER</h2>
+            <p class="lead" data-de="Melde dich an. Wähle deine Einsatztage. Das Kontignent muss wissen, wer wann im Dienst ist." data-no="Meld dig ind. Vælg dine tjenestedage. Kontignentet maa vide hvo som staar i tjeneste — og naar.">Melde dich an. Wähle deine Einsatztage. Das Kontignent muss wissen, wer wann im Dienst ist.</p>
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
-              <span class="divider-text">DEIN EINSATZPLAN</span>
+              <span class="divider-text" data-de="DEIN EINSATZPLAN" data-no="DIN TJENESTEPLAN">DEIN EINSATZPLAN</span>
               <span class="divider-line"></span><span class="star">★</span>
             </div>
             <div class="day-selector" id="daySelector"></div>
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
-              <span class="divider-text">ÜBERSICHT ALLER AGENTEN</span>
+              <span class="divider-text" data-de="ÜBERSICHT ALLER AGENTEN" data-no="OVERSIGT OVER SAMTLIGE AGENTER">ÜBERSICHT ALLER AGENTEN</span>
               <span class="divider-line"></span><span class="star">★</span>
             </div>
             <div id="attendanceOverview"></div>
@@ -502,22 +512,22 @@
         <div class="poster">
           <section class="hero">
             <div class="ddr-emblem">★</div>
-            <h2 class="tab-title">VORBEREITUNG</h2>
-            <p class="lead">Pflichtprogramm vor der Abreise. Jeder Agent muss sich mit dem Kontignent vertraut machen. Fortschritt wird überwacht.</p>
+            <h2 class="tab-title" data-de="VORBEREITUNG" data-no="FORBEREDELSE">VORBEREITUNG</h2>
+            <p class="lead" data-de="Pflichtprogramm vor der Abreise. Jeder Agent muss sich mit dem Kontignent vertraut machen. Fortschritt wird überwacht." data-no="Pligtprogram førend afreisen. Enhver agent maa gjøre sig fortrolig med Kontignentets sæd og skik. Fremskridtet overvaages ædrueligt.">Pflichtprogramm vor der Abreise. Jeder Agent muss sich mit dem Kontignent vertraut machen. Fortschritt wird überwacht.</p>
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
-              <span class="divider-text">AGENTEN-RANGLISTE</span>
+              <span class="divider-text" data-de="AGENTEN-RANGLISTE" data-no="AGENTERNES RANGORDEN">AGENTEN-RANGLISTE</span>
               <span class="divider-line"></span><span class="star">★</span>
             </div>
             <div id="prepLeaderboard"></div>
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
-              <span class="divider-text">PFLICHTBIERE</span>
+              <span class="divider-text" data-de="PFLICHTBIERE" data-no="PLIGTØLLENE">PFLICHTBIERE</span>
               <span class="divider-line"></span><span class="star">★</span>
             </div>
-            <p class="lead" style="font-size:0.6rem;opacity:0.7;">Tilgjengelig på Vinmonopolet og i dagligvarehandel i Norge.</p>
+            <p class="lead" style="font-size:0.6rem;opacity:0.7;" data-de="Tilgjengelig på Vinmonopolet og i dagligvarehandel i Norge." data-no="At erhverve paa Vinmonopolet, samt i dagligvarehandelen om land og strand.">Tilgjengelig på Vinmonopolet og i dagligvarehandel i Norge.</p>
             <div id="prepList"></div>
           </section>
         </div>
@@ -528,39 +538,39 @@
         <div class="poster">
           <section class="hero">
             <div class="ddr-emblem">★</div>
-            <h2 class="tab-title">BIERKONTROLLE</h2>
-            <p class="lead">Systematische Bewertung der Münchner Braukultur. Jedes Bier wird nach staatlichen Richtlinien geprüft.</p>
+            <h2 class="tab-title" data-de="BIERKONTROLLE" data-no="ØLKONTROLLEN">BIERKONTROLLE</h2>
+            <p class="lead" data-de="Systematische Bewertung der Münchner Braukultur. Jedes Bier wird nach staatlichen Richtlinien geprüft." data-no="En systematisk bedømmelse af det münchener bryggehandværk. Hvert øl prøves paa strengt vis, efter Statens forskrifter.">Systematische Bewertung der Münchner Braukultur. Jedes Bier wird nach staatlichen Richtlinien geprüft.</p>
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
-              <span class="divider-text">PERSÖNLICHE BESTENLISTE</span>
+              <span class="divider-text" data-de="PERSÖNLICHE BESTENLISTE" data-no="PERSONLIG BEDSTELISTE">PERSÖNLICHE BESTENLISTE</span>
               <span class="divider-line"></span><span class="star">★</span>
             </div>
             <div id="personalTop3"></div>
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
-              <span class="divider-text">KOLLEKTIVE BESTENLISTE</span>
+              <span class="divider-text" data-de="KOLLEKTIVE BESTENLISTE" data-no="KOLLEKTIVETS BEDSTELISTE">KOLLEKTIVE BESTENLISTE</span>
               <span class="divider-line"></span><span class="star">★</span>
             </div>
             <div id="sharedTop3"></div>
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
-              <span class="divider-text">FLEISSIGSTE PRÜFER</span>
+              <span class="divider-text" data-de="FLEISSIGSTE PRÜFER" data-no="DE FLITTIGSTE PRØVERE">FLEISSIGSTE PRÜFER</span>
               <span class="divider-line"></span><span class="star">★</span>
             </div>
             <div id="beerLeaderboard"></div>
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
-              <span class="divider-text">VOLLSTÄNDIGE KONTROLLE</span>
+              <span class="divider-text" data-de="VOLLSTÄNDIGE KONTROLLE" data-no="FULDSTÆNDIG KONTROL">VOLLSTÄNDIGE KONTROLLE</span>
               <span class="divider-line"></span><span class="star">★</span>
             </div>
 
             <div class="beer-controls">
-              <button class="ddr-btn" id="resetBeers">NULLSTELLUNG</button>
-              <div class="beer-stats"><span id="beerProgress">0</span> / <span id="beerTotal">0</span> GEPRÜFT</div>
+              <button class="ddr-btn" id="resetBeers" data-de="NULLSTELLUNG" data-no="NULSTILLING">NULLSTELLUNG</button>
+              <div class="beer-stats"><span id="beerProgress">0</span> / <span id="beerTotal">0</span> <span data-de="GEPRÜFT" data-no="PRØVET">GEPRÜFT</span></div>
             </div>
             <div id="beerList"></div>
           </section>
@@ -572,14 +582,14 @@
         <div class="poster">
           <section class="hero">
             <div class="ddr-emblem">★</div>
-            <h2 class="tab-title">ALTE SCHLAGER</h2>
-            <p class="lead">Staatsgenehmigte Musik für das Kontignent. Nur zugelassene Schlager werden abgespielt.</p>
+            <h2 class="tab-title" data-de="ALTE SCHLAGER" data-no="GAMLE TONER">ALTE SCHLAGER</h2>
+            <p class="lead" data-de="Staatsgenehmigte Musik für das Kontignent. Nur zugelassene Schlager werden abgespielt." data-no="Musik med Statens tilladelse, for Kontignentets ædle øre. Kun godkjendte Schlagerviser vil klinge fra denne indretning.">Staatsgenehmigte Musik für das Kontignent. Nur zugelassene Schlager werden abgespielt.</p>
 
             <div class="player-container" id="musicPlayer">
               <div class="player-display">
                 <div class="player-art">🎵</div>
                 <div class="player-info">
-                  <div class="player-title" id="playerTitle">KEIN LIED GELADEN</div>
+                  <div class="player-title" id="playerTitle" data-de="KEIN LIED GELADEN" data-no="INTET LIED INDHENTET">KEIN LIED GELADEN</div>
                   <div class="player-artist" id="playerArtist">—</div>
                 </div>
               </div>
@@ -601,7 +611,7 @@
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
-              <span class="divider-text">ZUGELASSENE LIEDER</span>
+              <span class="divider-text" data-de="ZUGELASSENE LIEDER" data-no="TILLADTE VISER">ZUGELASSENE LIEDER</span>
               <span class="divider-line"></span><span class="star">★</span>
             </div>
             <div id="trackList"></div>
@@ -614,26 +624,26 @@
         <div class="poster">
           <section class="hero">
             <div class="ddr-emblem">★</div>
-            <h2 class="tab-title">FRÜHSCHOPPEN</h2>
-            <p class="lead">Morgendliche Einsatzorte in der Altstadt. Melde dich an, damit das Kontignent weiß wo du bist.</p>
+            <h2 class="tab-title" data-de="FRÜHSCHOPPEN" data-no="MORGENDRAMMEN">FRÜHSCHOPPEN</h2>
+            <p class="lead" data-de="Morgendliche Einsatzorte in der Altstadt. Melde dich an, damit das Kontignent weiß wo du bist." data-no="Morgentidens tjenestesteder i den gamle bydel. Meld dig, at Kontignentet maa vide, hvor du befinder dig i denne tidlige stund.">Morgendliche Einsatzorte in der Altstadt. Melde dich an, damit das Kontignent weiß wo du bist.</p>
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
-              <span class="divider-text">TAGESAUSWAHL</span>
+              <span class="divider-text" data-de="TAGESAUSWAHL" data-no="DAGSVALG">TAGESAUSWAHL</span>
               <span class="divider-line"></span><span class="star">★</span>
             </div>
             <div class="checkin-day-selector" id="checkinDaySelector"></div>
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
-              <span class="divider-text">AKTIVE AGENTEN</span>
+              <span class="divider-text" data-de="AKTIVE AGENTEN" data-no="AGENTER I VIRKE">AKTIVE AGENTEN</span>
               <span class="divider-line"></span><span class="star">★</span>
             </div>
             <div id="checkinOverview"></div>
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
-              <span class="divider-text">EINSATZORTE</span>
+              <span class="divider-text" data-de="EINSATZORTE" data-no="TJENESTESTEDER">EINSATZORTE</span>
               <span class="divider-line"></span><span class="star">★</span>
             </div>
             <div id="venueList"></div>
@@ -646,19 +656,19 @@
         <div class="poster">
           <section class="hero">
             <div class="ddr-emblem">★</div>
-            <h2 class="tab-title">GEHEIMAUFTRAG</h2>
-            <p class="lead">Streng geheim. Jeder Agent erhält tägliche Aufträge vom Ministerium. Erfolg wird belohnt. Versagen wird dokumentiert.</p>
+            <h2 class="tab-title" data-de="GEHEIMAUFTRAG" data-no="LØNLIG BEFALING">GEHEIMAUFTRAG</h2>
+            <p class="lead" data-de="Streng geheim. Jeder Agent erhält tägliche Aufträge vom Ministerium. Erfolg wird belohnt. Versagen wird dokumentiert." data-no="Strengt hemmeligt! Enhver agent modtager sine daglige befalinger fra Ministeriet selv. Sejr belønnes med ære — nederlag indføres i de sorte protokoller.">Streng geheim. Jeder Agent erhält tägliche Aufträge vom Ministerium. Erfolg wird belohnt. Versagen wird dokumentiert.</p>
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
-              <span class="divider-text">AUFTRAGS-RANGLISTE</span>
+              <span class="divider-text" data-de="AUFTRAGS-RANGLISTE" data-no="BEFALINGENS RANGORDEN">AUFTRAGS-RANGLISTE</span>
               <span class="divider-line"></span><span class="star">★</span>
             </div>
             <div id="missionLeaderboard"></div>
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
-              <span class="divider-text">DEINE AUFTRÄGE</span>
+              <span class="divider-text" data-de="DEINE AUFTRÄGE" data-no="DINE BEFALINGER">DEINE AUFTRÄGE</span>
               <span class="divider-line"></span><span class="star">★</span>
             </div>
             <div id="missionList"></div>
@@ -671,19 +681,19 @@
         <div class="poster">
           <section class="hero">
             <div class="ddr-emblem">★</div>
-            <h2 class="tab-title">KRIEGSBEUTE</h2>
-            <p class="lead">Geplünderte Biergläser werden hier registriert. Das Kontignent sammelt Trophäen für das Vaterland.</p>
+            <h2 class="tab-title" data-de="KRIEGSBEUTE" data-no="KRIGSBYTTET">KRIEGSBEUTE</h2>
+            <p class="lead" data-de="Geplünderte Biergläser werden hier registriert. Das Kontignent sammelt Trophäen für das Vaterland." data-no="Plyndrede ølglas indføres her i den store bog. Kontignentet samler tropæer, som ære til fædrelandet og til den sene efterslægt.">Geplünderte Biergläser werden hier registriert. Das Kontignent sammelt Trophäen für das Vaterland.</p>
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
-              <span class="divider-text">PLÜNDERUNGS-RANGLISTE</span>
+              <span class="divider-text" data-de="PLÜNDERUNGS-RANGLISTE" data-no="PLYNDRINGENS RANGORDEN">PLÜNDERUNGS-RANGLISTE</span>
               <span class="divider-line"></span><span class="star">★</span>
             </div>
             <div id="glassLeaderboard"></div>
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
-              <span class="divider-text">BEUTEVERZEICHNIS</span>
+              <span class="divider-text" data-de="BEUTEVERZEICHNIS" data-no="BYTTEFORTEGNELSE">BEUTEVERZEICHNIS</span>
               <span class="divider-line"></span><span class="star">★</span>
             </div>
             <div id="glassGrid"></div>
@@ -696,24 +706,24 @@
         <div class="poster">
           <section class="hero">
             <div class="ddr-emblem">★</div>
-            <h2 class="tab-title">GESPRÄCHS&shy;STARTER</h2>
-            <p class="lead">Wenn die Konversation ins Stocken gerät, drücke den Knopf. Die Partei liefert das Thema.</p>
+            <h2 class="tab-title" data-de="GESPRÄCHS&shy;STARTER" data-no="TAL-OPHAV">GESPRÄCHS&shy;STARTER</h2>
+            <p class="lead" data-de="Wenn die Konversation ins Stocken gerät, drücke den Knopf. Die Partei liefert das Thema." data-no="Naar samtalen gaar i staa, og tavsheden lægger sit tunge lod paa bordet — tryk da paa knappen. Partiet leverer emnet.">Wenn die Konversation ins Stocken gerät, drücke den Knopf. Die Partei liefert das Thema.</p>
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
-              <span class="divider-text">THEMA</span>
+              <span class="divider-text" data-de="THEMA" data-no="EMNE">THEMA</span>
               <span class="divider-line"></span><span class="star">★</span>
             </div>
 
             <div class="conversation-display" id="conversationTopic">
-              <div class="conv-topic">DRÜCKE DEN KNOPF</div>
+              <div class="conv-topic" data-de="DRÜCKE DEN KNOPF" data-no="TRYK PAA KNAPPEN">DRÜCKE DEN KNOPF</div>
             </div>
 
-            <button class="ddr-button conv-button" id="newTopicBtn">★ NEUES THEMA ★</button>
+            <button class="ddr-button conv-button" id="newTopicBtn" data-de="★ NEUES THEMA ★" data-no="★ NYT EMNE ★">★ NEUES THEMA ★</button>
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
-              <span class="divider-text">ALLE THEMEN</span>
+              <span class="divider-text" data-de="ALLE THEMEN" data-no="ALLE EMNER">ALLE THEMEN</span>
               <span class="divider-line"></span><span class="star">★</span>
             </div>
 
@@ -727,12 +737,12 @@
         <div class="poster">
           <section class="hero">
             <div class="ddr-emblem">★</div>
-            <h2 class="tab-title">DAS SPIEL</h2>
-            <p class="lead">Et tekstbasert rollespill fra Ministerium für Unterhaltung. Velg dine valg med omhu — Skumløs-Wald er aldri langt unna.</p>
+            <h2 class="tab-title" data-de="DAS SPIEL" data-no="SPILLET">DAS SPIEL</h2>
+            <p class="lead" data-de="Et tekstbasert rollespill fra Ministerium für Unterhaltung. Velg dine valg med omhu — Skumløs-Wald er aldri langt unna." data-no="Et tekstbaseret rollespil fra Ministeriet for Adspredelse. Vælg dine handlinger med omtanke — thi Skumløs-Waldens graae rand ligger stedse paa lur.">Et tekstbasert rollespill fra Ministerium für Unterhaltung. Velg dine valg med omhu — Skumløs-Wald er aldri langt unna.</p>
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
-              <span class="divider-text">STRENG GEHEIM</span>
+              <span class="divider-text" data-de="STRENG GEHEIM" data-no="STRENGT HEMMELIGT">STRENG GEHEIM</span>
               <span class="divider-line"></span><span class="star">★</span>
             </div>
 
@@ -752,7 +762,7 @@
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
-              <span class="divider-text">KAPITLER</span>
+              <span class="divider-text" data-de="KAPITLER" data-no="KAPITLER">KAPITLER</span>
               <span class="divider-line"></span><span class="star">★</span>
             </div>
 
@@ -810,36 +820,36 @@
         <div class="poster">
           <section class="hero">
             <div class="ddr-emblem">★</div>
-            <h2 class="tab-title">SPIELE</h2>
-            <p class="lead">Staatsgenehmigte Unterhaltungsprogramme des Ministeriums. Zur Schulung der Reflexe und Stärkung des Kollektivgeistes.</p>
+            <h2 class="tab-title" data-de="SPIELE" data-no="SPIL">SPIELE</h2>
+            <p class="lead" data-de="Staatsgenehmigte Unterhaltungsprogramme des Ministeriums. Zur Schulung der Reflexe und Stärkung des Kollektivgeistes." data-no="Statens tilladte adspredelsesprogrammer af Ministeriet — til øvelse af reflekserne og styrkelse af Kollektivets aand.">Staatsgenehmigte Unterhaltungsprogramme des Ministeriums. Zur Schulung der Reflexe und Stärkung des Kollektivgeistes.</p>
 
             <div class="section-divider">
               <span class="star">★</span><span class="divider-line"></span>
-              <span class="divider-text">SPIEL-AUSWAHL</span>
+              <span class="divider-text" data-de="SPIEL-AUSWAHL" data-no="SPIL-VALG">SPIEL-AUSWAHL</span>
               <span class="divider-line"></span><span class="star">★</span>
             </div>
 
             <div class="spiele-grid">
               <button class="spiele-card" data-game="bierturm">
                 <div class="spiele-icon">🏗️🍺</div>
-                <div class="spiele-title">BIERTURM AM FLUGHAFEN</div>
-                <div class="spiele-desc">Trinkt, stapelt, flieht vor dem Au-Pair. Stapelt zwei Türme à 7 Gläser.</div>
+                <div class="spiele-title" data-de="BIERTURM AM FLUGHAFEN" data-no="ØLTAARN PAA FLYVEPLADSEN">BIERTURM AM FLUGHAFEN</div>
+                <div class="spiele-desc" data-de="Trinkt, stapelt, flieht vor dem Au-Pair. Stapelt zwei Türme à 7 Gläser." data-no="Drikker, stapler, flygter for Au Pairen. Reiser tvende taarne, hvert med syv glas.">Trinkt, stapelt, flieht vor dem Au-Pair. Stapelt zwei Türme à 7 Gläser.</div>
                 <div class="spiele-meta">
-                  <span class="spiele-chip">👥 1–6 Agenten</span>
-                  <span class="spiele-chip">⏱ Kurz</span>
+                  <span class="spiele-chip" data-de="👥 1–6 Agenten" data-no="👥 1–6 AGENTER">👥 1–6 Agenten</span>
+                  <span class="spiele-chip" data-de="⏱ Kurz" data-no="⏱ KORT">⏱ Kurz</span>
                 </div>
-                <div class="spiele-play">★ SPIELEN ★</div>
+                <div class="spiele-play" data-de="★ SPIELEN ★" data-no="★ SPIL ★">★ SPIELEN ★</div>
               </button>
 
               <button class="spiele-card" data-game="glaeser-klauen">
                 <div class="spiele-icon">🟡🇩🇪</div>
-                <div class="spiele-title">LEERE GLÄSER KLAUEN</div>
-                <div class="spiele-desc">Gelbes Piquet und Deutsches Trikot klauen leere Krüge. 60 Sekunden. Volle Ehre.</div>
+                <div class="spiele-title" data-de="LEERE GLÄSER KLAUEN" data-no="AT STJÆLE TOMME GLAS">LEERE GLÄSER KLAUEN</div>
+                <div class="spiele-desc" data-de="Gelbes Piquet und Deutsches Trikot klauen leere Krüge. 60 Sekunden. Volle Ehre." data-no="Gult Piquet og Tysk Landsholdsdragt stjæle tomme krus. Tresindstyve sekunder. Fuld ære.">Gelbes Piquet und Deutsches Trikot klauen leere Krüge. 60 Sekunden. Volle Ehre.</div>
                 <div class="spiele-meta">
-                  <span class="spiele-chip">👥 Solo</span>
-                  <span class="spiele-chip">⏱ 60 Sek.</span>
+                  <span class="spiele-chip" data-de="👥 Solo" data-no="👥 ALENE">👥 Solo</span>
+                  <span class="spiele-chip" data-de="⏱ 60 Sek." data-no="⏱ 60 SEK.">⏱ 60 Sek.</span>
                 </div>
-                <div class="spiele-play">★ SPIELEN ★</div>
+                <div class="spiele-play" data-de="★ SPIELEN ★" data-no="★ SPIL ★">★ SPIELEN ★</div>
               </button>
             </div>
           </section>
@@ -860,8 +870,8 @@
         <div class="poster">
           <section class="hero">
             <div class="ddr-emblem">★</div>
-            <h2 class="tab-title">DAS KONTIG&shy;NENT GIBT</h2>
-            <p class="lead">Die Versorgung des Volkes. Bayerische Delikatessen, die das Kontignent mit Freude und Disziplin genießt.</p>
+            <h2 class="tab-title" data-de="DAS KONTIG&shy;NENT GIBT" data-no="KONTIG&shy;NENTET GIVER">DAS KONTIG&shy;NENT GIBT</h2>
+            <p class="lead" data-de="Die Versorgung des Volkes. Bayerische Delikatessen, die das Kontignent mit Freude und Disziplin genießt." data-no="Folkets forsyning. Bayerske delikatesser, som Kontignentet nyder med glæde i sindet og disciplin i haanden.">Die Versorgung des Volkes. Bayerische Delikatessen, die das Kontignent mit Freude und Disziplin genießt.</p>
             <div class="gallery-grid" id="girGallery"></div>
           </section>
         </div>
@@ -872,8 +882,8 @@
         <div class="poster">
           <section class="hero">
             <div class="ddr-emblem">★</div>
-            <h2 class="tab-title">DAS KONTIG&shy;NENT NIMMT</h2>
-            <p class="lead">Die unvermeidliche Konsequenz.</p>
+            <h2 class="tab-title" data-de="DAS KONTIG&shy;NENT NIMMT" data-no="KONTIG&shy;NENTET TAGER">DAS KONTIG&shy;NENT NIMMT</h2>
+            <p class="lead" data-de="Die unvermeidliche Konsequenz." data-no="Den uundgaaelige følge, som ingen sjæl kan flygte fra.">Die unvermeidliche Konsequenz.</p>
             <div class="tar-container" id="tarImage"></div>
           </section>
         </div>

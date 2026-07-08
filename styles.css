@@ -1955,6 +1955,35 @@ h2.tab-title {
   border: 2px solid var(--gold-dark);
 }
 
+/* Prominent global variant (on home tab) */
+.lang-toggle--global {
+  margin: 14px 0 20px;
+  padding: 12px 10px;
+  border: 3px solid var(--gold);
+  background: linear-gradient(180deg, rgba(255, 214, 0, 0.16), rgba(127, 0, 0, 0.35));
+  box-shadow: 0 0 14px rgba(255, 214, 0, 0.35);
+  position: relative;
+}
+
+.lang-toggle--global::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(255, 214, 0, 0.35);
+  pointer-events: none;
+}
+
+.lang-toggle--global .lang-toggle-label {
+  font-size: 0.62rem;
+  color: var(--gold);
+  opacity: 0.95;
+}
+
+.lang-toggle--global .lang-btn {
+  font-size: 0.66rem;
+  padding: 8px 16px;
+}
+
 .lang-toggle-label {
   font-size: 0.55rem;
   font-weight: 900;

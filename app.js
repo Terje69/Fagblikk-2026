@@ -226,6 +226,12 @@
       sicknessCache = data;
       renderSickness();
     });
+
+    // Sync Jaget-protokollen (bestetider)
+    db.ref('jaget').on('value', snap => {
+      jagetCache = snap.val() || {};
+      sendJagetBoard();
+    });
   }
 
   // Push ALL local data to Firebase on login (in case offline data exists)
@@ -359,6 +365,7 @@
         db.ref('glasses').off();
         db.ref('reports').off();
         db.ref('sickness').off();
+        db.ref('jaget').off();
       }
     }
   });
@@ -467,8 +474,9 @@
 
   // ==================== SPIELE (GAMES) ====================
   const GAMES = {
-    'bierturm':       { title: 'BIERTURM AM FLUGHAFEN', src: 'games/bierturm.html' },
-    'glaeser-klauen': { title: 'LEERE GLÄSER KLAUEN',   src: 'games/glaeser-klauen.html' },
+    'bierturm':       { title: 'BIERTURM AM FLUGHAFEN',        src: 'games/bierturm.html' },
+    'glaeser-klauen': { title: 'LEERE GLÄSER KLAUEN',          src: 'games/glaeser-klauen.html' },
+    'jaget':          { title: 'JAGET — ET DRAMA I SYV BARER', src: 'games/jaget.html' },
   };
 
   const gameModal   = document.getElementById('gameModal');
@@ -2114,6 +2122,48 @@
   }
 
   initSotButton();
+
+  // ==================== JAGET — PROTOKOLLEN (leaderboard-bro) ====================
+  let jagetCache = {}; // safeAgent -> { best: ms, ts }
+
+  function jagetBoardRows() {
+    return Object.keys(jagetCache)
+      .filter(safe => jagetCache[safe] && typeof jagetCache[safe].best === 'number')
+      .map(safe => ({ agent: displayName(safe), timeMs: jagetCache[safe].best }))
+      .sort((a, b) => a.timeMs - b.timeMs)
+      .slice(0, 10);
+  }
+
+  function sendJagetBoard() {
+    const frame = document.getElementById('gameModalFrame');
+    if (!frame || !frame.contentWindow) return;
+    try {
+      frame.contentWindow.postMessage({
+        type: 'jagetBoard',
+        rows: jagetBoardRows(),
+        self: currentAgent || '',
+      }, '*');
+    } catch (e) {}
+  }
+
+  window.addEventListener('message', e => {
+    const d = e.data || {};
+    if (d.type === 'jagetReady') {
+      sendJagetBoard();
+      return;
+    }
+    if (d.type === 'jagetScore' && typeof d.timeMs === 'number' && d.timeMs > 0) {
+      if (!currentAgent || !firebaseReady || !db) { sendJagetBoard(); return; }
+      const safe = safeName(currentAgent);
+      const prev = jagetCache[safe];
+      if (!prev || d.timeMs < prev.best) {
+        // Ny bestetid — Firebase-lytteren sender oppdatert protokoll til spillet
+        db.ref('jaget/' + safe).set({ best: Math.round(d.timeMs), ts: Date.now() }).catch(() => {});
+      } else {
+        sendJagetBoard();
+      }
+    }
+  });
 
   // ==================== SVG IMAGES ====================
   function svgBeerMug() {

@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🏃 Jaget — Et drama i syv barer</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --red: #b71c1c;
+  --red-deep: #7f0000;
+  --red-bright: #e53935;
+  --gold: #ffd600;
+  --gold-dark: #c7a500;
+  --cream: #f5e6c8;
+  --ink: #1a0a0a;
+}
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'Arial Black', Arial, sans-serif;
+  background: var(--ink);
+  color: var(--cream);
+  user-select: none;
+  text-transform: uppercase;
+  touch-action: manipulation;
+}
+
+.screen {
+  display: none;
+  flex-direction: column;
+  height: 100%;
+  padding: 14px;
+  overflow-y: auto;
+}
+.screen.active { display: flex; }
+
+/* ── START / END ── */
+.big-title {
+  font-size: 1.25em;
+  color: var(--gold);
+  text-align: center;
+  letter-spacing: 0.1em;
+  line-height: 1.35;
+  margin: 10px 0 4px;
+  text-shadow: 0 0 14px rgba(255, 214, 0, 0.4);
+}
+.sub-title {
+  font-size: 0.6em;
+  text-align: center;
+  color: var(--cream);
+  opacity: 0.75;
+  letter-spacing: 0.1em;
+  margin-bottom: 14px;
+}
+.rules {
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid var(--gold-dark);
+  border-left: 4px solid var(--gold);
+  padding: 12px 14px;
+  font-size: 0.6em;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--cream);
+  margin-bottom: 14px;
+}
+.rules strong { color: var(--gold); }
+.rules em { color: var(--gold); font-style: italic; }
+
+.board-head {
+  text-align: center;
+  font-size: 0.62em;
+  color: var(--gold);
+  letter-spacing: 0.14em;
+  border-bottom: 1px dashed rgba(255, 214, 0, 0.35);
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+}
+.board {
+  margin-bottom: 14px;
+}
+.board-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  margin: 4px 0;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--gold-dark);
+  font-size: 0.6em;
+  letter-spacing: 0.04em;
+}
+.board-row.self { border-color: var(--gold); background: rgba(255, 214, 0, 0.12); }
+.board-rank { color: var(--gold); font-weight: 900; min-width: 22px; }
+.board-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.board-time { color: var(--gold); font-weight: 900; }
+.board-empty {
+  text-align: center;
+  font-size: 0.55em;
+  opacity: 0.6;
+  letter-spacing: 0.06em;
+  padding: 10px;
+  text-transform: none;
+}
+
+.main-btn {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  background: linear-gradient(180deg, var(--red), var(--red-deep));
+  color: var(--gold);
+  border: 3px solid var(--gold);
+  font-family: inherit;
+  font-size: 0.85em;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 14px 18px;
+  cursor: pointer;
+}
+.main-btn:active { transform: scale(0.97); }
+
+/* ── GAME ── */
+#topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(180deg, var(--red), var(--red-deep));
+  border: 2px solid var(--gold);
+  padding: 8px 12px;
+  flex-shrink: 0;
+}
+.tb-block { text-align: center; }
+.tb-lbl { font-size: 0.45em; letter-spacing: 0.12em; opacity: 0.85; }
+.tb-val { font-size: 0.95em; font-weight: 900; color: var(--gold); letter-spacing: 0.04em; }
+
+#bar-name {
+  text-align: center;
+  font-size: 0.8em;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  padding: 10px 6px 2px;
+  flex-shrink: 0;
+}
+#bar-flavor {
+  text-align: center;
+  font-size: 0.52em;
+  color: var(--cream);
+  opacity: 0.7;
+  letter-spacing: 0.05em;
+  text-transform: none;
+  font-style: italic;
+  padding-bottom: 8px;
+  flex-shrink: 0;
+}
+
+#scene {
+  flex: 1;
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(42, 10, 10, 0.9) 0%, rgba(26, 10, 10, 0.95) 70%),
+    repeating-linear-gradient(90deg, rgba(199, 165, 0, 0.06) 0 2px, transparent 2px 46px);
+  border: 2px solid var(--gold-dark);
+  overflow: hidden;
+  min-height: 260px;
+}
+
+#scene-msg {
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-size: 0.85em;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  line-height: 1.6;
+  width: 90%;
+  pointer-events: none;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+}
+
+#penalty-flash {
+  position: absolute;
+  top: 12%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.95em;
+  font-weight: 900;
+  color: var(--red-bright);
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 12px rgba(229, 57, 53, 0.9), 1px 1px 0 #000;
+  opacity: 0;
+  pointer-events: none;
+}
+#penalty-flash.show { animation: penaltyPop 0.8s ease-out; }
+@keyframes penaltyPop {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+  20%  { opacity: 1; transform: translate(-50%, -50%) scale(1.25); }
+  100% { opacity: 0; transform: translate(-50%, -80%) scale(1); }
+}
+
+#the-man {
+  position: absolute;
+  bottom: 8px;
+  left: 12px;
+  font-size: 2.6em;
+  transition: left 0.5s ease-in;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.7));
+}
+#the-man.running { animation: runShake 0.25s infinite; }
+@keyframes runShake {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50%      { transform: translateY(-5px) rotate(4deg); }
+}
+
+#beer-btn {
+  position: absolute;
+  width: 74px;
+  height: 92px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: none;
+  padding: 0;
+  z-index: 10;
+  animation: beerAppear 0.18s ease-out;
+}
+@keyframes beerAppear {
+  from { transform: scale(0.4); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+#beer-btn svg { width: 100%; height: 100%; filter: drop-shadow(0 0 12px rgba(255, 214, 0, 0.6)); }
+#beer-btn:active { transform: scale(0.92); }
+
+#taps-left {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 0.65em;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  text-shadow: 0 1px 4px #000;
+}
+
+#splits {
+  font-size: 0.55em;
+  letter-spacing: 0.05em;
+  color: var(--cream);
+  padding: 8px 4px;
+  flex-shrink: 0;
+  text-align: center;
+  min-height: 2em;
+  text-transform: none;
+}
+#splits span { color: var(--gold); font-weight: 900; }
+
+/* END */
+.end-total {
+  text-align: center;
+  font-size: 2em;
+  color: var(--gold);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  margin: 8px 0 2px;
+  text-shadow: 0 0 18px rgba(255, 214, 0, 0.5);
+}
+.end-sub {
+  text-align: center;
+  font-size: 0.6em;
+  color: var(--cream);
+  opacity: 0.85;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  line-height: 1.7;
+  margin-bottom: 14px;
+}
+.end-splits {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--gold-dark);
+  padding: 8px 12px;
+  font-size: 0.55em;
+  line-height: 1.9;
+  letter-spacing: 0.04em;
+  margin-bottom: 14px;
+  text-transform: none;
+}
+.end-splits b { color: var(--gold); }
+</style>
+</head>
+<body>
+
+<!-- ══════════ START ══════════ -->
+<div class="screen active" id="screen-start">
+  <div class="big-title">★ JAGET ★</div>
+  <div class="sub-title">ET DRAMA I SYV BARER</div>
+
+  <div class="rules">
+    <strong>Hør, du som træder ind!</strong><br>
+    En mand. Syv barer. Ét jag.<br><br>
+    I hver bar maa manden vente paa sit øl — <em>taalmodigheden prøves, og utaalmodighed straffes med én sekunds bod!</em><br><br>
+    Naar øllet serveres, da <strong>drik!</strong> Tryk paa glasset <strong>fem gange</strong> — men vogt eder: det flygter for eders finger, som æren flygter for den lade.<br><br>
+    Uret gaar fra øllet naar bordet, til glasset staar tomt. Den hurtigste indføres i Protokollen til evig ære.
+  </div>
+
+  <div class="board-head">★ PROTOKOLLEN — DE HURTIGSTE ★</div>
+  <div class="board" id="board-start"><div class="board-empty">Protokollen indhentes…</div></div>
+
+  <button class="main-btn" id="btn-start">★ LAD JAGET BEGYNDE ★</button>
+</div>
+
+<!-- ══════════ GAME ══════════ -->
+<div class="screen" id="screen-game">
+  <div id="topbar">
+    <div class="tb-block">
+      <div class="tb-lbl">BAR</div>
+      <div class="tb-val" id="ui-bar">1/7</div>
+    </div>
+    <div class="tb-block">
+      <div class="tb-lbl">DENNE BAR</div>
+      <div class="tb-val" id="ui-bartime">0,00</div>
+    </div>
+    <div class="tb-block">
+      <div class="tb-lbl">SAMLET JAG</div>
+      <div class="tb-val" id="ui-total">0,00</div>
+    </div>
+  </div>
+
+  <div id="bar-name">—</div>
+  <div id="bar-flavor">—</div>
+
+  <div id="scene">
+    <div id="scene-msg"></div>
+    <div id="penalty-flash">+1 SEKUND I BOD!</div>
+    <div id="the-man">🧔</div>
+    <button id="beer-btn"></button>
+    <div id="taps-left"></div>
+  </div>
+
+  <div id="splits"></div>
+</div>
+
+<!-- ══════════ END ══════════ -->
+<div class="screen" id="screen-end">
+  <div class="big-title">★ TÆPPEFALD! ★</div>
+  <div class="end-total" id="end-total">0,00 s</div>
+  <div class="end-sub" id="end-sub">Dramaet er fuldbragt.</div>
+
+  <div class="end-splits" id="end-splits"></div>
+
+  <div class="board-head">★ PROTOKOLLEN — DE HURTIGSTE ★</div>
+  <div class="board" id="board-end"><div class="board-empty">Protokollen indhentes…</div></div>
+
+  <button class="main-btn" id="btn-replay">★ SPIL ATTER ★</button>
+</div>
+
+<script>
+// ════════════════════════════════════════════
+//  KONFIG
+// ════════════════════════════════════════════
+const BARS = [
+  { name: 'AUGUSTINER-KELLER',    flavor: '— hvor æren bor' },
+  { name: 'HOFBRÄUHAUS',          flavor: '— turisternes hule' },
+  { name: 'SCHNEIDER BRÄUHAUS',   flavor: '— Aventinus’ hjem' },
+  { name: 'PAULANER-KELLER',      flavor: '— Wegert Beids fængsel' },
+  { name: 'DEN SISTE SNILLE',     flavor: '— de arbeidsomme sjæles havn' },
+  { name: 'AUGUSTINER BRÄUSTUBEN',flavor: '— Der Rüllers tilflugt' },
+  { name: 'KFC VED HAUPTBAHNHOF', flavor: '— Fagets Hjerte' },
+];
+const TAPS_PER_BEER = 5;
+const SERVE_MIN = 800, SERVE_MAX = 2600; // ms
+const PENALTY_MS = 1000;
+
+// ════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════
+let phase = 'idle';       // idle | waiting | drinking | running | done
+let barIdx = 0;
+let tapsLeft = 0;
+let serveTimer = null;
+let serveTime = 0;        // performance.now() når øl serveres
+let barPenalty = 0;       // ms bod i inneværende bar (før servering)
+let splits = [];          // ms per bar
+let totalMs = 0;
+let rafId = null;
+let lastPenaltyAt = 0;
+
+const $ = id => document.getElementById(id);
+
+// ════════════════════════════════════════════
+//  PROTOKOLL (leaderboard via parent)
+// ════════════════════════════════════════════
+let boardRows = null;
+let selfName = '';
+
+window.addEventListener('message', e => {
+  const d = e.data || {};
+  if (d.type === 'jagetBoard') {
+    boardRows = d.rows || [];
+    selfName = d.self || '';
+    renderBoards();
+  }
+});
+
+function renderBoards() {
+  ['board-start', 'board-end'].forEach(id => {
+    const el = $(id);
+    if (!el) return;
+    if (boardRows === null) {
+      el.innerHTML = '<div class="board-empty">Protokollen er utilgængelig — spil alligevel, for æren!</div>';
+      return;
+    }
+    if (boardRows.length === 0) {
+      el.innerHTML = '<div class="board-empty">Protokollen er tom. Bliv den første som indskrives!</div>';
+      return;
+    }
+    el.innerHTML = boardRows.map((r, i) =>
+      '<div class="board-row' + (r.agent === selfName ? ' self' : '') + '">'
+      + '<span class="board-rank">' + (i + 1) + '.</span>'
+      + '<span class="board-name">' + escapeHTML(r.agent) + '</span>'
+      + '<span class="board-time">' + fmt(r.timeMs) + ' s</span>'
+      + '</div>').join('');
+  });
+}
+
+function escapeHTML(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// Si fra til forelderen at vi er klare til å motta protokollen
+try { window.parent.postMessage({ type: 'jagetReady' }, '*'); } catch (e) {}
+setTimeout(() => { if (boardRows === null) renderBoards(); }, 2500);
+
+// ════════════════════════════════════════════
+//  HJELPERE
+// ════════════════════════════════════════════
+function fmt(ms) {
+  return (ms / 1000).toFixed(2).replace('.', ',');
+}
+
+function show(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(screenId).classList.add('active');
+}
+
+function setMsg(html) { $('scene-msg').innerHTML = html; }
+
+function beerSVG(pct) {
+  const h = Math.round(pct * 0.58);
+  const foamH = pct > 8 ? 8 : 0;
+  const liquidH = Math.max(0, h - foamH);
+  return '<svg viewBox="0 0 74 92" xmlns="http://www.w3.org/2000/svg">'
+    + '<path d="M12,8 L9,80 Q9,86 15,86 L55,86 Q61,86 61,80 L58,8 Z" fill="rgba(255,214,0,0.08)" stroke="#ffd600" stroke-width="3"/>'
+    + (liquidH > 0
+      ? '<clipPath id="jc"><path d="M12,8 L9,80 Q9,86 15,86 L55,86 Q61,86 61,80 L58,8 Z"/></clipPath>'
+        + '<rect x="9" y="' + (86 - liquidH - foamH) + '" width="52" height="' + liquidH + '" fill="#ffd600" opacity="0.9" clip-path="url(#jc)"/>'
+        + (foamH > 0 ? '<rect x="9" y="' + (86 - liquidH - foamH - 6) + '" width="52" height="8" fill="#f5e6c8" opacity="0.95" clip-path="url(#jc)"/>' : '')
+      : '')
+    + '<path d="M58,24 Q72,24 72,44 Q72,64 58,64" fill="none" stroke="#ffd600" stroke-width="4"/>'
+    + '</svg>';
+}
+
+// ════════════════════════════════════════════
+//  SPILLFLYT
+// ════════════════════════════════════════════
+function startGame() {
+  barIdx = 0;
+  splits = [];
+  totalMs = 0;
+  show('screen-game');
+  enterBar();
+  if (rafId) cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(tick);
+}
+
+function enterBar() {
+  const bar = BARS[barIdx];
+  phase = 'waiting';
+  barPenalty = 0;
+  tapsLeft = TAPS_PER_BEER;
+  $('ui-bar').textContent = (barIdx + 1) + '/7';
+  $('bar-name').textContent = '★ ' + bar.name + ' ★';
+  $('bar-flavor').textContent = bar.flavor;
+  $('beer-btn').style.display = 'none';
+  $('taps-left').textContent = '';
+  $('the-man').classList.remove('running');
+  $('the-man').style.left = '12px';
+  setMsg('Manden venter paa sit øl…<br><span style="font-size:0.7em;opacity:0.75;">(taalmodighed! utaalmodighed straffes)</span>');
+
+  const delay = SERVE_MIN + Math.random() * (SERVE_MAX - SERVE_MIN);
+  serveTimer = setTimeout(serveBeer, delay);
+}
+
+function serveBeer() {
+  phase = 'drinking';
+  serveTime = performance.now();
+  setMsg('★ ØLLET ER SERVERET — DRIK! ★');
+  setTimeout(() => { if (phase === 'drinking') setMsg(''); }, 700);
+  moveBeer(true);
+  $('beer-btn').style.display = 'block';
+  updateTapsLabel();
+}
+
+function moveBeer(first) {
+  const scene = $('scene');
+  const btn = $('beer-btn');
+  const W = scene.clientWidth, H = scene.clientHeight;
+  const bw = 74, bh = 92;
+  const mx = 8, myTop = 8, myBot = 46; // margin (unngå mann/teller nederst)
+  const x = mx + Math.random() * Math.max(1, W - bw - mx * 2);
+  const y = myTop + Math.random() * Math.max(1, H - bh - myTop - myBot);
+  btn.style.left = x + 'px';
+  btn.style.top = y + 'px';
+  btn.innerHTML = beerSVG((tapsLeft / TAPS_PER_BEER) * 100);
+  if (!first) {
+    btn.style.animation = 'none';
+    void btn.offsetWidth;
+    btn.style.animation = '';
+  }
+}
+
+function updateTapsLabel() {
+  $('taps-left').textContent = 'SLURKER IGJEN: ' + tapsLeft;
+}
+
+function drinkTap(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  if (phase !== 'drinking') return;
+  tapsLeft--;
+  if (navigator.vibrate) { try { navigator.vibrate(25); } catch (err) {} }
+  if (tapsLeft <= 0) {
+    finishBar();
+  } else {
+    moveBeer(false);
+    updateTapsLabel();
+  }
+}
+
+function finishBar() {
+  const barMs = (performance.now() - serveTime) + barPenalty;
+  splits.push(barMs);
+  totalMs += barMs;
+  phase = 'running';
+  $('beer-btn').style.display = 'none';
+  $('taps-left').textContent = '';
+  $('splits').innerHTML = 'Bar ' + (barIdx + 1) + ' tømt paa <span>' + fmt(barMs) + ' s</span>'
+    + (barPenalty > 0 ? ' (deraf ' + fmt(barPenalty) + ' s i bod)' : '');
+
+  barIdx++;
+  if (barIdx >= BARS.length) {
+    setMsg('★ TÆPPEFALD! ★');
+    setTimeout(endGame, 700);
+    return;
+  }
+
+  setMsg('Videre! Manden iler mod næste bar…');
+  const man = $('the-man');
+  man.classList.add('running');
+  man.style.left = 'calc(100% - 70px)';
+  setTimeout(enterBar, 850);
+}
+
+function sceneTap(e) {
+  if (phase === 'waiting') {
+    const now = performance.now();
+    if (now - lastPenaltyAt < 350) return; // ikke spam-straff
+    lastPenaltyAt = now;
+    barPenalty += PENALTY_MS;
+    const fl = $('penalty-flash');
+    fl.classList.remove('show');
+    void fl.offsetWidth;
+    fl.classList.add('show');
+    if (navigator.vibrate) { try { navigator.vibrate([60, 40, 60]); } catch (err) {} }
+  }
+}
+
+function endGame() {
+  phase = 'done';
+  if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+
+  $('end-total').textContent = fmt(totalMs) + ' s';
+  $('end-sub').innerHTML = 'Dramaet er fuldbragt. Manden har naaet sit endelige maal<br>— og fortjener nu at sidde i ro.';
+  $('end-splits').innerHTML = splits.map((ms, i) =>
+    (i + 1) + '. ' + BARS[i].name + ': <b>' + fmt(ms) + ' s</b>').join('<br>');
+
+  // Meld resultatet til forelderen (lagres i Protokollen om det er bestetid)
+  try { window.parent.postMessage({ type: 'jagetScore', timeMs: Math.round(totalMs) }, '*'); } catch (e) {}
+
+  show('screen-end');
+}
+
+// ════════════════════════════════════════════
+//  TICK (ur)
+// ════════════════════════════════════════════
+function tick() {
+  if (phase === 'drinking') {
+    const cur = (performance.now() - serveTime) + barPenalty;
+    $('ui-bartime').textContent = fmt(cur);
+    $('ui-total').textContent = fmt(totalMs + cur);
+  } else if (phase === 'waiting') {
+    $('ui-bartime').textContent = barPenalty > 0 ? fmt(barPenalty) : '0,00';
+    $('ui-total').textContent = fmt(totalMs + barPenalty);
+  } else {
+    $('ui-total').textContent = fmt(totalMs);
+  }
+  rafId = requestAnimationFrame(tick);
+}
+
+// ════════════════════════════════════════════
+//  WIRING
+// ════════════════════════════════════════════
+$('btn-start').addEventListener('click', startGame);
+$('btn-replay').addEventListener('click', startGame);
+$('beer-btn').addEventListener('pointerdown', drinkTap);
+$('scene').addEventListener('pointerdown', sceneTap);
+</script>
+</body>
+</html>

@@ -2354,7 +2354,7 @@
   ];
 
   const HAM_FALLBACKS = [
-    'amatøra',
+    'noldusa',
     'ska se på det, påsan trasig no',
     'bare nokka pess ta',
   ];

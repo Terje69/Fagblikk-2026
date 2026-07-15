@@ -1940,6 +1940,51 @@ h2.tab-title {
   text-transform: uppercase;
 }
 
+/* ==================== MELDEWESEN / BUDBRINGEREN ==================== */
+.notify-box {
+  padding: 14px;
+  margin: 12px 0;
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid var(--gold-dark);
+  border-left: 4px solid var(--gold);
+  text-align: center;
+}
+
+.notify-desc {
+  font-size: 0.6rem;
+  color: var(--cream);
+  letter-spacing: 0.03em;
+  line-height: 1.7;
+  text-transform: none;
+  margin: 0 0 12px;
+}
+
+.notify-btn {
+  font-size: 0.62rem;
+  padding: 10px 16px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.notify-status {
+  font-size: 0.56rem;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+  line-height: 1.6;
+  text-transform: none;
+  margin: 10px 0 0;
+}
+
+.notify-hint {
+  font-size: 0.5rem;
+  color: var(--cream);
+  opacity: 0.6;
+  letter-spacing: 0.03em;
+  line-height: 1.6;
+  text-transform: none;
+  margin: 10px 0 0;
+}
+
 /* ==================== DIE REISE ==================== */
 
 /* Language toggle */

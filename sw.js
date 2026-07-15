@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fagblikk-v9';
+const CACHE_NAME = 'fagblikk-v10';
 const ASSETS = [
   './',
   './index.html',
@@ -33,5 +33,18 @@ self.addEventListener('fetch', event => {
     caches.match(event.request)
       .then(cached => cached || fetch(event.request))
       .catch(() => caches.match('./index.html'))
+  );
+});
+
+// Tap on a notification: focus the app if open, else open it
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      for (const client of list) {
+        if ('focus' in client) return client.focus();
+      }
+      return self.clients.openWindow('./');
+    })
   );
 });

@@ -184,12 +184,15 @@
     // Sync checkin data
     db.ref('checkins').on('value', snap => {
       const data = snap.val();
-      if (!data) return;
+      if (!data) { maybeNotifyCheckins({}); return; }
+      const newState = {};
       Object.keys(data).forEach(day => {
         Object.keys(data[day]).forEach(agent => {
           lsSet('checkin_' + agent + '_' + day, data[day][agent]);
+          newState[day + '|' + agent] = data[day][agent];
         });
       });
+      maybeNotifyCheckins(newState);
       renderVenueList();
       renderCheckinOverview();
     });
@@ -1152,6 +1155,123 @@
   ];
 
   let selectedCheckinDay = 'mi'; // default
+
+  // ==================== MORGENDRAM-BUD (check-in notifications) ====================
+  const NOTIFY_PREF_KEY = 'notifyCheckins';
+  let checkinSeen = null; // null = baseline not yet set (first Firebase snapshot)
+
+  const NOTIFY_PHRASES = [
+    (agent, venue) => 'Hør, hør, mine Brødre! ' + agent + ' har indfundet sig til morgendram hos ' + venue + '! Skynd eder did — thi øllet venter paa ingen mand!',
+    (agent, venue) => 'Se! ' + agent + ' sidder allerede benket hos ' + venue + '. Lad ei manden drikke alene i denne tidlige stund!',
+    (agent, venue) => 'Et bud fra Ministeriet: ' + agent + ' har meldt sig til tjeneste hos ' + venue + '. Kontignentet samles — æren kalder!',
+    (agent, venue) => agent + ' har draget til ' + venue + ' for morgendrammens skyld. Følg efter, førend glassene tømmes!'
+  ];
+
+  function notifyPrefOn() {
+    return lsGet(NOTIFY_PREF_KEY) === true;
+  }
+
+  function notifyReady() {
+    return notifyPrefOn()
+      && typeof Notification !== 'undefined'
+      && Notification.permission === 'granted';
+  }
+
+  function maybeNotifyCheckins(newState) {
+    if (checkinSeen === null) { checkinSeen = newState; return; } // baseline: no spam on load
+    const prev = checkinSeen;
+    checkinSeen = newState;
+    if (!notifyReady()) return;
+    const selfSafe = currentAgent ? currentAgent.replace(/[.#$/\[\]]/g, '_') : '';
+    Object.keys(newState).forEach(key => {
+      if (prev[key] === newState[key]) return; // unchanged
+      const parts = key.split('|');
+      const day = parts[0], agentSafe = parts[1];
+      if (agentSafe === selfSafe) return; // don't notify about yourself
+      sendCheckinNotification(day, agentSafe, newState[key]);
+    });
+  }
+
+  function sendCheckinNotification(day, agentSafe, venueId) {
+    const agent = APPROVED_AGENTS.find(a => a.replace(/[.#$/\[\]]/g, '_') === agentSafe)
+      || agentSafe.replace(/_/g, ' ');
+    const venue = (VENUES.find(v => v.id === venueId) || {}).name || venueId;
+    const phrase = NOTIFY_PHRASES[Math.floor(Math.random() * NOTIFY_PHRASES.length)](agent, venue);
+    const title = '★ MORGENDRAM-BUD ★';
+    const opts = {
+      body: phrase,
+      icon: 'assets/icon-192.png',
+      badge: 'assets/icon-192.png',
+      tag: 'checkin-' + day + '-' + agentSafe,
+      renotify: true
+    };
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready
+        .then(reg => reg.showNotification(title, opts))
+        .catch(() => { try { new Notification(title, opts); } catch (e) {} });
+    } else {
+      try { new Notification(title, opts); } catch (e) {}
+    }
+  }
+
+  function updateNotifyUI() {
+    const btn = document.getElementById('notifyToggle');
+    const status = document.getElementById('notifyStatus');
+    if (!btn || !status) return;
+
+    if (typeof Notification === 'undefined') {
+      btn.style.display = 'none';
+      status.dataset.de = 'Dieses Gerät unterstützt keine Benachrichtigungen. (iPhone: App zuerst zum Home-Bildschirm hinzufügen.)';
+      status.dataset.no = 'Denne indretning formaar ikke at bære bud. (iPhone: læg først appen til hjemskjærmen.)';
+      status.style.display = 'block';
+    } else if (Notification.permission === 'denied') {
+      btn.style.display = 'none';
+      status.dataset.de = 'Benachrichtigungen sind im Browser blockiert. Bitte in den Einstellungen freigeben.';
+      status.dataset.no = 'Budene ere blokkerede af hine browsermagter. Giv tilladelse i indstillingerne.';
+      status.style.display = 'block';
+    } else if (notifyReady()) {
+      btn.style.display = '';
+      btn.dataset.de = '🔔 MELDUNGEN: AN — ZUM ABSCHALTEN DRÜCKEN';
+      btn.dataset.no = '🔔 BUDBRINGEREN: VAAGEN — TRYK FOR AT DYSSE HAM';
+      status.dataset.de = 'Du erhältst eine Meldung, wenn ein Agent sich einfindet.';
+      status.dataset.no = 'Du modtager bud, naar en agent indfinder sig til morgendram.';
+      status.style.display = 'block';
+    } else {
+      btn.style.display = '';
+      btn.dataset.de = '🔕 MELDUNGEN: AUS — ZUM EINSCHALTEN DRÜCKEN';
+      btn.dataset.no = '🔕 BUDBRINGEREN: SOVER — TRYK FOR AT VÆKKE HAM';
+      status.dataset.de = '';
+      status.dataset.no = '';
+      status.style.display = 'none';
+    }
+
+    if (window.__reapplyLang) window.__reapplyLang();
+  }
+
+  function initNotifyToggle() {
+    const btn = document.getElementById('notifyToggle');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      if (typeof Notification === 'undefined') return;
+      if (notifyReady()) {
+        lsSet(NOTIFY_PREF_KEY, false);
+        updateNotifyUI();
+        return;
+      }
+      if (Notification.permission === 'granted') {
+        lsSet(NOTIFY_PREF_KEY, true);
+        updateNotifyUI();
+      } else {
+        Notification.requestPermission().then(perm => {
+          if (perm === 'granted') lsSet(NOTIFY_PREF_KEY, true);
+          updateNotifyUI();
+        });
+      }
+    });
+    updateNotifyUI();
+  }
+
+  initNotifyToggle();
 
   function getCheckin(agent, day) {
     return lsGet('checkin_' + agent + '_' + day) || null;

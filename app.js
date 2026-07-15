@@ -2365,7 +2365,7 @@
       return Math.random() < 0.5 ? 'verdi' : 'dem kan det sa karan der';
     }
     if (HAM_BOOK_RE.test(n) || HAM_BOOKS.some(b => n.indexOf(b) !== -1)) {
-      return Math.random() < 0.5 ? 'den har æ lest, den va fin' : 'lest den. fin bok';
+      return 'lest den ja. Grei den';
     }
     return HAM_FALLBACKS[Math.floor(Math.random() * HAM_FALLBACKS.length)];
   }

@@ -2338,12 +2338,36 @@
       .trim();
   }
 
+  // Bøker: kodeord + kjente titler/forfattere. HamGPT har lest alt.
+  const HAM_BOOK_RE = /\b(bok|boka|boken|bøker|bøkene|roman|romanen|forfatter|forfatteren|litteratur|lest)\b/;
+  const HAM_BOOKS = [
+    'ibsen', 'hamsun', 'sult', 'markens grøde', 'peer gynt', 'et dukkehjem',
+    'vildanden', 'gjengangere', 'knausgård', 'knausgard', 'min kamp',
+    'harry potter', 'ringenes herre', 'hobbiten', 'bibelen', 'koranen',
+    'krig og fred', 'prosessen', 'kafka', 'shakespeare', 'hamlet', 'macbeth',
+    'don quijote', 'moby dick', 'odysseen', 'iliaden', 'dante',
+    'den guddommelige komedie', 'jo nesbø', 'jo nesbo', 'snømannen',
+    'sofies verden', 'jostein gaarder', 'dracula', 'frankenstein', '1984',
+    'orwell', 'animal farm', 'dostojevskij', 'forbrytelse og straff',
+    'idioten', 'brødrene karamasov', 'hemingway', 'den gamle mannen og havet',
+    'stolthet og fordom', 'jane austen', 'ulysses', 'james joyce',
+  ];
+
+  const HAM_FALLBACKS = [
+    'amatøra',
+    'ska se på det, påsan trasig no',
+    'bare nokka pess ta',
+  ];
+
   function hamReply(text) {
     const n = hamNormalize(text);
     if (WINE_PRODUCERS.some(p => n.indexOf(p) !== -1)) {
       return Math.random() < 0.5 ? 'verdi' : 'dem kan det sa karan der';
     }
-    return 'amatøra';
+    if (HAM_BOOK_RE.test(n) || HAM_BOOKS.some(b => n.indexOf(b) !== -1)) {
+      return Math.random() < 0.5 ? 'den har æ lest, den va fin' : 'lest den. fin bok';
+    }
+    return HAM_FALLBACKS[Math.floor(Math.random() * HAM_FALLBACKS.length)];
   }
 
   function openHamGPT() {
@@ -2354,7 +2378,7 @@
     ham.style.display = 'block';
     const log = document.getElementById('hamLog');
     if (log && log.children.length === 0) {
-      hamAddMsg('sys', 'Forbindelse opprettet til HamGPT · Barolo-basert språkmodell · 1972 parametre');
+      hamAddMsg('sys', 'Forbindelse opprettet til HamGPT · Barolo-basert språkmodell · 1972 parametre · 0 feil siden 1972');
       hamAddMsg('bot', 'no?');
     }
     const input = document.getElementById('hamInput');

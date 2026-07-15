@@ -2359,13 +2359,36 @@
     'bare nokka pess ta',
   ];
 
+  // Forretningsrelaterte nøkkelord
+  const HAM_BUSINESS = [
+    'forretning', 'business', 'regnskap', 'faktura', 'moms', 'mva',
+    'budsjett', 'økonomi', 'penger', 'kroner', 'investering', 'invester',
+    'aksje', 'marked', 'kunde', 'salg', 'selge', 'omsetning', 'resultat',
+    'fordring', 'likviditet', 'konkurs', 'skatt', 'lønn', 'bedrift',
+    'firma', 'selskap', 'avtale', 'kontrakt', 'anbud', 'tilbud',
+    'kostnad', 'inntekt', 'utbytte', 'balanse', 'revisor', 'revisjon',
+    'lån', 'rente', 'børs', 'million', 'strategi', 'kvartal', 'rapport',
+  ];
+
+  // Spørsmål vs. påstand
+  const HAM_QUESTION_START_RE = /^(hva|hvem|hvor|hvorfor|hvordan|når|ka|kem|kor|koffer|koffør|kossen|kan|skal|vil|har|er|e|va|blir|liker|synes|syns|tror|trur|husker|visste|vet|veit)\b/;
+  const HAM_CLAIM_RE = /\b(er|e|va|var|blir)\b|\benn\b|\b(alltid|aldri|best|verst|bedre|verre|mest|minst|mer|meir|mindre)\b/;
+
   function hamReply(text) {
     const n = hamNormalize(text);
+    const isQuestion = /\?/.test(text) || HAM_QUESTION_START_RE.test(n);
+
     if (WINE_PRODUCERS.some(p => n.indexOf(p) !== -1)) {
       return Math.random() < 0.5 ? 'verdi' : 'dem kan det sa karan der';
     }
+    if (HAM_BUSINESS.some(b => n.indexOf(b) !== -1)) {
+      return 'njaaaa... Det kommer litt an på fordringan';
+    }
     if (HAM_BOOK_RE.test(n) || HAM_BOOKS.some(b => n.indexOf(b) !== -1)) {
       return 'lest den ja. Grei den';
+    }
+    if (!isQuestion && HAM_CLAIM_RE.test(n)) {
+      return 'ja, stemmer det, men det kommer heilt an på da';
     }
     return HAM_FALLBACKS[Math.floor(Math.random() * HAM_FALLBACKS.length)];
   }

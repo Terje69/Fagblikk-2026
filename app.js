@@ -2266,6 +2266,95 @@
     agentInput.focus();
   }
 
+  // ==================== PULL-TO-REFRESH ====================
+  (function initPullToRefresh() {
+    const ind = document.getElementById('ptrIndicator');
+    const txt = document.getElementById('ptrText');
+    if (!ind || !txt) return;
+
+    const THRESHOLD = 80;   // px (etter motstand) før slipp utløser refresh
+    const MAX_PULL = 130;
+    let startY = 0, startX = 0;
+    let pulling = false;
+    let pastThreshold = false;
+    let refreshing = false;
+
+    function setText(de, no) {
+      txt.dataset.de = de;
+      txt.dataset.no = no;
+      if (window.__reapplyLang) window.__reapplyLang();
+    }
+
+    function setOffset(px, snap) {
+      ind.classList.toggle('snap', !!snap);
+      ind.style.transform = 'translateX(-50%) translateY(' + (px - 64) + 'px)';
+    }
+
+    async function doRefresh() {
+      // Sjekk etter ny app-versjon før omlasting — innloggingen
+      // overlever via lastAgent i localStorage (auto-login)
+      try {
+        if ('serviceWorker' in navigator) {
+          const reg = await navigator.serviceWorker.getRegistration();
+          if (reg) {
+            await reg.update();
+            await new Promise(r => setTimeout(r, 700));
+          }
+        }
+      } catch (e) {}
+      location.reload();
+    }
+
+    document.addEventListener('touchstart', e => {
+      if (refreshing) return;
+      const modal = document.getElementById('gameModal');
+      if (modal && modal.style.display === 'flex') return; // ikke under spill
+      if (window.scrollY > 2) return; // kun fra toppen av siden
+      startY = e.touches[0].clientY;
+      startX = e.touches[0].clientX;
+      pulling = true;
+      pastThreshold = false;
+    }, { passive: true });
+
+    document.addEventListener('touchmove', e => {
+      if (!pulling || refreshing) return;
+      const dy = e.touches[0].clientY - startY;
+      const dx = e.touches[0].clientX - startX;
+      // Horisontal bevegelse (f.eks. nav-scrolling) eller oppover: avbryt
+      if (dy <= 0 || Math.abs(dx) > Math.abs(dy)) {
+        if (dy < -6 || Math.abs(dx) > 24) pulling = false;
+        return;
+      }
+      if (window.scrollY > 2) { pulling = false; setOffset(0, true); return; }
+      e.preventDefault(); // demp native bounce mens vi drar
+      const pull = Math.min(dy * 0.45, MAX_PULL);
+      setOffset(pull, false);
+      const past = pull >= THRESHOLD;
+      if (past !== pastThreshold) {
+        pastThreshold = past;
+        if (past) setText('↑ LOSLASSEN — ALLES WIRD ERNEUERT', '↑ SLIP — OG ALT FORNYES');
+        else setText('↓ ZIEHEN ZUM AKTUALISIEREN', '↓ DRAG FOR AT FORNYE');
+      }
+    }, { passive: false });
+
+    function endPull() {
+      if (!pulling || refreshing) return;
+      pulling = false;
+      if (pastThreshold) {
+        refreshing = true;
+        ind.classList.add('refreshing');
+        setText('★ AKTUALISIERUNG LÄUFT…', '★ FORNYELSEN ER I GANG…');
+        setOffset(THRESHOLD, true);
+        doRefresh();
+      } else {
+        setOffset(0, true);
+      }
+    }
+
+    document.addEventListener('touchend', endPull, { passive: true });
+    document.addEventListener('touchcancel', endPull, { passive: true });
+  })();
+
   // ==================== SERVICE WORKER ====================
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(() => {});

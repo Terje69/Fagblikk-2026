@@ -28,7 +28,49 @@ html, body {
   margin: 0; padding: 0;
   min-height: 100vh; min-height: 100dvh;
   overflow-x: hidden;
+  overscroll-behavior-y: contain;
 }
+
+/* ============================================================
+   PULL-TO-REFRESH
+   ============================================================ */
+
+#ptrIndicator {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(-64px);
+  z-index: 950;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(180deg, var(--red), var(--red-deep));
+  border: 2px solid var(--gold);
+  color: var(--gold);
+  padding: 10px 18px;
+  font-size: 0.6rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  will-change: transform;
+}
+
+#ptrIndicator.snap { transition: transform 0.25s ease-out; }
+
+.ptr-star {
+  font-size: 1rem;
+  line-height: 1;
+  display: inline-block;
+}
+
+#ptrIndicator.refreshing .ptr-star {
+  animation: ptrSpin 0.8s linear infinite;
+}
+
+@keyframes ptrSpin { to { transform: rotate(360deg); } }
 
 body {
   font-family: 'Arial Black', 'Arial Bold', Arial, Helvetica, sans-serif;

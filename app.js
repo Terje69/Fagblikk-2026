@@ -218,6 +218,14 @@
       renderAkteFeed();
       renderMedals();
     });
+
+    // Sync sickness status (Den Flanderske Sot)
+    db.ref('sickness').on('value', snap => {
+      const data = snap.val() || {};
+      maybeNotifySickness(data);
+      sicknessCache = data;
+      renderSickness();
+    });
   }
 
   // Push ALL local data to Firebase on login (in case offline data exists)
@@ -350,6 +358,7 @@
         db.ref('missions').off();
         db.ref('glasses').off();
         db.ref('reports').off();
+        db.ref('sickness').off();
       }
     }
   });
@@ -394,6 +403,7 @@
       if (tab === 'kriegs') { renderGlassGrid(); renderGlassLeaderboard(); }
       if (tab === 'akte') { renderAkteFeed(); }
       if (tab === 'orden') { renderMedals(); }
+      if (tab === 'nimmt') { renderSickness(); }
     });
   });
 
@@ -1963,6 +1973,147 @@
         + '</div>';
     }).join('') + '</div>';
   }
+
+  // ==================== DEN FLANDERSKE SOT (sykestatus) ====================
+  let sicknessCache = {};   // safeAgent -> { status, since, recoveredAt, episodes }
+  let sicknessSeen = null;  // baseline for varsler
+
+  function maybeNotifySickness(newData) {
+    if (sicknessSeen === null) { sicknessSeen = newData; return; }
+    const prev = sicknessSeen;
+    sicknessSeen = newData;
+    if (!notifyReady()) return;
+    const selfSafe = currentAgent ? safeName(currentAgent) : '';
+    Object.keys(newData).forEach(safe => {
+      if (safe === selfSafe) return;
+      const now = newData[safe] || {};
+      const before = prev[safe] || {};
+      if (now.status === before.status) return;
+      const agent = displayName(safe);
+      if (now.status === 'sick') {
+        sendSotNotification('★ SOT-ALARM ★',
+          'Ve os! ' + agent + ' er falden for Den Flanderske Sot! Hold afstand, og bed for hans tarme.', safe);
+      } else if (now.status === 'recovered' && before.status === 'sick') {
+        sendSotNotification('★ SOTEN ER OVERVUNDEN ★',
+          agent + ' har rejst sig fra sygelejet — helbredet, dog mærket for livet!', safe);
+      }
+    });
+  }
+
+  function sendSotNotification(title, body, safe) {
+    const opts = {
+      body: body,
+      icon: 'assets/icon-192.png',
+      badge: 'assets/icon-192.png',
+      tag: 'sot-' + safe,
+      renotify: true
+    };
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready
+        .then(reg => reg.showNotification(title, opts))
+        .catch(() => { try { new Notification(title, opts); } catch (e) {} });
+    } else {
+      try { new Notification(title, opts); } catch (e) {}
+    }
+  }
+
+  function sotTime(ts) {
+    if (!ts) return '';
+    const d = new Date(ts);
+    return d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })
+      + ' ' + d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function renderSickness() {
+    const btn = document.getElementById('sotButton');
+    const statusEl = document.getElementById('sotStatus');
+    const sickList = document.getElementById('sotSickList');
+    const recList = document.getElementById('sotRecoveredList');
+    if (!btn || !sickList || !recList) return;
+
+    const selfSafe = currentAgent ? safeName(currentAgent) : '';
+    const mine = sicknessCache[selfSafe] || {};
+
+    // Knappen: alarm eller friskmelding
+    if (mine.status === 'sick') {
+      btn.className = 'sot-btn sot-btn--recover';
+      btn.dataset.de = '★ GENESUNG MELDEN — DIE SEUCHE IST BESIEGT ★';
+      btn.dataset.no = '★ MELD EDER HELBREDET — SOTEN ER OVERVUNDEN ★';
+      statusEl.dataset.de = 'Du bist als Seuchenfall registriert. Das Kontignent hält Abstand.';
+      statusEl.dataset.no = 'Du staar opført som sotens fange. Kontignentet holder afstand — og trykker for eder.';
+    } else {
+      btn.className = 'sot-btn sot-btn--alarm';
+      btn.dataset.de = '🚨 ALARM SCHLAGEN — DIE SEUCHE HAT MICH!';
+      btn.dataset.no = '🚨 SLAA ALARM — SOTEN HAR TAGET MIG!';
+      if (mine.status === 'recovered') {
+        statusEl.dataset.de = 'Du bist genesen — doch gezeichnet. Anfälle überstanden: ' + (mine.episodes || 1) + '.';
+        statusEl.dataset.no = 'Du er helbredet — dog mærket. Anfald overstaaet: ' + (mine.episodes || 1) + '.';
+      } else {
+        statusEl.dataset.de = 'Du bist bei Kräften. Möge es so bleiben.';
+        statusEl.dataset.no = 'Du staar ved fuld kraft. Gid det maa vare ved.';
+      }
+    }
+
+    // Syke agenter
+    const sick = [];
+    const recovered = [];
+    Object.keys(sicknessCache).forEach(safe => {
+      const s = sicknessCache[safe];
+      if (!s || !s.status) return;
+      if (s.status === 'sick') sick.push({ safe, s });
+      else if (s.status === 'recovered') recovered.push({ safe, s });
+    });
+    sick.sort((a, b) => (b.s.since || 0) - (a.s.since || 0));
+    recovered.sort((a, b) => (b.s.recoveredAt || 0) - (a.s.recoveredAt || 0));
+
+    sickList.innerHTML = sick.length === 0
+      ? '<div class="lb-empty">Keine Seuchenfälle. Das Kontignent ist bei Kräften.</div>'
+      : sick.map(({ safe, s }) =>
+          '<div class="sot-row sot-row--sick">'
+          + '<span class="sot-row-icon">🤒</span>'
+          + '<span class="sot-row-name">' + esc(displayName(safe)) + '</span>'
+          + '<span class="sot-row-meta">RAMMET SEIT ' + sotTime(s.since) + (s.episodes > 1 ? ' · ' + s.episodes + '. ANFALL' : '') + '</span>'
+          + '</div>').join('');
+
+    recList.innerHTML = recovered.length === 0
+      ? '<div class="lb-empty">Noch niemand genesen — oder noch niemand krank gewesen.</div>'
+      : recovered.map(({ safe, s }) =>
+          '<div class="sot-row sot-row--recovered">'
+          + '<span class="sot-row-icon">✚</span>'
+          + '<span class="sot-row-name">' + esc(displayName(safe)) + '</span>'
+          + '<span class="sot-row-meta">GENESEN ' + sotTime(s.recoveredAt) + ' · ' + (s.episodes || 1) + (s.episodes > 1 ? ' ANFÄLLE' : ' ANFALL') + ' ÜBERSTANDEN</span>'
+          + '</div>').join('');
+
+    if (window.__reapplyLang) window.__reapplyLang();
+  }
+
+  function initSotButton() {
+    const btn = document.getElementById('sotButton');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      if (!currentAgent) return;
+      if (!firebaseReady || !db) return;
+      const selfSafe = safeName(currentAgent);
+      const mine = sicknessCache[selfSafe] || {};
+      if (mine.status === 'sick') {
+        db.ref('sickness/' + selfSafe).set({
+          status: 'recovered',
+          since: mine.since || Date.now(),
+          recoveredAt: Date.now(),
+          episodes: mine.episodes || 1,
+        }).catch(() => {});
+      } else {
+        db.ref('sickness/' + selfSafe).set({
+          status: 'sick',
+          since: Date.now(),
+          recoveredAt: null,
+          episodes: (mine.episodes || 0) + 1,
+        }).catch(() => {});
+      }
+    });
+  }
+
+  initSotButton();
 
   // ==================== SVG IMAGES ====================
   function svgBeerMug() {

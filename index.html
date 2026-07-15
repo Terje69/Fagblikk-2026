@@ -114,6 +114,10 @@
           <span class="nav-label" data-de="FRÜH&shy;SCHOPPEN" data-no="MORGEN&shy;DRAM">FRÜH&shy;SCHOPPEN</span>
           <strong class="nav-icon">🍻</strong>
         </button>
+        <button class="nav-card" data-tab="notruf">
+          <span class="nav-label" data-de="NOTRUF" data-no="NØDRAAB">NOTRUF</span>
+          <strong class="nav-icon">🚨</strong>
+        </button>
         <button class="nav-card" data-tab="auftrag">
           <span class="nav-label" data-de="GEHEIM&shy;AUFTRAG" data-no="LØNLIG BEFAL">GEHEIM&shy;AUFTRAG</span>
           <strong class="nav-icon">🕵</strong>
@@ -678,6 +682,81 @@
               <span class="divider-line"></span><span class="star">★</span>
             </div>
             <div id="venueList"></div>
+          </section>
+        </div>
+      </main>
+
+      <!-- ============ TAB: NOTRUF / NØDRAAB ============ -->
+      <main class="tab-content" id="tab-notruf">
+        <div class="poster">
+          <section class="hero">
+
+            <div id="notrufMain">
+              <div class="ddr-emblem">★</div>
+              <h2 class="tab-title" data-de="NOTRUF" data-no="NØDRAABET">NOTRUF</h2>
+              <p class="lead" data-de="Wenn die Not am größten ist. Sende einen Notruf — das gesamte Kontignent wird alarmiert und eilt zur Rettung." data-no="Naar nøden er størst. Udsend et nødraab — og hele Kontignentet varsles og iler til undsætning.">Wenn die Not am größten ist. Sende einen Notruf — das gesamte Kontignent wird alarmiert und eilt zur Rettung.</p>
+
+              <div class="section-divider">
+                <span class="star">★</span><span class="divider-line"></span>
+                <span class="divider-text" data-de="NOTSTAND MELDEN" data-no="MELD DIN NØD">NOTSTAND MELDEN</span>
+                <span class="divider-line"></span><span class="star">★</span>
+              </div>
+
+              <div class="notruf-grid">
+                <button class="notruf-btn" data-alert="bier">
+                  <span class="notruf-icon">🍺</span>
+                  <span class="notruf-label" data-de="BIER-NOTSTAND" data-no="ØLNØD">BIER-NOTSTAND</span>
+                  <span class="notruf-sub" data-de="Desperater Bedarf an Bier" data-no="Desperat trang til øl">Desperater Bedarf an Bier</span>
+                </button>
+                <button class="notruf-btn" data-alert="schwein">
+                  <span class="notruf-icon">🐷</span>
+                  <span class="notruf-label" data-de="SCHWEINEFLEISCH-NOTSTAND" data-no="SVINEKJØDSNØD">SCHWEINEFLEISCH-NOTSTAND</span>
+                  <span class="notruf-sub" data-de="Desperater Bedarf an Schweinefleisch" data-no="Desperat trang til svinekjød">Desperater Bedarf an Schweinefleisch</span>
+                </button>
+                <button class="notruf-btn" data-alert="huhn">
+                  <span class="notruf-icon">🍗</span>
+                  <span class="notruf-label" data-de="FRITTIERTES HUHN" data-no="FRITERET KYLLING">FRITTIERTES HUHN</span>
+                  <span class="notruf-sub" data-de="Der Oberst ruft — KFC unverzüglich" data-no="Obersten kalder — KFC ufortøvet">Der Oberst ruft — KFC unverzüglich</span>
+                </button>
+              </div>
+
+              <div class="section-divider">
+                <span class="star">★</span><span class="divider-line"></span>
+                <span class="divider-text" data-de="EIGENER NOTRUF" data-no="EGET NØDRAAB">EIGENER NOTRUF</span>
+                <span class="divider-line"></span><span class="star">★</span>
+              </div>
+
+              <div class="notruf-custom">
+                <input type="text" class="akte-input" id="notrufCustom" maxlength="140" placeholder="..." autocomplete="off" spellcheck="false" />
+                <button class="ddr-btn notruf-custom-btn" id="notrufCustomSend" data-de="★ NOTRUF SENDEN ★" data-no="★ UDSEND NØDRAABET ★">★ NOTRUF SENDEN ★</button>
+                <p class="notify-status" id="notrufStatus"></p>
+              </div>
+
+              <div class="section-divider">
+                <span class="star">★</span><span class="divider-line"></span>
+                <span class="divider-text" data-de="EINGEGANGENE NOTRUFE" data-no="INDKOMNE NØDRAAB">EINGEGANGENE NOTRUFE</span>
+                <span class="divider-line"></span><span class="star">★</span>
+              </div>
+              <div id="notrufFeed"></div>
+            </div>
+
+            <!-- ═══ STRENG HEMMELIG: HAMGPT ═══ -->
+            <div id="hamgpt" style="display:none;">
+              <div class="ham-header">
+                <div class="ham-title-block">
+                  <div class="ham-title">🍷 HAMGPT</div>
+                  <div class="ham-sub">Kunstig Intelligens af høieste Kvalitet · Ministerium für Weinsicherheit</div>
+                </div>
+                <button class="ham-close" id="hamClose" aria-label="Lukk">✕</button>
+              </div>
+              <div class="ham-log" id="hamLog"></div>
+              <div class="ham-input-row">
+                <input type="text" class="ham-input" id="hamInput" maxlength="200" placeholder="Spør HamGPT…" autocomplete="off" spellcheck="false" />
+                <button class="ham-send" id="hamSend">▶</button>
+              </div>
+              <p class="ham-disclaimer">HamGPT kan begaa feil. Kontroller vigtig information mod en aargangstabel.</p>
+            </div>
+
           </section>
         </div>
       </main>

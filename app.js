@@ -232,6 +232,17 @@
       jagetCache = snap.val() || {};
       sendJagetBoard();
     });
+
+    // Sync nødraab (Notruf)
+    db.ref('alerts').limitToLast(30).on('child_added', snap => {
+      alertsCache[snap.key] = snap.val();
+      maybeNotifyAlert(snap.val());
+      renderAlerts();
+    });
+    db.ref('alerts').on('child_changed', snap => {
+      alertsCache[snap.key] = snap.val();
+      renderAlerts();
+    });
   }
 
   // Push ALL local data to Firebase on login (in case offline data exists)
@@ -366,6 +377,7 @@
         db.ref('reports').off();
         db.ref('sickness').off();
         db.ref('jaget').off();
+        db.ref('alerts').off();
       }
     }
   });
@@ -411,6 +423,7 @@
       if (tab === 'akte') { renderAkteFeed(); }
       if (tab === 'orden') { renderMedals(); }
       if (tab === 'nimmt') { renderSickness(); }
+      if (tab === 'notruf') { renderAlerts(); }
     });
   });
 
@@ -2164,6 +2177,245 @@
       }
     }
   });
+
+  // ==================== NOTRUF / NØDRAAB ====================
+  const alertsCache = {}; // key -> { ts, agentSafe, type, text, resolved }
+  let lastAlertSentAt = 0;
+
+  const ALERT_TYPES = {
+    bier:    { icon: '🍺', label: 'BIER-NOTSTAND' },
+    schwein: { icon: '🐷', label: 'SCHWEINEFLEISCH-NOTSTAND' },
+    huhn:    { icon: '🍗', label: 'NOTSTAND: FRITTIERTES HUHN' },
+    custom:  { icon: '⚠️', label: 'NOTRUF' },
+  };
+
+  function alertNotifyBody(a) {
+    const agent = displayName(a.agentSafe);
+    if (a.type === 'bier')    return 'Ve os! ' + agent + ' lider af desperat Ølnød! Enhver mand som formaar, ile til undsætning med en Maß!';
+    if (a.type === 'schwein') return agent + ' hungrer efter Svinekjød! Før manden ufortøvet til nærmeste Schweinshaxe!';
+    if (a.type === 'huhn')    return agent + ' kræver friteret Kylling! Obersten kalder — til KFC, mine Brødre!';
+    return 'Nødraab fra ' + agent + ': „' + (a.text || '') + '"';
+  }
+
+  function maybeNotifyAlert(a) {
+    if (!a || !a.ts) return;
+    if (Date.now() - a.ts > 120000) return; // gamle raab varsler ikke ved lasting
+    const selfSafe = currentAgent ? safeName(currentAgent) : '';
+    if (a.agentSafe === selfSafe) return;
+    if (!notifyReady()) return;
+    const opts = {
+      body: alertNotifyBody(a),
+      icon: 'assets/icon-192.png',
+      badge: 'assets/icon-192.png',
+      tag: 'alert-' + a.agentSafe + '-' + a.ts,
+    };
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready
+        .then(reg => reg.showNotification('⚠ NØDRAAB! ⚠', opts))
+        .catch(() => { try { new Notification('⚠ NØDRAAB! ⚠', opts); } catch (e) {} });
+    } else {
+      try { new Notification('⚠ NØDRAAB! ⚠', opts); } catch (e) {}
+    }
+  }
+
+  function sendAlert(type, text) {
+    const statusEl = document.getElementById('notrufStatus');
+    if (!currentAgent || !firebaseReady || !db) {
+      if (statusEl) statusEl.textContent = '⚠ Das Ministerium ist ohne Verbindung.';
+      return;
+    }
+    const now = Date.now();
+    if (now - lastAlertSentAt < 10000) {
+      if (statusEl) statusEl.textContent = '⚠ Ruhe! Das Ministerium bearbeitet noch den letzten Notruf.';
+      return;
+    }
+    lastAlertSentAt = now;
+    db.ref('alerts').push({
+      ts: now,
+      agentSafe: safeName(currentAgent),
+      type: type,
+      text: text || null,
+      resolved: false,
+    }).then(() => {
+      if (statusEl) {
+        statusEl.textContent = '★ Der Notruf ist ausgesandt. Die Rettung naht.';
+        setTimeout(() => { statusEl.textContent = ''; }, 4000);
+      }
+    }).catch(() => {
+      if (statusEl) statusEl.textContent = '⚠ Übermittlung fehlgeschlagen.';
+    });
+  }
+
+  function renderAlerts() {
+    const el = document.getElementById('notrufFeed');
+    if (!el) return;
+    const keys = Object.keys(alertsCache);
+    if (keys.length === 0) {
+      el.innerHTML = '<div class="lb-empty">Keine Notrufe. Das Kontignent ist versorgt.</div>';
+      return;
+    }
+    keys.sort((a, b) => (alertsCache[b].ts || 0) - (alertsCache[a].ts || 0));
+    const selfSafe = currentAgent ? safeName(currentAgent) : '';
+
+    el.innerHTML = keys.map(key => {
+      const a = alertsCache[key];
+      const t = ALERT_TYPES[a.type] || ALERT_TYPES.custom;
+      const d = new Date(a.ts || 0);
+      const timeStr = d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })
+        + ' ' + d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+      const isSelf = a.agentSafe === selfSafe;
+      return '<div class="alert-row' + (a.resolved ? ' alert-resolved' : ' alert-active') + '">'
+        + '<span class="alert-icon">' + t.icon + '</span>'
+        + '<div class="alert-body">'
+          + '<div class="alert-agent">' + esc(displayName(a.agentSafe)) + '</div>'
+          + '<div class="alert-type">' + (a.type === 'custom' && a.text ? '„' + esc(a.text) + '"' : t.label) + '</div>'
+          + '<div class="alert-time">' + timeStr + (a.resolved ? ' · ★ GERETTET' : '') + '</div>'
+        + '</div>'
+        + (isSelf && !a.resolved
+          ? '<button class="alert-resolve" data-akey="' + key + '">GERETTET</button>'
+          : '')
+        + '</div>';
+    }).join('');
+
+    el.querySelectorAll('.alert-resolve').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (firebaseReady && db) db.ref('alerts/' + btn.dataset.akey + '/resolved').set(true).catch(() => {});
+      });
+    });
+  }
+
+  function initNotruf() {
+    const customInput = document.getElementById('notrufCustom');
+    const customBtn = document.getElementById('notrufCustomSend');
+    document.querySelectorAll('.notruf-btn[data-alert]').forEach(btn => {
+      btn.addEventListener('click', () => sendAlert(btn.dataset.alert, null));
+    });
+    if (customBtn && customInput) {
+      const submitCustom = () => {
+        const text = (customInput.value || '').trim();
+        if (!text) return;
+        // ── HEMMELIG DØR ──
+        if (text.toLowerCase().replace(/\s+/g, ' ') === 'pio cesare') {
+          customInput.value = '';
+          openHamGPT();
+          return;
+        }
+        sendAlert('custom', text.slice(0, 140));
+        customInput.value = '';
+      };
+      customBtn.addEventListener('click', submitCustom);
+      customInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitCustom(); });
+    }
+  }
+
+  initNotruf();
+
+  // ==================== HAMGPT (streng hemmelig) ====================
+  const WINE_PRODUCERS = [
+    'pio cesare', 'gaja', 'antinori', 'sassicaia', 'tenuta san guido',
+    'ornellaia', 'masseto', 'tignanello', 'solaia', 'biondi santi',
+    'frescobaldi', 'banfi', 'ruffino', 'felsina', 'fontodi',
+    'isole e olena', 'querciabella', 'ricasoli', 'casanova di neri',
+    'poggio di sotto', 'salvioni', 'il poggione', 'altesino', 'argiano',
+    'giacomo conterno', 'conterno', 'bartolo mascarello', 'mascarello',
+    'giuseppe rinaldi', 'rinaldi', 'vietti', 'prunotto', 'marchesi di barolo',
+    'massolino', 'elio grasso', 'paolo scavino', 'scavino', 'vajra',
+    'luciano sandrone', 'sandrone', 'roberto voerzio', 'voerzio', 'ceretto',
+    'fontanafredda', 'produttori del barbaresco', 'bruno giacosa', 'giacosa',
+    'la spinetta', 'renato ratti', 'michele chiarlo', 'quintarelli',
+    'dal forno', 'masi', 'allegrini', 'tommasi', 'zenato', 'bertani',
+    'planeta', 'donnafugata', 'tasca d almerita', 'san felice',
+    'castiglion del bosco', 'brancaia', 'le macchiole', 'grattamacco',
+    'ca del bosco', 'bellavista', 'jermann', 'livio felluga', 'gravner',
+    'elena walch', 'alois lageder', 'braida', 'aldo conterno',
+    'poderi aldo conterno', 'pio boffa',
+  ];
+
+  function hamNormalize(s) {
+    return String(s).toLowerCase()
+      .replace(/['’´`.,!?;:"“”«»()-]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function hamReply(text) {
+    const n = hamNormalize(text);
+    if (WINE_PRODUCERS.some(p => n.indexOf(p) !== -1)) {
+      return Math.random() < 0.5 ? 'verdi' : 'dem kan det sa karan der';
+    }
+    return 'amatøra';
+  }
+
+  function openHamGPT() {
+    const main = document.getElementById('notrufMain');
+    const ham = document.getElementById('hamgpt');
+    if (!main || !ham) return;
+    main.style.display = 'none';
+    ham.style.display = 'block';
+    const log = document.getElementById('hamLog');
+    if (log && log.children.length === 0) {
+      hamAddMsg('sys', 'Forbindelse opprettet til HamGPT · Barolo-basert språkmodell · 1972 parametre');
+      hamAddMsg('bot', 'no?');
+    }
+    const input = document.getElementById('hamInput');
+    if (input) input.focus();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function closeHamGPT() {
+    const main = document.getElementById('notrufMain');
+    const ham = document.getElementById('hamgpt');
+    if (!main || !ham) return;
+    ham.style.display = 'none';
+    main.style.display = '';
+  }
+
+  function hamAddMsg(who, text) {
+    const log = document.getElementById('hamLog');
+    if (!log) return;
+    const div = document.createElement('div');
+    div.className = 'ham-msg ham-' + who;
+    if (who === 'bot') {
+      div.innerHTML = '<span class="ham-avatar">🍷</span><span class="ham-bubble">' + esc(text) + '</span>';
+    } else if (who === 'user') {
+      div.innerHTML = '<span class="ham-bubble">' + esc(text) + '</span>';
+    } else {
+      div.innerHTML = '<span class="ham-sysline">' + esc(text) + '</span>';
+    }
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function initHamGPT() {
+    const input = document.getElementById('hamInput');
+    const sendBtn = document.getElementById('hamSend');
+    const closeBtn = document.getElementById('hamClose');
+    if (!input || !sendBtn) return;
+
+    const submit = () => {
+      const text = (input.value || '').trim();
+      if (!text) return;
+      input.value = '';
+      hamAddMsg('user', text);
+      // "Tenke"-indikator for realisme
+      const log = document.getElementById('hamLog');
+      const typing = document.createElement('div');
+      typing.className = 'ham-msg ham-bot ham-typing';
+      typing.innerHTML = '<span class="ham-avatar">🍷</span><span class="ham-bubble">…</span>';
+      log.appendChild(typing);
+      log.scrollTop = log.scrollHeight;
+      setTimeout(() => {
+        typing.remove();
+        hamAddMsg('bot', hamReply(text));
+      }, 500 + Math.random() * 900);
+    };
+
+    sendBtn.addEventListener('click', submit);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+    if (closeBtn) closeBtn.addEventListener('click', closeHamGPT);
+  }
+
+  initHamGPT();
 
   // ==================== SVG IMAGES ====================
   function svgBeerMug() {

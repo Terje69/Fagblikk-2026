@@ -116,6 +116,18 @@
           <span class="nav-label" data-de="KRIEGS&shy;BEUTE" data-no="KRIGS&shy;BYTTE">KRIEGS&shy;BEUTE</span>
           <strong class="nav-icon">🍺</strong>
         </button>
+        <button class="nav-card" data-tab="akte">
+          <span class="nav-label" data-de="STASI-AKTE" data-no="STASI-AKTEN">STASI-AKTE</span>
+          <strong class="nav-icon">📁</strong>
+        </button>
+        <button class="nav-card" data-tab="orden">
+          <span class="nav-label" data-de="ORDEN" data-no="ORDENER">ORDEN</span>
+          <strong class="nav-icon">🎖️</strong>
+        </button>
+        <button class="nav-card" data-tab="parlor">
+          <span class="nav-label" data-de="SPRACH&shy;FÜHRER" data-no="PARLØREN">SPRACH&shy;FÜHRER</span>
+          <strong class="nav-icon">📖</strong>
+        </button>
         <button class="nav-card" data-tab="gespraech">
           <span class="nav-label" data-de="GESPRÄCHS&shy;STARTER" data-no="TAL-OPHAV">GESPRÄCHS&shy;STARTER</span>
           <strong class="nav-icon">🗣️</strong>
@@ -710,6 +722,193 @@
               <span class="divider-line"></span><span class="star">★</span>
             </div>
             <div id="glassGrid"></div>
+          </section>
+        </div>
+      </main>
+
+      <!-- ============ TAB: STASI-AKTE ============ -->
+      <main class="tab-content" id="tab-akte">
+        <div class="poster">
+          <section class="hero">
+            <div class="ddr-emblem">★</div>
+            <h2 class="tab-title" data-de="STASI-AKTE" data-no="STASI-AKTEN">STASI-AKTE</h2>
+            <p class="lead" data-de="Das Kontignent überwacht sich selbst. Melde Verstöße gegen die Bierehre — mit oder ohne Beweisfoto. Das Ministerium vergisst nichts." data-no="Kontignentet vogter over sig selv. Angiv brud paa Bierehren — med eller uden bevisfoto. Ministeriet glemmer intet, og tilgiver mindre.">Das Kontignent überwacht sich selbst. Melde Verstöße gegen die Bierehre — mit oder ohne Beweisfoto. Das Ministerium vergisst nichts.</p>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text" data-de="NEUE MELDUNG" data-no="NY ANGIVELSE">NEUE MELDUNG</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+
+            <div class="akte-form">
+              <label class="akte-label" data-de="BESCHULDIGTER AGENT" data-no="DEN BESKYLDTE AGENT">BESCHULDIGTER AGENT</label>
+              <select class="akte-select" id="akteAccused"></select>
+
+              <label class="akte-label" data-de="VERGEHEN" data-no="FORBRYDELSEN">VERGEHEN</label>
+              <select class="akte-select" id="akteViolation"></select>
+
+              <div id="akteCustomWrap" style="display:none;">
+                <label class="akte-label" data-de="VERGEHEN BESCHREIBEN" data-no="BESKRIV FORBRYDELSEN">VERGEHEN BESCHREIBEN</label>
+                <input type="text" class="akte-input" id="akteCustom" maxlength="120" placeholder="..." />
+              </div>
+
+              <label class="akte-label" data-de="KOMMENTAR (FREIWILLIG)" data-no="BEMÆRKNING (FRIVILLIG)">KOMMENTAR (FREIWILLIG)</label>
+              <input type="text" class="akte-input" id="akteComment" maxlength="200" placeholder="..." />
+
+              <label class="akte-label" data-de="BEWEISFOTO (FREIWILLIG)" data-no="BEVISFOTO (FRIVILLIGT)">BEWEISFOTO (FREIWILLIG)</label>
+              <input type="file" class="akte-file" id="aktePhoto" accept="image/*" />
+
+              <label class="akte-check-row">
+                <input type="checkbox" id="akteAnon" />
+                <span data-de="ANONYME MELDUNG (Quelle wird geschützt)" data-no="ANONYM ANGIVELSE (kilden beskyttes)">ANONYME MELDUNG (Quelle wird geschützt)</span>
+              </label>
+
+              <button class="ddr-btn akte-submit" id="akteSubmit" data-de="★ MELDUNG EINREICHEN ★" data-no="★ INDGIV ANGIVELSEN ★">★ MELDUNG EINREICHEN ★</button>
+              <p class="akte-form-status" id="akteFormStatus"></p>
+            </div>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text" data-de="DIE AKTE" data-no="AKTEN">DIE AKTE</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+            <div id="akteFeed"></div>
+          </section>
+        </div>
+      </main>
+
+      <!-- ============ TAB: ORDEN ============ -->
+      <main class="tab-content" id="tab-orden">
+        <div class="poster">
+          <section class="hero">
+            <div class="ddr-emblem">★</div>
+            <h2 class="tab-title" data-de="ORDEN" data-no="ORDENER">ORDEN</h2>
+            <p class="lead" data-de="Auszeichnungen des Ministeriums für außerordentliche Verdienste. Orden werden automatisch verliehen — das Ministerium sieht alles." data-no="Ministeriets udmærkelser for overordentlige fortjenester. Ordener tildeles av sig selv — thi Ministeriet seer alt.">Auszeichnungen des Ministeriums für außerordentliche Verdienste. Orden werden automatisch verliehen — das Ministerium sieht alles.</p>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text" data-de="DEINE ORDEN" data-no="DINE ORDENER">DEINE ORDEN</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+            <div class="medal-grid" id="medalGrid"></div>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text" data-de="ORDENSLISTE" data-no="ORDENSLISTEN">ORDENSLISTE</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+            <div id="medalLeaderboard"></div>
+          </section>
+        </div>
+      </main>
+
+      <!-- ============ TAB: SPRACHFÜHRER / PARLØREN ============ -->
+      <main class="tab-content" id="tab-parlor">
+        <div class="poster">
+          <section class="hero">
+            <div class="ddr-emblem">★</div>
+            <h2 class="tab-title" data-de="SPRACHFÜHRER" data-no="PARLØREN">SPRACHFÜHRER</h2>
+            <p class="lead" data-de="Amtlich geprüfte bayerische Redewendungen mit ehrwürdiger Übersetzung. Auswendig lernen. Wird kontrolliert." data-no="Statsgodkjendte bayerske vendinger med ærværdig oversættelse. Læres udenad. Kontrol vil forekomme.">Amtlich geprüfte bayerische Redewendungen mit ehrwürdiger Übersetzung. Auswendig lernen. Wird kontrolliert.</p>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text" data-de="BEGRÜSSUNG" data-no="HILSNING">BEGRÜSSUNG</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+
+            <div class="phrase-card">
+              <div class="phrase-bay">Servus!</div>
+              <div class="phrase-no">«Vær hilset, gode mand!»</div>
+            </div>
+            <div class="phrase-card">
+              <div class="phrase-bay">Grüß Gott!</div>
+              <div class="phrase-no">«Gud hilse eder og eders hus!»</div>
+            </div>
+            <div class="phrase-card">
+              <div class="phrase-bay">Habe d'Ehre!</div>
+              <div class="phrase-no">«Æren er paa min side!»</div>
+            </div>
+            <div class="phrase-card">
+              <div class="phrase-bay">Pfiat di!</div>
+              <div class="phrase-no">«Far vel — og gid glasholdet følge eder!»</div>
+            </div>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text" data-de="BESTELLUNG" data-no="BESTILLING">BESTELLUNG</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+
+            <div class="phrase-card">
+              <div class="phrase-bay">A Mass, bitte!</div>
+              <div class="phrase-no">«Én liter af eders ædleste øl, om jeg tør bede!»</div>
+            </div>
+            <div class="phrase-card">
+              <div class="phrase-bay">No a Mass!</div>
+              <div class="phrase-no">«Atter en liter — thi tørsten er endnu ei slukket!»</div>
+            </div>
+            <div class="phrase-card">
+              <div class="phrase-bay">No a Brezn, bitte!</div>
+              <div class="phrase-no">«Endnu en kringle, om jeg tør bede!»</div>
+            </div>
+            <div class="phrase-card">
+              <div class="phrase-bay">Wos kost' des?</div>
+              <div class="phrase-no">«Hvad koster denne herlighed?»</div>
+            </div>
+            <div class="phrase-card">
+              <div class="phrase-bay">Zahlen, bitte!</div>
+              <div class="phrase-no">«Regningen, om jeg maa bede!»</div>
+            </div>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text" data-de="NOTFÄLLE" data-no="NØDSTILFÆLDE">NOTFÄLLE</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+
+            <div class="phrase-card">
+              <div class="phrase-bay">Wo is' as Klo?</div>
+              <div class="phrase-no">«Hvor finder en nødstedt mand det stille kammer?»</div>
+            </div>
+            <div class="phrase-card">
+              <div class="phrase-bay">I hob an Duasch!</div>
+              <div class="phrase-no">«Tørsten plager mig saare!»</div>
+            </div>
+            <div class="phrase-card">
+              <div class="phrase-bay">Des Bier is' warm!</div>
+              <div class="phrase-no">«Dette øl er lunkent — en skjændsel uden lige!»</div>
+            </div>
+            <div class="phrase-card">
+              <div class="phrase-bay">Schleich di!</div>
+              <div class="phrase-no">«Fjern eder fra mit aasyn!» <span class="phrase-hint">(anvendes mod Hofbräu Original-sælgere)</span></div>
+            </div>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text" data-de="EHRE &amp; FEIER" data-no="ÆRE &amp; FEST">EHRE &amp; FEIER</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+
+            <div class="phrase-card">
+              <div class="phrase-bay">O'zapft is!</div>
+              <div class="phrase-no">«Fadet er anstukket — lad glæden strømme frit!»</div>
+            </div>
+            <div class="phrase-card">
+              <div class="phrase-bay">Oans, zwoa, drei — gsuffa!</div>
+              <div class="phrase-no">«En, to, tre — drik, mine Brødre!»</div>
+            </div>
+            <div class="phrase-card">
+              <div class="phrase-bay">I mog di!</div>
+              <div class="phrase-no">«Mit hjærte banker varmt for eder!»</div>
+            </div>
+            <div class="phrase-card">
+              <div class="phrase-bay">Auf geht's!</div>
+              <div class="phrase-no">«Afsted, mine Brødre — æren venter!»</div>
+            </div>
+            <div class="phrase-card">
+              <div class="phrase-bay">Mia san mia!</div>
+              <div class="phrase-no">«Vi ere hvo vi ere — og det faar være nok!»</div>
+            </div>
           </section>
         </div>
       </main>

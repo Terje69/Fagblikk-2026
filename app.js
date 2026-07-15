@@ -206,6 +206,18 @@
       });
       renderAttendance();
     });
+
+    // Sync Stasi-Akte reports (incremental — photos can be large)
+    db.ref('reports').limitToLast(100).on('child_added', snap => {
+      reportsCache[snap.key] = snap.val();
+      renderAkteFeed();
+      renderMedals();
+    });
+    db.ref('reports').on('child_removed', snap => {
+      delete reportsCache[snap.key];
+      renderAkteFeed();
+      renderMedals();
+    });
   }
 
   // Push ALL local data to Firebase on login (in case offline data exists)
@@ -337,6 +349,7 @@
         db.ref('checkins').off();
         db.ref('missions').off();
         db.ref('glasses').off();
+        db.ref('reports').off();
       }
     }
   });
@@ -379,6 +392,8 @@
       if (tab === 'frueh') { renderCheckinDaySelector(); renderVenueList(); renderCheckinOverview(); }
       if (tab === 'auftrag') { renderMissionList(); renderMissionLeaderboard(); }
       if (tab === 'kriegs') { renderGlassGrid(); renderGlassLeaderboard(); }
+      if (tab === 'akte') { renderAkteFeed(); }
+      if (tab === 'orden') { renderMedals(); }
     });
   });
 
@@ -1653,6 +1668,298 @@
         + '<div class="lb-name">' + r.agent + '</div>'
         + '<div class="lb-bar-wrap"><div class="lb-bar" style="width:' + pct + '%"></div></div>'
         + '<div class="lb-pct">' + r.count + ' 🍺</div>'
+        + '</div>';
+    }).join('') + '</div>';
+  }
+
+  // ==================== STASI-AKTE (angiveri) ====================
+  const reportsCache = {}; // key -> report
+
+  const VIOLATIONS = [
+    'Wurde mit einem Hofbräu Original gesehen — freiwillig',
+    'Pepsi Max am Tisch',
+    'Verließ den Tisch vor Leerung des Glases',
+    'Bestellte ein kleines Bier (0,3 L)',
+    'Sprach Englisch mit dem Kellner',
+    'Glasshold: fraværende',
+    'Zu langsames Trinken — Tempoverstoß',
+    'Verweigerte den Frühschoppen',
+    'Wurde beim Wassertrinken beobachtet',
+    'Unbefugtes Nickerchen in der Öffentlichkeit',
+    'Fotografierte sein Essen länger als 30 Sekunden',
+    'Eigenmächtiger Aufbruch ins Hotel vor Mitternacht',
+    'Unterließ es, beim „Ein Prosit" mitzusingen',
+    'Behauptete, satt zu sein',
+  ];
+
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function safeName(agent) {
+    return agent.replace(/[.#$/\[\]]/g, '_');
+  }
+
+  function displayName(safe) {
+    return APPROVED_AGENTS.find(a => safeName(a) === safe) || String(safe).replace(/_/g, ' ');
+  }
+
+  // Compress a photo client-side → base64 JPEG (max ~900px, stepwise quality)
+  function compressPhoto(file) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const maxDim = 900;
+        const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+        const w = Math.round(img.width * scale);
+        const h = Math.round(img.height * scale);
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        let quality = 0.6;
+        let data = canvas.toDataURL('image/jpeg', quality);
+        while (data.length > 400000 && quality > 0.25) {
+          quality -= 0.15;
+          data = canvas.toDataURL('image/jpeg', quality);
+        }
+        if (data.length > 500000) reject(new Error('too-big'));
+        else resolve(data);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('bad-image')); };
+      img.src = url;
+    });
+  }
+
+  function initAkteForm() {
+    const accusedSel = document.getElementById('akteAccused');
+    const violationSel = document.getElementById('akteViolation');
+    const submitBtn = document.getElementById('akteSubmit');
+    if (!accusedSel || !violationSel || !submitBtn) return;
+
+    accusedSel.innerHTML = '<option value="">— AGENT WÄHLEN —</option>'
+      + APPROVED_AGENTS.map(a => '<option value="' + esc(a) + '">' + esc(a) + '</option>').join('');
+
+    violationSel.innerHTML = VIOLATIONS.map(v => '<option value="' + esc(v) + '">' + esc(v) + '</option>').join('')
+      + '<option value="__custom__">ANDERES VERGEHEN (frei formulieren)…</option>';
+
+    violationSel.addEventListener('change', () => {
+      document.getElementById('akteCustomWrap').style.display =
+        violationSel.value === '__custom__' ? 'block' : 'none';
+    });
+
+    submitBtn.addEventListener('click', async () => {
+      const statusEl = document.getElementById('akteFormStatus');
+      const accused = accusedSel.value;
+      let violation = violationSel.value;
+      if (violation === '__custom__') {
+        violation = (document.getElementById('akteCustom').value || '').trim();
+      }
+      const comment = (document.getElementById('akteComment').value || '').trim();
+      const anonymous = document.getElementById('akteAnon').checked;
+      const fileInput = document.getElementById('aktePhoto');
+
+      if (!accused) { statusEl.textContent = '⚠ Ein Agent muss beschuldigt werden.'; return; }
+      if (!violation) { statusEl.textContent = '⚠ Ein Vergehen muss angegeben werden.'; return; }
+      if (!firebaseReady || !db) { statusEl.textContent = '⚠ Das Ministerium ist ohne Verbindung. Später versuchen.'; return; }
+
+      submitBtn.disabled = true;
+      statusEl.textContent = '⏳ Meldung wird übermittelt…';
+
+      let photo = null;
+      if (fileInput.files && fileInput.files[0]) {
+        try {
+          statusEl.textContent = '⏳ Beweisfoto wird komprimiert…';
+          photo = await compressPhoto(fileInput.files[0]);
+        } catch (e) {
+          statusEl.textContent = '⚠ Foto konnte nicht verarbeitet werden. Meldung ohne Foto senden, oder anderes Foto wählen.';
+          submitBtn.disabled = false;
+          return;
+        }
+      }
+
+      const report = {
+        ts: Date.now(),
+        accused: accused,
+        violation: violation,
+        comment: comment || null,
+        photo: photo,
+        anonymous: anonymous,
+        reporterSafe: currentAgent ? safeName(currentAgent) : '',
+      };
+
+      db.ref('reports').push(report)
+        .then(() => {
+          statusEl.textContent = '★ Meldung registriert. Das Ministerium dankt.';
+          accusedSel.value = '';
+          violationSel.selectedIndex = 0;
+          document.getElementById('akteCustom').value = '';
+          document.getElementById('akteCustomWrap').style.display = 'none';
+          document.getElementById('akteComment').value = '';
+          document.getElementById('akteAnon').checked = false;
+          fileInput.value = '';
+          submitBtn.disabled = false;
+          setTimeout(() => { statusEl.textContent = ''; }, 4000);
+        })
+        .catch(() => {
+          statusEl.textContent = '⚠ Übermittlung fehlgeschlagen. Erneut versuchen.';
+          submitBtn.disabled = false;
+        });
+    });
+  }
+
+  function renderAkteFeed() {
+    const el = document.getElementById('akteFeed');
+    if (!el) return;
+
+    const keys = Object.keys(reportsCache);
+    if (keys.length === 0) {
+      el.innerHTML = '<div class="lb-empty">Die Akte ist leer. Das Kontignent verhält sich — noch — vorbildlich.</div>';
+      return;
+    }
+
+    keys.sort((a, b) => (reportsCache[b].ts || 0) - (reportsCache[a].ts || 0));
+    const selfSafe = currentAgent ? safeName(currentAgent) : '';
+
+    el.innerHTML = keys.map(key => {
+      const r = reportsCache[key];
+      const d = new Date(r.ts || 0);
+      const dateStr = d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })
+        + ' · ' + d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+      const source = r.anonymous ? 'ANONYME QUELLE' : esc(displayName(r.reporterSafe));
+      const canDelete = selfSafe && r.reporterSafe === selfSafe;
+      return '<div class="akte-card">'
+        + '<div class="akte-head">'
+          + '<span class="akte-stamp">AKTE №' + key.slice(-5).toUpperCase() + '</span>'
+          + '<span class="akte-date">' + dateStr + '</span>'
+        + '</div>'
+        + '<div class="akte-accused">BESCHULDIGT: <strong>' + esc(r.accused) + '</strong></div>'
+        + '<div class="akte-violation">' + esc(r.violation) + '</div>'
+        + (r.comment ? '<div class="akte-comment">„' + esc(r.comment) + '"</div>' : '')
+        + (r.photo ? '<img class="akte-photo" src="' + r.photo + '" alt="Beweisfoto" loading="lazy">' : '')
+        + '<div class="akte-foot">'
+          + '<span class="akte-source">QUELLE: ' + source + '</span>'
+          + (canDelete ? '<button class="akte-delete" data-rkey="' + key + '">LÖSCHEN</button>' : '')
+        + '</div>'
+        + '</div>';
+    }).join('');
+
+    el.querySelectorAll('.akte-delete').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (firebaseReady && db) db.ref('reports/' + btn.dataset.rkey).remove().catch(() => {});
+      });
+    });
+  }
+
+  initAkteForm();
+
+  // ==================== ORDEN (medaljer) ====================
+  function countTasted(agent) {
+    let n = 0;
+    BREWERIES.forEach(b => b.beers.forEach(beer => {
+      if (getRating(agent, b.name, beer.name).tasted) n++;
+    }));
+    return n;
+  }
+
+  function countGlasses(agent) {
+    let n = 0;
+    GLASSES.forEach(g => g.glasses.forEach(gl => {
+      if (getGlass(agent, g.brewery, gl)) n++;
+    }));
+    return n;
+  }
+
+  function countMissions(agent) {
+    let n = 0;
+    TRIP_DAYS.forEach(d => {
+      for (let i = 0; i < 3; i++) if (getMissionDone(agent, d.key, i)) n++;
+    });
+    return n;
+  }
+
+  function countCheckinDays(agent) {
+    let n = 0;
+    TRIP_DAYS.forEach(d => { if (getCheckin(agent, d.key)) n++; });
+    return n;
+  }
+
+  function countPrep(agent) {
+    let n = 0;
+    PREP_BEERS.forEach(b => { if (getPrep(agent, b.key)) n++; });
+    return n;
+  }
+
+  function countReportsFiled(agent) {
+    const safe = safeName(agent);
+    return Object.values(reportsCache).filter(r => r.reporterSafe === safe).length;
+  }
+
+  function countReportsAgainst(agent) {
+    return Object.values(reportsCache).filter(r => r.accused === agent).length;
+  }
+
+  const MEDALS = [
+    { id: 'arbeit',     icon: '🏅', name: 'HELD DER ARBEIT',              req: '10 Biere geprüft',
+      check: a => { const n = countTasted(a); return { done: n >= 10, prog: n + '/10' }; } },
+    { id: 'pruefer',    icon: '⭐', name: 'DER WAHRE PRÜFER',             req: 'Alle Biere geprüft',
+      check: a => { const t = BREWERIES.reduce((s, b) => s + b.beers.length, 0); const n = countTasted(a); return { done: n >= t, prog: n + '/' + t }; } },
+    { id: 'vorb',       icon: '📋', name: 'MEISTER DER VORBEREITUNG',     req: 'Alle Pflichtbiere erledigt',
+      check: a => { const n = countPrep(a); return { done: n >= PREP_BEERS.length, prog: n + '/' + PREP_BEERS.length }; } },
+    { id: 'frueh',      icon: '🌅', name: 'VOLKSHELD DES FRÜHSCHOPPENS',  req: 'Frühschoppen alle 3 Tage',
+      check: a => { const n = countCheckinDays(a); return { done: n >= 3, prog: n + '/3' }; } },
+    { id: 'beute',      icon: '🍺', name: 'ORDEN DER KRIEGSBEUTE',        req: '3 Gläser geplündert',
+      check: a => { const n = countGlasses(a); return { done: n >= 3, prog: n + '/3' }; } },
+    { id: 'pluender',   icon: '💎', name: 'GENERALPLÜNDERER',             req: '8 Gläser geplündert',
+      check: a => { const n = countGlasses(a); return { done: n >= 8, prog: n + '/8' }; } },
+    { id: 'auftrag',    icon: '🕵️', name: 'ORDENSTRÄGER DER AUFTRÄGE',   req: '5 Aufträge erledigt',
+      check: a => { const n = countMissions(a); return { done: n >= 5, prog: n + '/5' }; } },
+    { id: 'informant',  icon: '📁', name: 'STASI-INFORMANT',              req: '3 Meldungen eingereicht',
+      check: a => { const n = countReportsFiled(a); return { done: n >= 3, prog: n + '/3' }; } },
+    { id: 'volksfeind', icon: '☠️', name: 'VOLKSFEIND',                   req: '3-mal gemeldet worden',
+      check: a => { const n = countReportsAgainst(a); return { done: n >= 3, prog: n + '/3' }; } },
+  ];
+
+  function renderMedals() {
+    const grid = document.getElementById('medalGrid');
+    const board = document.getElementById('medalLeaderboard');
+    if (!grid || !board) return;
+    if (!currentAgent) return;
+
+    // My medals
+    grid.innerHTML = MEDALS.map(m => {
+      const res = m.check(currentAgent);
+      return '<div class="medal-card' + (res.done ? ' medal-unlocked' : ' medal-locked') + '">'
+        + '<div class="medal-icon">' + m.icon + '</div>'
+        + '<div class="medal-name">' + m.name + '</div>'
+        + '<div class="medal-req">' + m.req + '</div>'
+        + '<div class="medal-prog">' + (res.done ? '★ VERLIEHEN ★' : res.prog) + '</div>'
+        + '</div>';
+    }).join('');
+
+    // Leaderboard: medal count per agent
+    const rows = APPROVED_AGENTS.map(agent => ({
+      agent,
+      count: MEDALS.filter(m => m.check(agent).done).length,
+    }));
+    rows.sort((a, b) => b.count - a.count || a.agent.localeCompare(b.agent));
+
+    if (rows.every(r => r.count === 0)) {
+      board.innerHTML = '<div class="lb-empty">Noch keine Orden verliehen. Das Vaterland wartet.</div>';
+      return;
+    }
+
+    board.innerHTML = '<div class="leaderboard">' + rows.map((r, i) => {
+      const isSelf = currentAgent && r.agent === currentAgent;
+      const pct = Math.round((r.count / MEDALS.length) * 100);
+      return '<div class="lb-row' + (isSelf ? ' lb-self' : '') + '">'
+        + '<div class="lb-rank">' + (i + 1) + '.</div>'
+        + '<div class="lb-name">' + r.agent + '</div>'
+        + '<div class="lb-bar-wrap"><div class="lb-bar" style="width:' + pct + '%"></div></div>'
+        + '<div class="lb-pct">' + r.count + ' 🎖️</div>'
         + '</div>';
     }).join('') + '</div>';
   }

@@ -1963,8 +1963,8 @@
       check: a => { const n = countReportsAgainst(a); return { done: n >= 3, prog: n + '/3' }; } },
     { id: 'laufheld',   icon: '🏃', name: 'LAUFHELD DES VOLKES',          req: '3 gebilligte Laufwochen',
       check: a => { const n = runsApprovedWeeks(a); return { done: n >= 3, prog: n + '/3' }; } },
-    { id: 'eisbaer',    icon: '🐻‍❄️', name: 'EISBÄR-GENERAL',            req: 'Isbjørn-Kontingent von 10+',
-      check: a => { const n = runsQuota(a); return { done: n >= 10, prog: n + '/10' }; } },
+    { id: 'eisbaer',    icon: '🐻‍❄️', name: 'EISBÄR-GENERAL',            req: '12 gebilligte Laufwochen',
+      check: a => { const n = runsApprovedWeeks(a); return { done: n >= 12, prog: n + '/12' }; } },
   ];
 
   function renderMedals() {
@@ -2541,8 +2541,12 @@
     return Math.floor(excess / KM_PER_ISBJOERN);
   }
 
+  const RUN_BACKFILL_WEEKS = 5; // antall foregående uker som kan etterregistreres
+  const WEEK_MS = 7 * 86400000;
+
   function addRun() {
     const input = document.getElementById('runKm');
+    const weekSel = document.getElementById('runWeek');
     const statusEl = document.getElementById('runStatus');
     if (!input) return;
     const raw = (input.value || '').replace(',', '.').trim();
@@ -2555,18 +2559,36 @@
       if (statusEl) statusEl.textContent = '⚠ Das Ministerium ist ohne Verbindung.';
       return;
     }
+    let weeksBack = weekSel ? parseInt(weekSel.value, 10) : 0;
+    if (isNaN(weeksBack) || weeksBack < 0 || weeksBack > RUN_BACKFILL_WEEKS) weeksBack = 0;
+    const ts = Date.now() - weeksBack * WEEK_MS;
     const safe = safeName(currentAgent);
-    db.ref('runs/' + safe).push({ ts: Date.now(), km: Math.round(km * 10) / 10 })
+    db.ref('runs/' + safe).push({ ts: ts, km: Math.round(km * 10) / 10 })
       .then(() => {
         input.value = '';
+        if (weekSel) weekSel.value = '0';
         if (statusEl) {
-          statusEl.textContent = '★ Løbet er indført i Protokollen. Milen nærmer sig.';
+          statusEl.textContent = weeksBack === 0
+            ? '★ Løbet er indført i Protokollen. Milen nærmer sig.'
+            : '★ Løbet er efterindført paa ' + isoWeekLabel(isoWeekKey(ts)) + '. Ministeriet noterer — uden at spørge.';
           setTimeout(() => { statusEl.textContent = ''; }, 4000);
         }
       })
       .catch(() => {
         if (statusEl) statusEl.textContent = '⚠ Indførsel fejlede. Forsøg atter.';
       });
+  }
+
+  function buildRunWeekOptions() {
+    const weekSel = document.getElementById('runWeek');
+    if (!weekSel) return;
+    const now = Date.now();
+    let html = '';
+    for (let k = 0; k <= RUN_BACKFILL_WEEKS; k++) {
+      const label = isoWeekLabel(isoWeekKey(now - k * WEEK_MS));
+      html += '<option value="' + k + '">' + label + (k === 0 ? ' (DENNE)' : '') + '</option>';
+    }
+    weekSel.innerHTML = html;
   }
 
   function deleteRun(runId) {
@@ -2685,6 +2707,7 @@
     const btn = document.getElementById('runAdd');
     const input = document.getElementById('runKm');
     if (!btn || !input) return;
+    buildRunWeekOptions();
     btn.addEventListener('click', addRun);
     input.addEventListener('keydown', e => { if (e.key === 'Enter') addRun(); });
   }

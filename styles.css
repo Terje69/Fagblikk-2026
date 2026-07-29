@@ -2329,10 +2329,25 @@ h2.tab-title {
 
 .run-form { text-align: center; }
 
+.run-form-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.run-form-field {
+  flex: 1;
+  min-width: 130px;
+  max-width: 210px;
+  text-align: left;
+}
+
+.run-form-field .akte-label { margin-top: 0; }
+
 .run-input {
-  max-width: 200px;
-  margin: 0 auto 10px;
-  display: block;
   text-align: center;
   font-size: 0.85rem !important;
 }

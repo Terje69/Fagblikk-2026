@@ -45,7 +45,6 @@
     'Hams Brurs Brurs Brur',
     'Hams Brur',
     'Mykle',
-    'Banksjef2',
     'Fagbrur',
     'Mace',
     'Niggo Kristiansen',
@@ -1269,59 +1268,69 @@
     }
   }
 
-  function updateNotifyUI() {
-    const btn = document.getElementById('notifyToggle');
-    const status = document.getElementById('notifyStatus');
-    if (!btn || !status) return;
+  // To knapper deler samme tilstand: Frühschoppen-fanen og forsiden
+  const NOTIFY_UI = [
+    { btn: 'notifyToggle',     status: 'notifyStatus' },
+    { btn: 'notifyToggleHome', status: 'notifyStatusHome' },
+  ];
 
-    if (typeof Notification === 'undefined') {
-      btn.style.display = 'none';
-      status.dataset.de = 'Dieses Gerät unterstützt keine Benachrichtigungen. (iPhone: App zuerst zum Home-Bildschirm hinzufügen.)';
-      status.dataset.no = 'Denne indretning formaar ikke at bære bud. (iPhone: læg først appen til hjemskjærmen.)';
-      status.style.display = 'block';
-    } else if (Notification.permission === 'denied') {
-      btn.style.display = 'none';
-      status.dataset.de = 'Benachrichtigungen sind im Browser blockiert. Bitte in den Einstellungen freigeben.';
-      status.dataset.no = 'Budene ere blokkerede af hine browsermagter. Giv tilladelse i indstillingerne.';
-      status.style.display = 'block';
-    } else if (notifyReady()) {
-      btn.style.display = '';
-      btn.dataset.de = '🔔 MELDUNGEN: AN — ZUM ABSCHALTEN DRÜCKEN';
-      btn.dataset.no = '🔔 BUDBRINGEREN: VAAGEN — TRYK FOR AT DYSSE HAM';
-      status.dataset.de = 'Du erhältst eine Meldung, wenn ein Agent sich einfindet.';
-      status.dataset.no = 'Du modtager bud, naar en agent indfinder sig til morgendram.';
-      status.style.display = 'block';
-    } else {
-      btn.style.display = '';
-      btn.dataset.de = '🔕 MELDUNGEN: AUS — ZUM EINSCHALTEN DRÜCKEN';
-      btn.dataset.no = '🔕 BUDBRINGEREN: SOVER — TRYK FOR AT VÆKKE HAM';
-      status.dataset.de = '';
-      status.dataset.no = '';
-      status.style.display = 'none';
-    }
+  function updateNotifyUI() {
+    NOTIFY_UI.forEach(ids => {
+      const btn = document.getElementById(ids.btn);
+      const status = document.getElementById(ids.status);
+      if (!btn || !status) return;
+
+      if (typeof Notification === 'undefined') {
+        btn.style.display = 'none';
+        status.dataset.de = 'Dieses Gerät unterstützt keine Benachrichtigungen. (iPhone: App zuerst zum Home-Bildschirm hinzufügen.)';
+        status.dataset.no = 'Denne indretning formaar ikke at bære bud. (iPhone: læg først appen til hjemskjærmen.)';
+        status.style.display = 'block';
+      } else if (Notification.permission === 'denied') {
+        btn.style.display = 'none';
+        status.dataset.de = 'Benachrichtigungen sind im Browser blockiert. Bitte in den Einstellungen freigeben.';
+        status.dataset.no = 'Budene ere blokkerede af hine browsermagter. Giv tilladelse i indstillingerne.';
+        status.style.display = 'block';
+      } else if (notifyReady()) {
+        btn.style.display = '';
+        btn.dataset.de = '🔔 MELDUNGEN: AN — ZUM ABSCHALTEN DRÜCKEN';
+        btn.dataset.no = '🔔 BUDBRINGEREN: VAAGEN — TRYK FOR AT DYSSE HAM';
+        status.dataset.de = 'Du erhältst Meldungen des Ministeriums: Frühschoppen, Seuche, Notrufe.';
+        status.dataset.no = 'Du modtager Ministeriets bud: morgendram, sot og nødraab.';
+        status.style.display = 'block';
+      } else {
+        btn.style.display = '';
+        btn.dataset.de = '🔕 MELDUNGEN: AUS — ZUM EINSCHALTEN DRÜCKEN';
+        btn.dataset.no = '🔕 BUDBRINGEREN: SOVER — TRYK FOR AT VÆKKE HAM';
+        status.dataset.de = '';
+        status.dataset.no = '';
+        status.style.display = 'none';
+      }
+    });
 
     if (window.__reapplyLang) window.__reapplyLang();
   }
 
   function initNotifyToggle() {
-    const btn = document.getElementById('notifyToggle');
-    if (!btn) return;
-    btn.addEventListener('click', () => {
-      if (typeof Notification === 'undefined') return;
-      if (notifyReady()) {
-        lsSet(NOTIFY_PREF_KEY, false);
-        updateNotifyUI();
-        return;
-      }
-      if (Notification.permission === 'granted') {
-        lsSet(NOTIFY_PREF_KEY, true);
-        updateNotifyUI();
-      } else {
-        Notification.requestPermission().then(perm => {
-          if (perm === 'granted') lsSet(NOTIFY_PREF_KEY, true);
+    NOTIFY_UI.forEach(ids => {
+      const btn = document.getElementById(ids.btn);
+      if (!btn) return;
+      btn.addEventListener('click', () => {
+        if (typeof Notification === 'undefined') return;
+        if (notifyReady()) {
+          lsSet(NOTIFY_PREF_KEY, false);
           updateNotifyUI();
-        });
-      }
+          return;
+        }
+        if (Notification.permission === 'granted') {
+          lsSet(NOTIFY_PREF_KEY, true);
+          updateNotifyUI();
+        } else {
+          Notification.requestPermission().then(perm => {
+            if (perm === 'granted') lsSet(NOTIFY_PREF_KEY, true);
+            updateNotifyUI();
+          });
+        }
+      });
     });
     updateNotifyUI();
   }

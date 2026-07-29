@@ -243,6 +243,13 @@
       alertsCache[snap.key] = snap.val();
       renderAlerts();
     });
+
+    // Sync Kontignentets Løbere
+    db.ref('runs').on('value', snap => {
+      runsCache = snap.val() || {};
+      renderRuns();
+      renderMedals();
+    });
   }
 
   // Push ALL local data to Firebase on login (in case offline data exists)
@@ -378,6 +385,7 @@
         db.ref('sickness').off();
         db.ref('jaget').off();
         db.ref('alerts').off();
+        db.ref('runs').off();
       }
     }
   });
@@ -424,6 +432,7 @@
       if (tab === 'orden') { renderMedals(); }
       if (tab === 'nimmt') { renderSickness(); }
       if (tab === 'notruf') { renderAlerts(); }
+      if (tab === 'lauf') { renderRuns(); }
     });
   });
 
@@ -1952,6 +1961,10 @@
       check: a => { const n = countReportsFiled(a); return { done: n >= 3, prog: n + '/3' }; } },
     { id: 'volksfeind', icon: '☠️', name: 'VOLKSFEIND',                   req: '3-mal gemeldet worden',
       check: a => { const n = countReportsAgainst(a); return { done: n >= 3, prog: n + '/3' }; } },
+    { id: 'laufheld',   icon: '🏃', name: 'LAUFHELD DES VOLKES',          req: '3 gebilligte Laufwochen',
+      check: a => { const n = runsApprovedWeeks(a); return { done: n >= 3, prog: n + '/3' }; } },
+    { id: 'eisbaer',    icon: '🐻‍❄️', name: 'EISBÄR-GENERAL',            req: 'Isbjørn-Kontingent von 10+',
+      check: a => { const n = runsQuota(a); return { done: n >= 10, prog: n + '/10' }; } },
   ];
 
   function renderMedals() {
@@ -2463,6 +2476,220 @@
   }
 
   initHamGPT();
+
+  // ==================== KONTIGNENTETS LØBERE ====================
+  let runsCache = {}; // safeAgent -> { pushId: { ts, km } }
+
+  const WEEK_GOAL_KM = 10;       // en mil per uke for godkjent uke
+  const KM_PER_ISBJOERN = 1;     // 1 overskytende km = 1 Isbjørn
+
+  function isoWeekKey(ts) {
+    const d = new Date(ts);
+    const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    const dayNum = date.getUTCDay() || 7;
+    date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+    const week = Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+    return date.getUTCFullYear() + '-W' + String(week).padStart(2, '0');
+  }
+
+  function isoWeekLabel(key) {
+    return 'UKE ' + parseInt(key.split('-W')[1], 10);
+  }
+
+  function fmtKm(km) {
+    return (Math.round(km * 10) / 10).toFixed(1).replace('.', ',');
+  }
+
+  // Aggreger en agents løp: weekKey -> { km, runs: [{id, ts, km}] }
+  function agentWeeks(safe) {
+    const weeks = {};
+    const runs = runsCache[safe] || {};
+    Object.keys(runs).forEach(id => {
+      const r = runs[id];
+      if (!r || typeof r.km !== 'number') return;
+      const wk = isoWeekKey(r.ts || 0);
+      if (!weeks[wk]) weeks[wk] = { km: 0, runs: [] };
+      weeks[wk].km += r.km;
+      weeks[wk].runs.push({ id: id, ts: r.ts, km: r.km });
+    });
+    return weeks;
+  }
+
+  function runsApprovedWeeks(agent) {
+    const weeks = agentWeeks(safeName(agent));
+    const cur = isoWeekKey(Date.now());
+    let n = 0;
+    Object.keys(weeks).forEach(wk => {
+      if (weeks[wk].km >= WEEK_GOAL_KM) n++;
+      else if (wk === cur) {} // pågående uke telles ikke som underkjent
+    });
+    return n;
+  }
+
+  function runsTotalKm(agent) {
+    const weeks = agentWeeks(safeName(agent));
+    return Object.values(weeks).reduce((s, w) => s + w.km, 0);
+  }
+
+  function runsQuota(agent) {
+    const weeks = agentWeeks(safeName(agent));
+    let excess = 0;
+    Object.values(weeks).forEach(w => {
+      if (w.km >= WEEK_GOAL_KM) excess += (w.km - WEEK_GOAL_KM);
+    });
+    return Math.floor(excess / KM_PER_ISBJOERN);
+  }
+
+  function addRun() {
+    const input = document.getElementById('runKm');
+    const statusEl = document.getElementById('runStatus');
+    if (!input) return;
+    const raw = (input.value || '').replace(',', '.').trim();
+    const km = parseFloat(raw);
+    if (isNaN(km) || km <= 0 || km > 100) {
+      if (statusEl) statusEl.textContent = '⚠ Angiv en ærlig distance mellem 0,1 og 100 km.';
+      return;
+    }
+    if (!currentAgent || !firebaseReady || !db) {
+      if (statusEl) statusEl.textContent = '⚠ Das Ministerium ist ohne Verbindung.';
+      return;
+    }
+    const safe = safeName(currentAgent);
+    db.ref('runs/' + safe).push({ ts: Date.now(), km: Math.round(km * 10) / 10 })
+      .then(() => {
+        input.value = '';
+        if (statusEl) {
+          statusEl.textContent = '★ Løbet er indført i Protokollen. Milen nærmer sig.';
+          setTimeout(() => { statusEl.textContent = ''; }, 4000);
+        }
+      })
+      .catch(() => {
+        if (statusEl) statusEl.textContent = '⚠ Indførsel fejlede. Forsøg atter.';
+      });
+  }
+
+  function deleteRun(runId) {
+    if (!currentAgent || !firebaseReady || !db) return;
+    const safe = safeName(currentAgent);
+    db.ref('runs/' + safe + '/' + runId).remove().catch(() => {});
+  }
+
+  function renderRuns() {
+    const progEl = document.getElementById('runWeekProgress');
+    const listEl = document.getElementById('runMyWeeks');
+    const boardEl = document.getElementById('runLeaderboard');
+    if (!progEl || !listEl || !boardEl) return;
+
+    const curWeek = isoWeekKey(Date.now());
+
+    // ── Denne ukens fremdrift (selv) ──
+    if (currentAgent) {
+      const weeks = agentWeeks(safeName(currentAgent));
+      const cur = weeks[curWeek] || { km: 0 };
+      const pct = Math.min(100, (cur.km / WEEK_GOAL_KM) * 100);
+      const remaining = Math.max(0, WEEK_GOAL_KM - cur.km);
+      const excess = Math.max(0, cur.km - WEEK_GOAL_KM);
+      let statusLine;
+      if (cur.km >= WEEK_GOAL_KM) {
+        statusLine = '★ MILEN ER FULDBRAGT! Overskydende: ' + fmtKm(excess) + ' km = '
+          + Math.floor(excess / KM_PER_ISBJOERN) + ' Isbjørn 🐻‍❄️';
+      } else {
+        statusLine = fmtKm(remaining) + ' km gjenstaar før ugen er godkjendt.';
+      }
+      progEl.innerHTML =
+        '<div class="run-week-head">' + isoWeekLabel(curWeek) + ' · ' + fmtKm(cur.km) + ' / ' + WEEK_GOAL_KM + ' KM</div>'
+        + '<div class="run-bar-bg"><div class="run-bar-fill' + (cur.km >= WEEK_GOAL_KM ? ' run-bar-done' : '') + '" style="width:' + pct + '%"></div></div>'
+        + '<div class="run-week-status">' + statusLine + '</div>';
+    } else {
+      progEl.innerHTML = '';
+    }
+
+    // ── Mine uker ──
+    if (currentAgent) {
+      const weeks = agentWeeks(safeName(currentAgent));
+      const keys = Object.keys(weeks).sort().reverse();
+      if (keys.length === 0) {
+        listEl.innerHTML = '<div class="lb-empty">Ingen løb indført. Milen venter.</div>';
+      } else {
+        listEl.innerHTML = keys.map(wk => {
+          const w = weeks[wk];
+          const approved = w.km >= WEEK_GOAL_KM;
+          const isCur = wk === curWeek;
+          const excess = Math.max(0, w.km - WEEK_GOAL_KM);
+          let badge;
+          if (approved) badge = '<span class="run-badge run-badge-ok">✓ GODKJENDT' + (excess > 0 ? ' · +' + Math.floor(excess / KM_PER_ISBJOERN) + ' 🐻‍❄️' : '') + '</span>';
+          else if (isCur) badge = '<span class="run-badge run-badge-cur">PAAGAAR</span>';
+          else badge = '<span class="run-badge run-badge-fail">✗ UNDERKJENDT</span>';
+
+          const runRows = w.runs.sort((a, b) => b.ts - a.ts).map(r => {
+            const d = new Date(r.ts);
+            const ds = d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
+            return '<div class="run-entry">'
+              + '<span class="run-entry-date">' + ds + '</span>'
+              + '<span class="run-entry-km">' + fmtKm(r.km) + ' km</span>'
+              + '<button class="run-entry-del" data-runid="' + r.id + '">✕</button>'
+              + '</div>';
+          }).join('');
+
+          return '<div class="run-week-card' + (approved ? ' run-week-approved' : '') + '">'
+            + '<div class="run-week-row">'
+              + '<span class="run-week-label">' + isoWeekLabel(wk) + '</span>'
+              + '<span class="run-week-km">' + fmtKm(w.km) + ' KM</span>'
+              + badge
+            + '</div>'
+            + runRows
+            + '</div>';
+        }).join('');
+
+        listEl.querySelectorAll('.run-entry-del').forEach(btn => {
+          btn.addEventListener('click', () => deleteRun(btn.dataset.runid));
+        });
+      }
+    } else {
+      listEl.innerHTML = '';
+    }
+
+    // ── Samleoversigt ──
+    const rows = APPROVED_AGENTS.map(agent => ({
+      agent: agent,
+      weeks: runsApprovedWeeks(agent),
+      km: runsTotalKm(agent),
+      quota: runsQuota(agent),
+    }));
+    rows.sort((a, b) => b.quota - a.quota || b.weeks - a.weeks || b.km - a.km || a.agent.localeCompare(b.agent));
+
+    if (rows.every(r => r.km === 0)) {
+      boardEl.innerHTML = '<div class="lb-empty">Ingen har løbet endnu. Isbjørnen sover trygt.</div>';
+      return;
+    }
+
+    boardEl.innerHTML = '<div class="run-lb-head-row">'
+      + '<span class="run-lb-name">AGENT</span>'
+      + '<span class="run-lb-col">UGER ✓</span>'
+      + '<span class="run-lb-col">KM</span>'
+      + '<span class="run-lb-col">🐻‍❄️ KVOTE</span>'
+      + '</div>'
+      + rows.map(r => {
+        const isSelf = currentAgent && r.agent === currentAgent;
+        return '<div class="run-lb-row' + (isSelf ? ' lb-self' : '') + '">'
+          + '<span class="run-lb-name">' + esc(r.agent) + '</span>'
+          + '<span class="run-lb-col">' + r.weeks + '</span>'
+          + '<span class="run-lb-col">' + fmtKm(r.km) + '</span>'
+          + '<span class="run-lb-col run-lb-quota">' + r.quota + '</span>'
+          + '</div>';
+      }).join('');
+  }
+
+  function initRuns() {
+    const btn = document.getElementById('runAdd');
+    const input = document.getElementById('runKm');
+    if (!btn || !input) return;
+    btn.addEventListener('click', addRun);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') addRun(); });
+  }
+
+  initRuns();
 
   // ==================== SVG IMAGES ====================
   function svgBeerMug() {

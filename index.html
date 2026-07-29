@@ -102,6 +102,10 @@
           <span class="nav-label" data-de="VORBE&shy;REITUNG" data-no="FORBE&shy;REDELSE">VORBE&shy;REITUNG</span>
           <strong class="nav-icon">📋</strong>
         </button>
+        <button class="nav-card" data-tab="lauf">
+          <span class="nav-label" data-de="LÄUFER" data-no="LØBERNE">LÄUFER</span>
+          <strong class="nav-icon">🏃</strong>
+        </button>
         <button class="nav-card" data-tab="bier">
           <span class="nav-label" data-de="BIER&shy;KONTROLLE" data-no="ØL&shy;KONTROL">BIER&shy;KONTROLLE</span>
           <strong class="nav-icon">🍺</strong>
@@ -551,6 +555,65 @@
             </div>
             <p class="lead" style="font-size:0.6rem;opacity:0.7;" data-de="Tilgjengelig på Vinmonopolet og i dagligvarehandel i Norge." data-no="At erhverve paa Vinmonopolet, samt i dagligvarehandelen om land og strand.">Tilgjengelig på Vinmonopolet og i dagligvarehandel i Norge.</p>
             <div id="prepList"></div>
+          </section>
+        </div>
+      </main>
+
+      <!-- ============ TAB: LÄUFER / LØBERNE ============ -->
+      <main class="tab-content" id="tab-lauf">
+        <div class="poster">
+          <section class="hero">
+            <div class="ddr-emblem">★</div>
+            <h2 class="tab-title" data-de="LÄUFER DES KONTIGNENTS" data-no="KONTIGNENTETS LØBERE">LÄUFER DES KONTIGNENTS</h2>
+            <p class="lead" data-de="Eine Meile pro Woche ist das Gesetz. Wer mehr läuft, verdient sich zusätzliche Isbjørn auf dem Widerøe-Flug — das einzige Bier, das man sich erlaufen muss." data-no="En mil om ugen er Loven. Hvo mere løber, gjør sig fortjent til yderligere Isbjørn paa Widerøe-flyvningen — det eneste øl en mand maa løbe sig til.">Eine Meile pro Woche ist das Gesetz. Wer mehr läuft, verdient sich zusätzliche Isbjørn auf dem Widerøe-Flug — das einzige Bier, das man sich erlaufen muss.</p>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text" data-de="DAS GESETZ" data-no="LOVEN">DAS GESETZ</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+
+            <div class="run-rules">
+              <ul>
+                <li data-de="10 km pro Woche = gebilligte Woche" data-no="10 km per uge = godkjendt uge">10 km pro Woche = gebilligte Woche</li>
+                <li data-de="Jeder überschüssige Kilometer = 1 Isbjørn im Kontingent" data-no="Hver overskydende kilometer = 1 Isbjørn i kvoten">Jeder überschüssige Kilometer = 1 Isbjørn im Kontingent</li>
+                <li data-de="Nur eigene Läufe dürfen eingetragen werden" data-no="Kun egne løb kan indføres">Nur eigene Läufe dürfen eingetragen werden</li>
+                <li data-de="Das Ministerium führt keine GPS-Kontrolle. Das Ministerium vertraut eurer Ehre. Falsche Einträge werden mit ewigem Hansa bestraft." data-no="Ministeriet fører ingen GPS-kontrol. Ministeriet stoler paa eders ære. Falsk indførsel straffes med evig Hansa.">Das Ministerium führt keine GPS-Kontrolle. Das Ministerium vertraut eurer Ehre. Falsche Einträge werden mit ewigem Hansa bestraft.</li>
+              </ul>
+            </div>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text" data-de="LAUF EINTRAGEN" data-no="INDFØR LØB">LAUF EINTRAGEN</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+
+            <div class="run-form">
+              <input type="number" inputmode="decimal" step="0.1" min="0.1" max="100" class="akte-input run-input" id="runKm" placeholder="KM..." />
+              <button class="ddr-btn run-add-btn" id="runAdd" data-de="★ LAUF EINTRAGEN ★" data-no="★ INDFØR LØBET ★">★ LAUF EINTRAGEN ★</button>
+              <p class="notify-status" id="runStatus"></p>
+            </div>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text" data-de="DIESE WOCHE" data-no="DENNE UGE">DIESE WOCHE</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+            <div class="run-progress" id="runWeekProgress"></div>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text" data-de="DEINE WOCHEN" data-no="DINE UGER">DEINE WOCHEN</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+            <div id="runMyWeeks"></div>
+
+            <div class="section-divider">
+              <span class="star">★</span><span class="divider-line"></span>
+              <span class="divider-text" data-de="GESAMTÜBERSICHT" data-no="SAMLEOVERSIGTEN">GESAMTÜBERSICHT</span>
+              <span class="divider-line"></span><span class="star">★</span>
+            </div>
+            <div id="runLeaderboard"></div>
           </section>
         </div>
       </main>

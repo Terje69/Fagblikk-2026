@@ -2293,6 +2293,222 @@ h2.tab-title {
   margin-top: 3px;
 }
 
+/* ==================== KONTIGNENTETS LØBERE ==================== */
+.run-rules {
+  padding: 12px 14px;
+  margin: 12px 0;
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid var(--gold-dark);
+  border-left: 4px solid var(--gold);
+  text-align: left;
+}
+
+.run-rules ul {
+  margin: 0;
+  padding-left: 4px;
+  list-style: none;
+}
+
+.run-rules li {
+  position: relative;
+  padding: 4px 0 4px 18px;
+  font-size: 0.58rem;
+  color: var(--cream);
+  letter-spacing: 0.03em;
+  line-height: 1.65;
+  text-transform: none;
+}
+
+.run-rules li::before {
+  content: '★';
+  position: absolute;
+  left: 0;
+  color: var(--gold);
+  font-weight: 900;
+}
+
+.run-form { text-align: center; }
+
+.run-input {
+  max-width: 200px;
+  margin: 0 auto 10px;
+  display: block;
+  text-align: center;
+  font-size: 0.85rem !important;
+}
+
+.run-add-btn {
+  width: 100%;
+  max-width: 420px;
+  font-size: 0.66rem;
+  padding: 11px 14px;
+}
+
+/* Ukens fremdrift */
+.run-progress { margin: 12px 0; }
+
+.run-week-head {
+  font-size: 0.68rem;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.run-bar-bg {
+  height: 16px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid var(--gold-dark);
+  overflow: hidden;
+}
+
+.run-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--red), var(--red-bright, #e53935));
+  transition: width 0.4s ease-out;
+}
+
+.run-bar-fill.run-bar-done {
+  background: linear-gradient(90deg, var(--gold-dark), var(--gold));
+  box-shadow: 0 0 10px rgba(255, 214, 0, 0.6);
+}
+
+.run-week-status {
+  font-size: 0.56rem;
+  color: var(--cream);
+  letter-spacing: 0.04em;
+  text-align: center;
+  margin-top: 8px;
+  line-height: 1.6;
+  text-transform: none;
+}
+
+/* Ukekort */
+.run-week-card {
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid var(--gold-dark);
+  padding: 10px 12px;
+  margin: 10px 0;
+  text-align: left;
+}
+
+.run-week-card.run-week-approved {
+  border-color: var(--gold);
+  background: rgba(255, 214, 0, 0.07);
+}
+
+.run-week-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-bottom: 6px;
+  margin-bottom: 6px;
+  border-bottom: 1px dashed rgba(255, 214, 0, 0.25);
+}
+
+.run-week-label {
+  font-size: 0.66rem;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+}
+
+.run-week-km {
+  font-size: 0.62rem;
+  font-weight: 900;
+  color: var(--cream);
+  letter-spacing: 0.05em;
+  flex: 1;
+}
+
+.run-badge {
+  font-size: 0.5rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  padding: 3px 9px;
+  border: 1.5px solid;
+}
+
+.run-badge-ok   { color: #66ff99; border-color: #66ff99; }
+.run-badge-cur  { color: var(--gold); border-color: var(--gold); }
+.run-badge-fail { color: var(--red-bright, #e53935); border-color: var(--red-bright, #e53935); }
+
+.run-entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 3px 0;
+  font-size: 0.55rem;
+  color: var(--cream);
+  letter-spacing: 0.04em;
+}
+
+.run-entry-date { opacity: 0.7; min-width: 44px; }
+.run-entry-km   { flex: 1; font-weight: 900; }
+
+.run-entry-del {
+  background: transparent;
+  border: 1px solid var(--red-bright, #e53935);
+  color: var(--red-bright, #e53935);
+  font-family: inherit;
+  font-size: 0.5rem;
+  font-weight: 900;
+  width: 20px; height: 20px;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* Samleoversigt */
+.run-lb-head-row,
+.run-lb-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border: 1px solid var(--gold-dark);
+  margin: 4px 0;
+  font-size: 0.58rem;
+  letter-spacing: 0.04em;
+  text-align: left;
+}
+
+.run-lb-head-row {
+  background: rgba(183, 28, 28, 0.35);
+  font-size: 0.48rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+.run-lb-row { background: rgba(0, 0, 0, 0.35); }
+.run-lb-row.lb-self { border-color: var(--gold); background: rgba(255, 214, 0, 0.1); }
+
+.run-lb-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 900;
+  color: var(--cream);
+}
+
+.run-lb-head-row .run-lb-name { color: var(--gold); }
+
+.run-lb-col {
+  min-width: 52px;
+  text-align: center;
+  font-weight: 900;
+  color: var(--cream);
+  flex-shrink: 0;
+}
+
+.run-lb-quota { color: var(--gold); }
+
 /* ==================== NOTRUF / NØDRAAB ==================== */
 .notruf-grid {
   display: grid;

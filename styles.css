@@ -2293,6 +2293,171 @@ h2.tab-title {
   margin-top: 3px;
 }
 
+/* ==================== HOTEL / HOVEDKVARTERET ==================== */
+.hotel-card {
+  padding: 18px 16px;
+  margin: 12px 0;
+  background: rgba(0, 0, 0, 0.4);
+  border: 3px solid var(--gold);
+  text-align: center;
+  position: relative;
+}
+
+.hotel-card::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(255, 214, 0, 0.3);
+  pointer-events: none;
+}
+
+.hotel-name {
+  font-family: var(--font-heading, inherit);
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+.hotel-address {
+  font-size: 0.64rem;
+  font-weight: 900;
+  color: var(--cream);
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.hotel-meta {
+  font-size: 0.55rem;
+  color: var(--cream);
+  opacity: 0.85;
+  letter-spacing: 0.03em;
+  line-height: 1.65;
+  text-transform: none;
+  margin-bottom: 12px;
+}
+
+.hotel-map-link {
+  display: inline-block;
+  background: rgba(255, 214, 0, 0.12);
+  border: 2px solid var(--gold-dark);
+  color: var(--gold);
+  font-size: 0.56rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  padding: 7px 16px;
+  text-decoration: none;
+}
+
+.hotel-map-link:active { transform: scale(0.96); }
+
+/* FØR MIG HJEM */
+.home-btn {
+  display: block;
+  padding: 18px 16px;
+  margin: 12px 0;
+  background: linear-gradient(180deg, var(--gold), var(--gold-dark));
+  border: 3px solid var(--gold);
+  text-align: center;
+  text-decoration: none;
+  box-shadow: 0 0 16px rgba(255, 214, 0, 0.4);
+  transition: transform 0.1s, box-shadow 0.2s;
+}
+
+.home-btn:active { transform: scale(0.98); }
+
+.home-btn-title {
+  display: block;
+  font-family: var(--font-heading, inherit);
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--ink);
+  letter-spacing: 0.14em;
+  margin-bottom: 5px;
+}
+
+.home-btn-sub {
+  display: block;
+  font-size: 0.52rem;
+  font-weight: 700;
+  color: var(--ink);
+  opacity: 0.8;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  text-transform: none;
+}
+
+/* Nachtwinkel */
+.nacht-card {
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid var(--gold-dark);
+  border-left: 4px solid var(--gold);
+  padding: 12px 14px;
+  margin: 10px 0;
+  text-align: left;
+}
+
+.nacht-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.nacht-name {
+  font-size: 0.66rem;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+}
+
+.nacht-dist {
+  font-size: 0.5rem;
+  font-weight: 900;
+  color: var(--cream);
+  opacity: 0.7;
+  letter-spacing: 0.08em;
+}
+
+.nacht-desc {
+  font-size: 0.56rem;
+  color: var(--cream);
+  letter-spacing: 0.03em;
+  line-height: 1.65;
+  text-transform: none;
+  margin-bottom: 8px;
+}
+
+.nacht-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(255, 214, 0, 0.25);
+}
+
+.nacht-rating {
+  font-size: 0.5rem;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+}
+
+.nacht-map {
+  font-size: 0.52rem;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  border: 1.5px solid var(--gold-dark);
+  padding: 4px 10px;
+}
+
 /* ==================== KONTIGNENTETS LØBERE ==================== */
 .run-rules {
   padding: 12px 14px;

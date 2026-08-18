@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fagblikk-v24';
+const CACHE_NAME = 'fagblikk-v25';
 const ASSETS = [
   './',
   './index.html',

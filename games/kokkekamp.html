@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🍳 Kokkekamp II — Turbo</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --red: #b71c1c;
+  --red-deep: #7f0000;
+  --red-bright: #e53935;
+  --gold: #ffd600;
+  --gold-dark: #c7a500;
+  --cream: #f5e6c8;
+  --ink: #1a0a0a;
+}
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'Arial Black', Arial, sans-serif;
+  background: var(--ink);
+  color: var(--cream);
+  user-select: none;
+  text-transform: uppercase;
+  touch-action: manipulation;
+}
+
+.screen { display: none; flex-direction: column; height: 100%; }
+.screen.active { display: flex; }
+
+/* ═══ INTRO ═══ */
+#screen-intro { padding: 10px; }
+.intro-title {
+  text-align: center;
+  font-size: 1.15em;
+  color: var(--gold);
+  letter-spacing: 0.12em;
+  padding: 6px 0 2px;
+  text-shadow: 0 0 14px rgba(255, 214, 0, 0.5);
+}
+.intro-sub {
+  text-align: center;
+  font-size: 0.5em;
+  color: var(--cream);
+  opacity: 0.7;
+  letter-spacing: 0.12em;
+  margin-bottom: 8px;
+}
+#intro-stage {
+  flex: 1;
+  position: relative;
+  border: 2px solid var(--gold-dark);
+  overflow: hidden;
+  min-height: 300px;
+  background: linear-gradient(180deg, #1a2035 0%, #232840 55%, #3a3025 55.1%, #2c2419 100%);
+}
+#intro-stage svg { width: 100%; height: 100%; display: block; }
+
+#intro-text {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  width: 92%;
+  background: rgba(0, 0, 0, 0.75);
+  border: 2px solid var(--gold);
+  padding: 10px 14px;
+  font-size: 0.66em;
+  letter-spacing: 0.04em;
+  line-height: 1.6;
+  text-align: center;
+  text-transform: none;
+  color: var(--cream);
+  min-height: 3em;
+}
+#intro-text strong { color: var(--gold); }
+
+#skip-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--gold-dark);
+  color: var(--gold);
+  font-family: inherit;
+  font-size: 0.5em;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  padding: 6px 12px;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.door-burst { animation: doorShake 0.5s ease-out; }
+@keyframes doorShake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-6px, 2px); }
+  40% { transform: translate(6px, -2px); }
+  60% { transform: translate(-4px, 1px); }
+  80% { transform: translate(4px, -1px); }
+}
+
+/* ═══ FIGHT ═══ */
+#hud {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: linear-gradient(180deg, var(--red), var(--red-deep));
+  border-bottom: 3px solid var(--gold);
+  flex-shrink: 0;
+}
+.hp-side { flex: 1; }
+.hp-name {
+  font-size: 0.5em;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hp-side.right .hp-name { text-align: right; }
+.hp-bar-bg {
+  height: 14px;
+  background: rgba(0, 0, 0, 0.55);
+  border: 2px solid var(--gold-dark);
+  overflow: hidden;
+}
+.hp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #66ff99, #2fd06a);
+  width: 100%;
+  transition: width 0.15s;
+}
+.hp-bar-fill.low { background: linear-gradient(90deg, #ff8833, var(--red-bright)); }
+.hp-side.right .hp-bar-fill { float: right; }
+.round-pips { margin-top: 3px; font-size: 0.55em; color: var(--gold); letter-spacing: 0.2em; }
+.hp-side.right .round-pips { text-align: right; }
+#round-num {
+  flex-shrink: 0;
+  text-align: center;
+  font-size: 0.7em;
+  font-weight: 900;
+  color: var(--cream);
+  letter-spacing: 0.06em;
+  min-width: 52px;
+}
+
+#arena {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #1a2035 0%, #232840 62%, #3a3025 62.1%, #2c2419 100%);
+  border-bottom: 2px solid var(--gold-dark);
+  min-height: 240px;
+}
+
+/* Bakgrunnsdekor i arenaen */
+#arena-bg { position: absolute; inset: 0; pointer-events: none; }
+#arena-bg svg { width: 100%; height: 100%; }
+
+.fighter {
+  position: absolute;
+  bottom: 12%;
+  width: 76px;
+  height: 84px;
+  font-size: 60px;
+  line-height: 84px;
+  text-align: center;
+  transition: filter 0.1s;
+  will-change: left, transform;
+  z-index: 10;
+}
+.fighter .weapon {
+  position: absolute;
+  top: 6px;
+  font-size: 34px;
+  opacity: 0;
+  pointer-events: none;
+}
+.fighter.face-left  { transform: scaleX(-1); }
+.fighter.attacking .weapon { animation: swing 0.22s ease-out; }
+@keyframes swing {
+  0%   { opacity: 0; transform: rotate(-70deg) translateX(0); }
+  40%  { opacity: 1; transform: rotate(10deg) translateX(26px); }
+  100% { opacity: 0; transform: rotate(30deg) translateX(34px); }
+}
+.fighter.hit { filter: brightness(2) saturate(0) drop-shadow(0 0 8px #fff); animation: reel 0.25s ease-out; }
+@keyframes reel {
+  0% { margin-bottom: 0; }
+  40% { margin-bottom: 10px; }
+  100% { margin-bottom: 0; }
+}
+.fighter.blocking::after {
+  content: '🛡';
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 30px;
+}
+.fighter.ko {
+  transform: rotate(90deg) !important;
+  bottom: 6%;
+  filter: saturate(0.4) brightness(0.8);
+  transition: transform 0.4s ease-in, bottom 0.4s;
+}
+
+.fx {
+  position: absolute;
+  font-size: 1em;
+  font-weight: 900;
+  color: var(--gold);
+  text-shadow: 0 0 8px rgba(255, 214, 0, 0.9), 2px 2px 0 #000;
+  pointer-events: none;
+  animation: fxFly 0.55s ease-out forwards;
+  z-index: 20;
+  letter-spacing: 0.05em;
+}
+@keyframes fxFly {
+  from { opacity: 1; transform: translateY(0) scale(0.7) rotate(-6deg); }
+  to   { opacity: 0; transform: translateY(-46px) scale(1.25) rotate(6deg); }
+}
+
+#banner {
+  position: absolute;
+  top: 34%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 2em;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.15em;
+  text-shadow: 0 0 24px rgba(255, 214, 0, 0.8), 3px 3px 0 #7f0000;
+  display: none;
+  z-index: 30;
+  white-space: nowrap;
+}
+#banner.show { display: block; animation: bannerZoom 0.4s ease-out; }
+@keyframes bannerZoom {
+  from { transform: translate(-50%, -50%) scale(2.4); opacity: 0; }
+  to   { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+#spec-bubble {
+  position: absolute;
+  left: 8px;
+  bottom: 34%;
+  max-width: 46%;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid var(--gold-dark);
+  color: var(--cream);
+  font-size: 0.5em;
+  letter-spacing: 0.03em;
+  line-height: 1.5;
+  padding: 6px 9px;
+  text-transform: none;
+  display: none;
+  z-index: 15;
+}
+
+#arena.shake { animation: arenaShake 0.25s; }
+@keyframes arenaShake {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-5px, 3px); }
+  50% { transform: translate(5px, -3px); }
+  75% { transform: translate(-3px, 2px); }
+}
+
+/* Kontroller */
+#controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 8px;
+  padding: 10px;
+  flex-shrink: 0;
+  background: linear-gradient(0deg, var(--red-deep), #3a0a0a);
+  border-top: 2px solid var(--gold-dark);
+}
+.ctrl-group { display: flex; gap: 8px; }
+.ctrl-btn {
+  min-width: 62px;
+  min-height: 62px;
+  background: linear-gradient(180deg, var(--red), var(--red-deep));
+  border: 2px solid var(--gold);
+  color: var(--gold);
+  font-family: inherit;
+  font-size: 0.62em;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border-radius: 8px;
+}
+.ctrl-btn span.ico { font-size: 1.6em; line-height: 1; }
+.ctrl-btn:active, .ctrl-btn.pressed { background: linear-gradient(180deg, var(--red-bright), var(--red)); transform: scale(0.94); }
+.ctrl-hint {
+  text-align: center;
+  font-size: 0.42em;
+  color: var(--cream);
+  opacity: 0.55;
+  letter-spacing: 0.08em;
+  padding-bottom: 6px;
+  background: linear-gradient(0deg, var(--red-deep), transparent);
+  flex-shrink: 0;
+}
+
+/* ═══ END ═══ */
+#screen-end { padding: 16px; overflow-y: auto; }
+.end-title {
+  text-align: center;
+  font-size: 1.5em;
+  color: var(--gold);
+  letter-spacing: 0.14em;
+  margin: 10px 0 14px;
+  text-shadow: 0 0 18px rgba(255, 214, 0, 0.6);
+}
+#audun-scene { text-align: center; margin-bottom: 10px; }
+#audun-scene svg { width: 170px; height: 170px; }
+.audun-bubble {
+  max-width: 420px;
+  margin: 0 auto 6px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid var(--gold);
+  padding: 14px 16px;
+  font-size: 0.78em;
+  letter-spacing: 0.03em;
+  line-height: 1.65;
+  text-align: center;
+  text-transform: none;
+  color: var(--cream);
+  position: relative;
+}
+.audun-bubble::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 10px solid transparent;
+  border-bottom-color: var(--gold);
+  border-top: none;
+}
+.audun-name {
+  text-align: center;
+  font-size: 0.55em;
+  color: var(--gold);
+  letter-spacing: 0.16em;
+  margin-bottom: 16px;
+}
+.main-btn {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  margin: 8px auto 0;
+  background: linear-gradient(180deg, var(--red), var(--red-deep));
+  color: var(--gold);
+  border: 3px solid var(--gold);
+  font-family: inherit;
+  font-size: 0.8em;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 13px 18px;
+  cursor: pointer;
+}
+.main-btn:active { transform: scale(0.97); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ INTRO ═══════════ -->
+<div class="screen active" id="screen-intro">
+  <div class="intro-title">★ KOKKEKAMP II — TURBO ★</div>
+  <div class="intro-sub">DET FANTES ALDRI NOEN KOKKEKAMP I</div>
+  <div id="intro-stage">
+    <button id="skip-btn">HOPP OVER ▶▶</button>
+    <svg viewBox="0 0 400 260" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+      <!-- Natt-himmel + måne -->
+      <rect x="0" y="0" width="400" height="160" fill="#1a2035"/>
+      <circle cx="350" cy="34" r="16" fill="#f5e6c8" opacity="0.85"/>
+      <!-- Restaurantfasade -->
+      <rect x="30" y="30" width="200" height="130" fill="#4a3020" stroke="#1a0a0a" stroke-width="2"/>
+      <rect x="30" y="30" width="200" height="26" fill="#7f0000" stroke="#1a0a0a" stroke-width="2"/>
+      <text x="130" y="48" text-anchor="middle" font-size="13" fill="#ffd600" font-family="Impact,sans-serif" letter-spacing="2">WIRTSHAUS</text>
+      <!-- Vinduer med varmt lys -->
+      <rect x="45" y="70" width="42" height="36" fill="#ffd600" opacity="0.55" stroke="#1a0a0a" stroke-width="2"/>
+      <rect x="173" y="70" width="42" height="36" fill="#ffd600" opacity="0.55" stroke="#1a0a0a" stroke-width="2"/>
+      <!-- Døra (animeres) -->
+      <g id="svg-door">
+        <rect x="108" y="70" width="48" height="90" fill="#2c1810" stroke="#1a0a0a" stroke-width="2"/>
+        <circle cx="148" cy="118" r="3" fill="#c7a500"/>
+      </g>
+      <!-- Gata -->
+      <rect x="0" y="160" width="400" height="100" fill="#3a3025"/>
+      <line x1="0" y1="160" x2="400" y2="160" stroke="#1a0a0a" stroke-width="2"/>
+      <!-- Brostein-antydning -->
+      <g stroke="#2c2419" stroke-width="1" opacity="0.7">
+        <line x1="0" y1="185" x2="400" y2="185"/>
+        <line x1="0" y1="212" x2="400" y2="212"/>
+        <line x1="0" y1="238" x2="400" y2="238"/>
+      </g>
+
+      <!-- Bord med to øl -->
+      <rect x="285" y="185" width="82" height="7" rx="2" fill="#8B6914" stroke="#1a0a0a" stroke-width="1.5"/>
+      <rect x="295" y="192" width="6" height="30" fill="#6a5010"/>
+      <rect x="352" y="192" width="6" height="30" fill="#6a5010"/>
+      <rect x="300" y="168" width="12" height="17" rx="1.5" fill="#DAA520" stroke="#1a0a0a" stroke-width="1"/>
+      <ellipse cx="306" cy="169" rx="7" ry="3" fill="#f5e6c8"/>
+      <rect x="340" y="168" width="12" height="17" rx="1.5" fill="#DAA520" stroke="#1a0a0a" stroke-width="1"/>
+      <ellipse cx="346" cy="169" rx="7" ry="3" fill="#f5e6c8"/>
+
+      <!-- VEST-MANNEN (midtskill + vest) -->
+      <g id="svg-vest">
+        <circle cx="272" cy="152" r="12" fill="#f2c896" stroke="#1a0a0a" stroke-width="1.5"/>
+        <!-- Midtskill: to buer med skill i midten -->
+        <path d="M261,148 Q265,138 271,141 L272,144 Z" fill="#5a3a1a" stroke="#1a0a0a" stroke-width="0.8"/>
+        <path d="M283,148 Q279,138 273,141 L272,144 Z" fill="#5a3a1a" stroke="#1a0a0a" stroke-width="0.8"/>
+        <circle cx="268" cy="152" r="1.2" fill="#000"/>
+        <circle cx="276" cy="152" r="1.2" fill="#000"/>
+        <path d="M268,158 Q272,160 276,158" fill="none" stroke="#000" stroke-width="1"/>
+        <!-- Kropp: hvit skjorte + mørk vest -->
+        <path d="M258,196 L260,168 Q266,163 272,163 Q278,163 284,168 L286,196 Z" fill="#e8e8e0" stroke="#1a0a0a" stroke-width="1.5"/>
+        <path d="M260,196 L261,168 L268,165 L268,196 Z" fill="#2c2c3a" stroke="#1a0a0a" stroke-width="1"/>
+        <path d="M284,196 L283,168 L276,165 L276,196 Z" fill="#2c2c3a" stroke="#1a0a0a" stroke-width="1"/>
+      </g>
+
+      <!-- AUDUN (palestinaskjerf) -->
+      <g id="svg-audun">
+        <circle cx="380" cy="152" r="12" fill="#f2c896" stroke="#1a0a0a" stroke-width="1.5"/>
+        <path d="M369,149 Q374,139 385,141 Q390,144 391,149 Q383,144 369,149 Z" fill="#3a2a1a" stroke="#1a0a0a" stroke-width="0.8"/>
+        <circle cx="376" cy="152" r="1.2" fill="#000"/>
+        <circle cx="384" cy="152" r="1.2" fill="#000"/>
+        <path d="M376,158 Q380,159 384,158" fill="none" stroke="#000" stroke-width="1"/>
+        <!-- Kropp -->
+        <path d="M366,196 L368,168 Q374,163 380,163 Q386,163 392,168 L394,196 Z" fill="#4a4e28" stroke="#1a0a0a" stroke-width="1.5"/>
+        <!-- Palestinaskjerf: hvitt med sort rutemønster -->
+        <path d="M368,168 Q374,162 380,163 Q386,162 392,168 L390,176 Q380,171 370,176 Z" fill="#f5f5f0" stroke="#1a0a0a" stroke-width="1"/>
+        <g fill="#1a1a1a">
+          <rect x="371" y="167" width="2.5" height="2.5"/>
+          <rect x="376" y="165" width="2.5" height="2.5"/>
+          <rect x="381" y="165" width="2.5" height="2.5"/>
+          <rect x="386" y="167" width="2.5" height="2.5"/>
+          <rect x="373.5" y="170" width="2.5" height="2.5"/>
+          <rect x="378.5" y="169" width="2.5" height="2.5"/>
+          <rect x="383.5" y="170" width="2.5" height="2.5"/>
+        </g>
+        <!-- Skjerfende henger ned -->
+        <path d="M369,169 L366,184 L371,184 L372,172 Z" fill="#f5f5f0" stroke="#1a0a0a" stroke-width="1"/>
+        <rect x="367" y="174" width="2" height="2" fill="#1a1a1a"/>
+        <rect x="368" y="179" width="2" height="2" fill="#1a1a1a"/>
+      </g>
+
+      <!-- Kokkene (skjult til de braser ut) -->
+      <g id="svg-chefs" opacity="0">
+        <text x="120" y="150" font-size="34">🧑‍🍳</text>
+        <text x="155" y="155" font-size="34">👨‍🍳</text>
+        <text x="140" y="120" font-size="22">💥</text>
+      </g>
+    </svg>
+    <div id="intro-text"></div>
+  </div>
+</div>
+
+<!-- ═══════════ FIGHT ═══════════ -->
+<div class="screen" id="screen-fight">
+  <div id="hud">
+    <div class="hp-side left">
+      <div class="hp-name">SAUSKOKKEN (DU)</div>
+      <div class="hp-bar-bg"><div class="hp-bar-fill" id="hp1"></div></div>
+      <div class="round-pips" id="pips1">○ ○</div>
+    </div>
+    <div id="round-num">R1</div>
+    <div class="hp-side right">
+      <div class="hp-name">GRILLKOKKEN</div>
+      <div class="hp-bar-bg"><div class="hp-bar-fill" id="hp2"></div></div>
+      <div class="round-pips" id="pips2">○ ○</div>
+    </div>
+  </div>
+
+  <div id="arena">
+    <div id="arena-bg">
+      <svg viewBox="0 0 400 240" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+        <rect x="20" y="14" width="150" height="105" fill="#4a3020" stroke="#1a0a0a" stroke-width="2" opacity="0.85"/>
+        <rect x="20" y="14" width="150" height="20" fill="#7f0000" stroke="#1a0a0a" stroke-width="2" opacity="0.85"/>
+        <text x="95" y="28" text-anchor="middle" font-size="10" fill="#ffd600" font-family="Impact,sans-serif" letter-spacing="2" opacity="0.9">WIRTSHAUS</text>
+        <rect x="80" y="45" width="34" height="70" fill="#0d0603" stroke="#1a0a0a" stroke-width="2" opacity="0.9"/>
+        <rect x="32" y="45" width="30" height="26" fill="#ffd600" opacity="0.4"/>
+        <rect x="128" y="45" width="30" height="26" fill="#ffd600" opacity="0.4"/>
+        <!-- Tilskuerbordet i hjørnet -->
+        <g transform="translate(300, 96) scale(0.9)">
+          <rect x="-15" y="89" width="82" height="7" rx="2" fill="#8B6914" stroke="#1a0a0a" stroke-width="1.5"/>
+          <rect x="0" y="72" width="10" height="15" rx="1.5" fill="#DAA520" stroke="#1a0a0a" stroke-width="1"/>
+          <rect x="40" y="72" width="10" height="15" rx="1.5" fill="#DAA520" stroke="#1a0a0a" stroke-width="1"/>
+          <circle cx="-8" cy="56" r="10" fill="#f2c896" stroke="#1a0a0a" stroke-width="1.5"/>
+          <path d="M-17,53 Q-13,45 -9,47 L-8,50 Z" fill="#5a3a1a"/>
+          <path d="M1,53 Q-3,45 -7,47 L-8,50 Z" fill="#5a3a1a"/>
+          <path d="M-19,89 L-17,66 Q-8,61 1,66 L3,89 Z" fill="#e8e8e0" stroke="#1a0a0a" stroke-width="1.2"/>
+          <path d="M-17,89 L-16,67 L-10,64 L-10,89 Z" fill="#2c2c3a"/>
+          <path d="M1,89 L0,67 L-6,64 L-6,89 Z" fill="#2c2c3a"/>
+          <circle cx="60" cy="56" r="10" fill="#f2c896" stroke="#1a0a0a" stroke-width="1.5"/>
+          <path d="M51,54 Q55,44 66,46 Q69,49 70,54 Q62,49 51,54 Z" fill="#3a2a1a"/>
+          <path d="M49,89 L51,66 Q60,61 69,66 L71,89 Z" fill="#4a4e28" stroke="#1a0a0a" stroke-width="1.2"/>
+          <path d="M51,66 Q60,60 69,66 L68,73 Q60,68 52,73 Z" fill="#f5f5f0" stroke="#1a0a0a" stroke-width="1"/>
+          <g fill="#1a1a1a">
+            <rect x="54" y="65" width="2" height="2"/>
+            <rect x="58" y="63.5" width="2" height="2"/>
+            <rect x="62" y="63.5" width="2" height="2"/>
+            <rect x="66" y="65" width="2" height="2"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <div id="spec-bubble"></div>
+    <div id="banner"></div>
+    <div class="fighter" id="f1">🧑‍🍳<span class="weapon">🍳</span></div>
+    <div class="fighter face-left" id="f2">👨‍🍳<span class="weapon">🥄</span></div>
+  </div>
+
+  <div id="controls">
+    <div class="ctrl-group">
+      <button class="ctrl-btn" id="btn-left"><span class="ico">◀</span></button>
+      <button class="ctrl-btn" id="btn-right"><span class="ico">▶</span></button>
+    </div>
+    <div class="ctrl-group">
+      <button class="ctrl-btn" id="btn-block"><span class="ico">🛡</span>BLOKK</button>
+      <button class="ctrl-btn" id="btn-punch"><span class="ico">🍳</span>SLAG</button>
+      <button class="ctrl-btn" id="btn-kick"><span class="ico">🦵</span>SPARK</button>
+    </div>
+  </div>
+  <div class="ctrl-hint">TASTATUR: A/D = GÅ · J = SLAG · K = SPARK · L = BLOKK</div>
+</div>
+
+<!-- ═══════════ END ═══════════ -->
+<div class="screen" id="screen-end">
+  <div class="end-title" id="end-title">★ SEIER! ★</div>
+  <div id="audun-scene">
+    <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="60" cy="38" r="22" fill="#f2c896" stroke="#1a0a0a" stroke-width="2"/>
+      <path d="M40,32 Q48,14 70,18 Q78,24 80,32 Q64,22 40,32 Z" fill="#3a2a1a" stroke="#1a0a0a" stroke-width="1.5"/>
+      <circle cx="52" cy="38" r="2.5" fill="#000"/>
+      <circle cx="68" cy="38" r="2.5" fill="#000"/>
+      <path id="audun-mouth" d="M52,49 Q60,54 68,49" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+      <path d="M34,115 L38,72 Q49,62 60,62 Q71,62 82,72 L86,115 Z" fill="#4a4e28" stroke="#1a0a0a" stroke-width="2"/>
+      <path d="M38,72 Q49,60 60,62 Q71,60 82,72 L79,86 Q60,76 41,86 Z" fill="#f5f5f0" stroke="#1a0a0a" stroke-width="1.5"/>
+      <g fill="#1a1a1a">
+        <rect x="44" y="70" width="4" height="4"/>
+        <rect x="52" y="67" width="4" height="4"/>
+        <rect x="60" y="67" width="4" height="4"/>
+        <rect x="68" y="70" width="4" height="4"/>
+        <rect x="48" y="76" width="4" height="4"/>
+        <rect x="56" y="74" width="4" height="4"/>
+        <rect x="64" y="76" width="4" height="4"/>
+      </g>
+      <path d="M40,74 L34,100 L42,100 L45,78 Z" fill="#f5f5f0" stroke="#1a0a0a" stroke-width="1.5"/>
+      <rect x="37" y="82" width="3.5" height="3.5" fill="#1a1a1a"/>
+      <rect x="38" y="91" width="3.5" height="3.5" fill="#1a1a1a"/>
+    </svg>
+  </div>
+  <div class="audun-bubble" id="audun-quote">…</div>
+  <div class="audun-name">— AUDUN</div>
+  <button class="main-btn" id="btn-rematch">★ NY KAMP ★</button>
+</div>
+
+<script>
+// ════════════════════════════════════════════
+//  INTRO
+// ════════════════════════════════════════════
+const INTRO_STEPS = [
+  { t: 1200, html: 'En stille aften i München. To mannfolk tar seg en velfortjent øl utenfor Wirtshaus…' },
+  { t: 2200, html: '<strong>VEST-MANNEN:</strong> «Skål, Audun. For freden.»' },
+  { t: 2200, html: '<strong>AUDUN:</strong> «Skål. Fred er bra.»' },
+  { t: 900,  html: '…', door: true },
+  { t: 1800, html: '💥 <strong>KRASJ!</strong> Døra fyker opp — to kokker braser ut av kjøkkenet i full krangel!', chefs: true },
+  { t: 2000, html: '<strong>GRILLKOKKEN:</strong> «DU kalte sausen min TYNN?!» <strong>SAUSKOKKEN:</strong> «Den VA tynn!»' },
+  { t: 1600, html: '<strong>AUDUN:</strong> «…dette må vi se.»' },
+];
+
+let introIdx = 0;
+let introTimer = null;
+
+function playIntro() {
+  const textEl = document.getElementById('intro-text');
+  if (introIdx >= INTRO_STEPS.length) { startMatch(); return; }
+  const step = INTRO_STEPS[introIdx];
+  textEl.innerHTML = step.html;
+  if (step.door) {
+    document.getElementById('intro-stage').classList.add('door-burst');
+    const door = document.getElementById('svg-door');
+    if (door) door.setAttribute('transform', 'rotate(-70 108 160)');
+  }
+  if (step.chefs) {
+    const chefs = document.getElementById('svg-chefs');
+    if (chefs) chefs.setAttribute('opacity', '1');
+  }
+  introIdx++;
+  introTimer = setTimeout(playIntro, step.t);
+}
+
+document.getElementById('skip-btn').addEventListener('click', () => {
+  if (introTimer) clearTimeout(introTimer);
+  startMatch();
+});
+
+playIntro();
+
+// ════════════════════════════════════════════
+//  FIGHT — tilstand
+// ════════════════════════════════════════════
+const CFG = {
+  hp: 100,
+  speed: 210,          // px/s
+  range: 92,           // rekkevidde
+  punch: { dmg: [6, 9],   cd: 380, windup: 90 },
+  kick:  { dmg: [11, 16], cd: 780, windup: 170 },
+  blockFactor: 0.15,
+  roundsToWin: 2,
+  aiThinkMin: 260, aiThinkMax: 620,
+};
+
+let match, keys = {}, rafId = null, lastTs = null;
+
+function mkFighter(el, dir) {
+  return { el, dir, x: 0, hp: CFG.hp, blocking: false,
+           attackCd: 0, stunned: 0, wins: 0 };
+}
+
+function startMatch() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-fight').classList.add('active');
+  match = {
+    p: mkFighter(document.getElementById('f1'), 1),
+    ai: mkFighter(document.getElementById('f2'), -1),
+    round: 1,
+    live: false,
+    aiTimer: 0,
+    aiPlan: 'approach',
+    over: false,
+  };
+  match.p.wins = 0; match.ai.wins = 0;
+  startRound();
+  if (rafId) cancelAnimationFrame(rafId);
+  lastTs = null;
+  rafId = requestAnimationFrame(loop);
+}
+
+function startRound() {
+  const arena = document.getElementById('arena');
+  const W = arena.clientWidth;
+  const m = match;
+  m.p.hp = CFG.hp; m.ai.hp = CFG.hp;
+  m.p.x = W * 0.18; m.ai.x = W * 0.82 - 76;
+  m.p.blocking = false; m.ai.blocking = false;
+  m.p.attackCd = 0; m.ai.attackCd = 0;
+  m.p.stunned = 0; m.ai.stunned = 0;
+  m.p.el.classList.remove('ko'); m.ai.el.classList.remove('ko');
+  m.live = false;
+  updateHud();
+  document.getElementById('round-num').textContent = 'R' + m.round;
+  showBanner('RUNDE ' + m.round, () => {
+    showBanner('SLÅSS!', () => { m.live = true; }, 550);
+  }, 1100);
+}
+
+function showBanner(text, cb, ms) {
+  const b = document.getElementById('banner');
+  b.textContent = text;
+  b.classList.remove('show');
+  void b.offsetWidth;
+  b.classList.add('show');
+  setTimeout(() => { b.classList.remove('show'); if (cb) cb(); }, ms || 900);
+}
+
+function updateHud() {
+  const h1 = document.getElementById('hp1');
+  const h2 = document.getElementById('hp2');
+  h1.style.width = Math.max(0, match.p.hp) + '%';
+  h2.style.width = Math.max(0, match.ai.hp) + '%';
+  h1.classList.toggle('low', match.p.hp <= 30);
+  h2.classList.toggle('low', match.ai.hp <= 30);
+  document.getElementById('pips1').textContent = match.p.wins >= 1 ? '● ' + (match.p.wins >= 2 ? '●' : '○') : '○ ○';
+  document.getElementById('pips2').textContent = match.ai.wins >= 1 ? '● ' + (match.ai.wins >= 2 ? '●' : '○') : '○ ○';
+}
+
+// ════════════════════════════════════════════
+//  INPUT
+// ════════════════════════════════════════════
+function bindHold(id, key) {
+  const el = document.getElementById(id);
+  el.addEventListener('pointerdown', e => { e.preventDefault(); keys[key] = true; el.classList.add('pressed'); });
+  const release = () => { keys[key] = false; el.classList.remove('pressed'); };
+  el.addEventListener('pointerup', release);
+  el.addEventListener('pointerleave', release);
+  el.addEventListener('pointercancel', release);
+}
+bindHold('btn-left', 'left');
+bindHold('btn-right', 'right');
+bindHold('btn-block', 'block');
+document.getElementById('btn-punch').addEventListener('pointerdown', e => { e.preventDefault(); tryAttack(match && match.p, match && match.ai, 'punch'); });
+document.getElementById('btn-kick').addEventListener('pointerdown', e => { e.preventDefault(); tryAttack(match && match.p, match && match.ai, 'kick'); });
+
+window.addEventListener('keydown', e => {
+  const k = e.key.toLowerCase();
+  if (k === 'a') keys.left = true;
+  if (k === 'd') keys.right = true;
+  if (k === 'l') keys.block = true;
+  if (k === 'j') tryAttack(match && match.p, match && match.ai, 'punch');
+  if (k === 'k') tryAttack(match && match.p, match && match.ai, 'kick');
+});
+window.addEventListener('keyup', e => {
+  const k = e.key.toLowerCase();
+  if (k === 'a') keys.left = false;
+  if (k === 'd') keys.right = false;
+  if (k === 'l') keys.block = false;
+});
+
+// ════════════════════════════════════════════
+//  KAMPLOGIKK
+// ════════════════════════════════════════════
+function dist() { return Math.abs(match.ai.x - match.p.x); }
+
+function tryAttack(attacker, defender, type) {
+  if (!match || !match.live || match.over) return;
+  if (!attacker || attacker.attackCd > 0 || attacker.stunned > 0 || attacker.blocking) return;
+  const spec = CFG[type];
+  attacker.attackCd = spec.cd;
+  attacker.el.classList.remove('attacking');
+  void attacker.el.offsetWidth;
+  attacker.el.classList.add('attacking');
+  setTimeout(() => {
+    if (!match || match.over || !match.live) return;
+    if (dist() <= CFG.range) {
+      const dmgBase = spec.dmg[0] + Math.random() * (spec.dmg[1] - spec.dmg[0]);
+      const blocked = defender.blocking;
+      const dmg = Math.round(dmgBase * (blocked ? CFG.blockFactor : 1));
+      defender.hp -= dmg;
+      defender.el.classList.remove('hit');
+      void defender.el.offsetWidth;
+      defender.el.classList.add('hit');
+      defender.stunned = blocked ? 60 : 190;
+      // knockback
+      defender.x += (defender === match.ai ? 1 : -1) * (blocked ? 8 : 26);
+      spawnFx(defender, blocked ? 'KLINK!' : (type === 'kick' ? 'SMELL!' : 'KLONK!'));
+      if (!blocked && type === 'kick') shakeArena();
+      updateHud();
+      if (defender.hp <= 0) endRound(attacker, defender);
+    } else {
+      spawnFx(attacker, 'SVISJ…');
+    }
+  }, spec.windup);
+}
+
+function spawnFx(f, text) {
+  const arena = document.getElementById('arena');
+  const fx = document.createElement('div');
+  fx.className = 'fx';
+  fx.textContent = text;
+  fx.style.left = (f.x + 12) + 'px';
+  fx.style.bottom = '52%';
+  arena.appendChild(fx);
+  setTimeout(() => fx.remove(), 600);
+  if (navigator.vibrate) { try { navigator.vibrate(20); } catch (e) {} }
+}
+
+function shakeArena() {
+  const a = document.getElementById('arena');
+  a.classList.remove('shake');
+  void a.offsetWidth;
+  a.classList.add('shake');
+}
+
+function endRound(winner, loser) {
+  match.live = false;
+  winner.wins++;
+  loser.el.classList.add('ko');
+  updateHud();
+  showBanner('K.O.!', () => {
+    if (winner.wins >= CFG.roundsToWin) {
+      endMatch(winner === match.p);
+    } else {
+      match.round++;
+      startRound();
+    }
+  }, 1300);
+}
+
+// ════════════════════════════════════════════
+//  TILSKUERKOMMENTARER
+// ════════════════════════════════════════════
+const SPEC_COMMENTS = [
+  'VEST-MANNEN: «Hold vesten min.»',
+  'AUDUN: «God vinkel på sleiva der.»',
+  'VEST-MANNEN: «Dette har jeg sett i Praha.»',
+  'AUDUN: «Fotarbeidet er … greit.»',
+  'AUDUN: «Sausen VAR tynn, forresten.»',
+  'VEST-MANNEN: «Skal vi bestille en til?» AUDUN: «Ja.»',
+];
+let specTimer = null;
+function scheduleSpec() {
+  specTimer = setTimeout(() => {
+    if (match && match.live) {
+      const b = document.getElementById('spec-bubble');
+      b.textContent = SPEC_COMMENTS[Math.floor(Math.random() * SPEC_COMMENTS.length)];
+      b.style.display = 'block';
+      setTimeout(() => { b.style.display = 'none'; }, 2600);
+    }
+    scheduleSpec();
+  }, 4500 + Math.random() * 4000);
+}
+scheduleSpec();
+
+// ════════════════════════════════════════════
+//  AI
+// ════════════════════════════════════════════
+function aiThink(dt) {
+  const m = match;
+  m.aiTimer -= dt;
+  if (m.aiTimer <= 0) {
+    m.aiTimer = CFG.aiThinkMin + Math.random() * (CFG.aiThinkMax - CFG.aiThinkMin);
+    const d = dist();
+    if (d > CFG.range * 0.95) {
+      m.aiPlan = Math.random() < 0.85 ? 'approach' : 'wait';
+    } else {
+      const r = Math.random();
+      if (r < 0.42)      m.aiPlan = 'punch';
+      else if (r < 0.62) m.aiPlan = 'kick';
+      else if (r < 0.80) m.aiPlan = 'block';
+      else               m.aiPlan = 'retreat';
+    }
+  }
+
+  const ai = m.ai;
+  ai.blocking = false;
+  if (ai.stunned > 0) return;
+
+  if (m.aiPlan === 'approach') {
+    ai.x -= CFG.speed * 0.82 * (dt / 1000) * (ai.x > m.p.x ? 1 : -1);
+  } else if (m.aiPlan === 'retreat') {
+    ai.x += CFG.speed * 0.7 * (dt / 1000) * (ai.x > m.p.x ? 1 : -1);
+  } else if (m.aiPlan === 'block') {
+    ai.blocking = true;
+  } else if (m.aiPlan === 'punch') {
+    tryAttack(ai, m.p, 'punch');
+    m.aiPlan = 'wait';
+  } else if (m.aiPlan === 'kick') {
+    tryAttack(ai, m.p, 'kick');
+    m.aiPlan = 'wait';
+  }
+}
+
+// ════════════════════════════════════════════
+//  LOOP
+// ════════════════════════════════════════════
+function loop(ts) {
+  if (!match || match.over) return;
+  if (!lastTs) lastTs = ts;
+  const dt = Math.min(ts - lastTs, 50);
+  lastTs = ts;
+
+  const arena = document.getElementById('arena');
+  const W = arena.clientWidth;
+  const m = match;
+
+  [m.p, m.ai].forEach(f => {
+    if (f.attackCd > 0) f.attackCd -= dt;
+    if (f.stunned > 0) f.stunned -= dt;
+  });
+
+  if (m.live) {
+    // Spillerbevegelse
+    const p = m.p;
+    p.blocking = !!keys.block && p.stunned <= 0;
+    if (p.stunned <= 0 && !p.blocking) {
+      if (keys.left)  p.x -= CFG.speed * (dt / 1000);
+      if (keys.right) p.x += CFG.speed * (dt / 1000);
+    }
+    aiThink(dt);
+
+    // Grenser + ikke gå gjennom hverandre
+    m.p.x = Math.max(4, Math.min(W - 80, m.p.x));
+    m.ai.x = Math.max(4, Math.min(W - 80, m.ai.x));
+    if (m.ai.x - m.p.x < 54 && m.ai.x > m.p.x) {
+      const mid = (m.ai.x + m.p.x) / 2;
+      m.p.x = mid - 27; m.ai.x = mid + 27;
+    }
+  }
+
+  // Render
+  m.p.el.style.left = m.p.x + 'px';
+  m.ai.el.style.left = m.ai.x + 'px';
+  m.p.el.classList.toggle('blocking', m.p.blocking);
+  m.ai.el.classList.toggle('blocking', m.ai.blocking);
+  // Vend riktig vei
+  m.p.el.classList.toggle('face-left', m.p.x > m.ai.x);
+  m.ai.el.classList.toggle('face-left', m.ai.x > m.p.x);
+
+  rafId = requestAnimationFrame(loop);
+}
+
+// ════════════════════════════════════════════
+//  SLUTT
+// ════════════════════════════════════════════
+const AUDUN_PRAISE = [
+  '«Det der… det der var faktisk solid. God vinkel på panna, roligt fotarbeid. Audun godkjenner.»',
+  '«Imponerende. Jeg har sett mange kokkeslagsmål i min tid, men dette hadde klasse.»',
+  '«Sterk innsats. Du har gjort deg fortjent til en øl. Kanskje to.»',
+  '«Vakkert. Rett og slett vakkert. Selv vest-mannen måtte se bort et øyeblikk.»',
+  '«Teknisk. Presist. Nådeløst. Slik skal en saus forsvares.»',
+];
+const AUDUN_DEFEAT = [
+  '«Nja. Vest-mannen vant veddemålet. Jeg sier ikke mer.»',
+  '«Sausen din hadde ikke overlevd dette uansett.»',
+  '«Reis deg. Børst av deg brosteinen. Prøv igjen.»',
+];
+
+function endMatch(playerWon) {
+  match.over = true;
+  if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-end').classList.add('active');
+  const title = document.getElementById('end-title');
+  const quote = document.getElementById('audun-quote');
+  const mouth = document.getElementById('audun-mouth');
+  if (playerWon) {
+    title.textContent = '★ SEIER! ★';
+    quote.textContent = AUDUN_PRAISE[Math.floor(Math.random() * AUDUN_PRAISE.length)];
+    if (mouth) mouth.setAttribute('d', 'M52,49 Q60,56 68,49');
+  } else {
+    title.textContent = '☠ TAP ☠';
+    quote.textContent = AUDUN_DEFEAT[Math.floor(Math.random() * AUDUN_DEFEAT.length)];
+    if (mouth) mouth.setAttribute('d', 'M52,52 Q60,48 68,52');
+  }
+}
+
+document.getElementById('btn-rematch').addEventListener('click', startMatch);
+</script>
+</body>
+</html>

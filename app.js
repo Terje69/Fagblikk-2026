@@ -498,6 +498,8 @@
     'bierturm':       { title: 'BIERTURM AM FLUGHAFEN',        src: 'games/bierturm.html' },
     'glaeser-klauen': { title: 'LEERE GLÄSER KLAUEN',          src: 'games/glaeser-klauen.html' },
     'jaget':          { title: 'JAGET — ET DRAMA I SYV BARER', src: 'games/jaget.html' },
+    // Skjult — åpnes kun via kodeord i Notruf-feltet
+    'kokkekamp':      { title: 'KOKKEKAMP II — TURBO',         src: 'games/kokkekamp.html' },
   };
 
   const gameModal   = document.getElementById('gameModal');
@@ -2316,6 +2318,12 @@
       const submitCustom = () => {
         const text = (customInput.value || '').trim();
         if (!text) return;
+        // ── HEMMELIG DØR ──
+        if (text.toLowerCase() === 'audun') {
+          customInput.value = '';
+          openGame('kokkekamp');
+          return;
+        }
         sendAlert('custom', text.slice(0, 140));
         customInput.value = '';
       };

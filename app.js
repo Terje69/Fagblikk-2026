@@ -1122,7 +1122,7 @@
       name: 'California Bean',
       type: 'Café',
       opens: '06:30',
-      beer: 'Øl finnes (merke ukjent)',
+      beer: 'Augustiner',
       address: 'Dachauer Str. 12',
       maps: 'https://www.google.com/maps/place/California+Bean/@48.1428747,11.5603058,17z/data=!3m1!4b1!4m6!3m5!1s0x479e75fbb138bf6b:0xafc8ee228d1f7b52!8m2!3d48.1428747!4d11.5603058'
     },

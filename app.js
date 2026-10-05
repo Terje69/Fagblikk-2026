@@ -1118,6 +1118,15 @@
   // ==================== FRÜHSCHOPPEN – VENUES & CHECK-IN ====================
   const VENUES = [
     {
+      id: 'california-bean',
+      name: 'California Bean',
+      type: 'Café',
+      opens: '06:30',
+      beer: 'Kaffe, pannekaker & bowls (ingen øl)',
+      address: 'Dachauer Str. 12',
+      maps: 'https://www.google.com/maps/search/?api=1&query=California+Bean+Dachauer+Str.+12+M%C3%BCnchen'
+    },
+    {
       id: 'schneider',
       name: 'Schneider Bräuhaus',
       alias: 'Weisses Bräuhaus',

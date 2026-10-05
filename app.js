@@ -2617,7 +2617,9 @@
     'Looting',
     'Terje Tvedt må vel være broren til Tore Tvedt',
     'Statens handlingslammelse når det kommer til...',
-    'Epstein da?'
+    'Epstein da?',
+    'Asbjørns reisebudsjett',
+    'Tronskiftet i blikkenslagerverdenen'
   ];
 
   function renderTopicList() {
